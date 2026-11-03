@@ -30,9 +30,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         {/* Dev mode needs eval for React tooling, so CSP is applied to production builds. */}
-        {isProduction && <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />}
-        <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/fraunces.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {isProduction && (
+          <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
+        )}
+        <link
+          rel="preload"
+          href="/fonts/inter.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/fraunces.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-dvh antialiased">
         <Providers>{children}</Providers>

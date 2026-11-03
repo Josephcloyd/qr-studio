@@ -14,7 +14,13 @@ export const TEMPLATES: TemplateDef[] = [
   ...PERSONAL_TEMPLATES,
 ];
 
-export const TEMPLATE_CATEGORIES: TemplateCategory[] = ["Business", "Restaurant", "Events", "Marketing", "Personal"];
+export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
+  "Business",
+  "Restaurant",
+  "Events",
+  "Marketing",
+  "Personal",
+];
 
 export function getTemplate(id: string): TemplateDef | undefined {
   return TEMPLATES.find((t) => t.id === id);

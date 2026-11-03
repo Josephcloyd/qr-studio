@@ -13,7 +13,14 @@ import {
 } from "@/lib/model/factory";
 import { findPreset } from "@/lib/model/presets";
 import { linear, NO_PAINT, radial, solid, type Paint } from "@/lib/model/paint";
-import type { DesignDocument, DesignElement, DocumentBackground, ShapeElement, ShapeKind, TextElement } from "@/lib/model/types";
+import type {
+  DesignDocument,
+  DesignElement,
+  DocumentBackground,
+  ShapeElement,
+  ShapeKind,
+  TextElement,
+} from "@/lib/model/types";
 import type { QrContent } from "@/lib/qr/content";
 import { DEFAULT_QR_STYLE, type QrStyle } from "@/lib/qr/style";
 
@@ -59,7 +66,14 @@ export function page(
 type TextOpts = Partial<TextElement>;
 
 /** Text box at (fx, fy) fraction, width fraction fw. */
-export function text(f: Frame, value: string, fx: number, fy: number, fw: number, opts: TextOpts = {}): TextElement {
+export function text(
+  f: Frame,
+  value: string,
+  fx: number,
+  fy: number,
+  fw: number,
+  opts: TextOpts = {},
+): TextElement {
   return {
     ...createTextElement(value, { x: f.x(fx), y: f.y(fy), width: f.x(fw) }, "body", opts),
     name: opts.name ?? value.split("\n")[0].slice(0, 28),
@@ -68,9 +82,24 @@ export function text(f: Frame, value: string, fx: number, fy: number, fw: number
 }
 
 /** QR code; `fs` is its size as a fraction of the artboard width. */
-export function qr(f: Frame, content: QrContent, fx: number, fy: number, fs: number, style: Partial<QrStyle> = {}, name = "QR code") {
+export function qr(
+  f: Frame,
+  content: QrContent,
+  fx: number,
+  fy: number,
+  fs: number,
+  style: Partial<QrStyle> = {},
+  name = "QR code",
+) {
   const size = f.x(fs);
-  return { ...createQrElement({ x: f.x(fx), y: f.y(fy), width: size }, content, { ...DEFAULT_QR_STYLE, ecLevel: "Q", ...style }), name };
+  return {
+    ...createQrElement({ x: f.x(fx), y: f.y(fy), width: size }, content, {
+      ...DEFAULT_QR_STYLE,
+      ecLevel: "Q",
+      ...style,
+    }),
+    name,
+  };
 }
 
 export function shape(
@@ -82,13 +111,28 @@ export function shape(
   fh: number,
   opts: Partial<ShapeElement> = {},
 ): ShapeElement {
-  return { ...createShapeElement(kind, { x: f.x(fx), y: f.y(fy), width: f.x(fw), height: f.y(fh) }, opts), ...(opts.name ? { name: opts.name } : {}) };
+  return {
+    ...createShapeElement(kind, { x: f.x(fx), y: f.y(fy), width: f.x(fw), height: f.y(fh) }, opts),
+    ...(opts.name ? { name: opts.name } : {}),
+  };
 }
 
 /** Square icon sized by width fraction. */
-export function icon(f: Frame, id: string, fx: number, fy: number, fs: number, color: string, strokeWidth = 2) {
+export function icon(
+  f: Frame,
+  id: string,
+  fx: number,
+  fy: number,
+  fs: number,
+  color: string,
+  strokeWidth = 2,
+) {
   const s = f.x(fs);
-  return { ...createIconElement(id, { x: f.x(fx), y: f.y(fy), width: s }, color), height: s, strokeWidth };
+  return {
+    ...createIconElement(id, { x: f.x(fx), y: f.y(fy), width: s }, color),
+    height: s,
+    strokeWidth,
+  };
 }
 
 export { linear, radial, solid, NO_PAINT };

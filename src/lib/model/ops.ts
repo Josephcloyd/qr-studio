@@ -10,12 +10,24 @@ export function findElement(doc: DesignDocument, id: string): DesignElement | un
   return doc.elements.find((e) => e.id === id);
 }
 
-export function addElements(doc: DesignDocument, elements: DesignElement[], index?: number): DesignDocument {
-  const at = index === undefined ? doc.elements.length : Math.max(0, Math.min(index, doc.elements.length));
-  return { ...doc, elements: [...doc.elements.slice(0, at), ...elements, ...doc.elements.slice(at)] };
+export function addElements(
+  doc: DesignDocument,
+  elements: DesignElement[],
+  index?: number,
+): DesignDocument {
+  const at =
+    index === undefined ? doc.elements.length : Math.max(0, Math.min(index, doc.elements.length));
+  return {
+    ...doc,
+    elements: [...doc.elements.slice(0, at), ...elements, ...doc.elements.slice(at)],
+  };
 }
 
-export function updateElement<T extends DesignElement>(doc: DesignDocument, id: string, patch: ElementPatch<T>): DesignDocument {
+export function updateElement<T extends DesignElement>(
+  doc: DesignDocument,
+  id: string,
+  patch: ElementPatch<T>,
+): DesignDocument {
   return {
     ...doc,
     elements: doc.elements.map((e) => (e.id === id ? ({ ...e, ...patch } as DesignElement) : e)),
@@ -58,13 +70,22 @@ export function duplicateElements(
   return { doc: { ...doc, elements }, ids: newIds };
 }
 
-export function moveElements(doc: DesignDocument, ids: readonly string[], dx: number, dy: number): DesignDocument {
+export function moveElements(
+  doc: DesignDocument,
+  ids: readonly string[],
+  dx: number,
+  dy: number,
+): DesignDocument {
   return mapElements(doc, ids, (e) => (e.locked ? e : { ...e, x: e.x + dx, y: e.y + dy }));
 }
 
 export type LayerMove = "forward" | "backward" | "front" | "back";
 
-export function reorderElements(doc: DesignDocument, ids: readonly string[], move: LayerMove): DesignDocument {
+export function reorderElements(
+  doc: DesignDocument,
+  ids: readonly string[],
+  move: LayerMove,
+): DesignDocument {
   const set = new Set(ids);
   const selected = doc.elements.filter((e) => set.has(e.id));
   const rest = doc.elements.filter((e) => !set.has(e.id));
@@ -129,9 +150,15 @@ export function alignElements(
 }
 
 /** Distributes 3+ elements so the gaps between them are equal. */
-export function distributeElements(doc: DesignDocument, ids: readonly string[], axis: "horizontal" | "vertical"): DesignDocument {
+export function distributeElements(
+  doc: DesignDocument,
+  ids: readonly string[],
+  axis: "horizontal" | "vertical",
+): DesignDocument {
   const set = new Set(ids);
-  const items = doc.elements.filter((e) => set.has(e.id) && !e.locked).map((e) => ({ e, b: boundsOf(e) }));
+  const items = doc.elements
+    .filter((e) => set.has(e.id) && !e.locked)
+    .map((e) => ({ e, b: boundsOf(e) }));
   if (items.length < 3) return doc;
   const h = axis === "horizontal";
   items.sort((a, b) => (h ? a.b.minX - b.b.minX : a.b.minY - b.b.minY));
@@ -153,7 +180,12 @@ export function distributeElements(doc: DesignDocument, ids: readonly string[], 
 }
 
 /** Resizes the artboard, optionally scaling content to fit proportionally. */
-export function resizeDocument(doc: DesignDocument, width: number, height: number, scaleContent: boolean): DesignDocument {
+export function resizeDocument(
+  doc: DesignDocument,
+  width: number,
+  height: number,
+  scaleContent: boolean,
+): DesignDocument {
   if (!scaleContent) return { ...doc, width, height };
   const s = Math.min(width / doc.width, height / doc.height);
   const ox = (width - doc.width * s) / 2;
@@ -163,12 +195,34 @@ export function resizeDocument(doc: DesignDocument, width: number, height: numbe
     width,
     height,
     elements: doc.elements.map((e) => {
-      const scaled = { ...e, x: e.x * s + ox, y: e.y * s + oy, width: e.width * s, height: e.height * s };
+      const scaled = {
+        ...e,
+        x: e.x * s + ox,
+        y: e.y * s + oy,
+        width: e.width * s,
+        height: e.height * s,
+      };
       if (scaled.type === "text") {
-        return { ...scaled, fontSize: scaled.fontSize * s, padding: scaled.padding * s, borderWidth: scaled.borderWidth * s, cornerRadius: scaled.cornerRadius * s };
+        return {
+          ...scaled,
+          fontSize: scaled.fontSize * s,
+          padding: scaled.padding * s,
+          borderWidth: scaled.borderWidth * s,
+          cornerRadius: scaled.cornerRadius * s,
+        };
       }
-      if (scaled.type === "shape") return { ...scaled, strokeWidth: scaled.strokeWidth * s, cornerRadius: scaled.cornerRadius * s };
-      if (scaled.type === "image") return { ...scaled, borderWidth: scaled.borderWidth * s, cornerRadius: scaled.cornerRadius * s };
+      if (scaled.type === "shape")
+        return {
+          ...scaled,
+          strokeWidth: scaled.strokeWidth * s,
+          cornerRadius: scaled.cornerRadius * s,
+        };
+      if (scaled.type === "image")
+        return {
+          ...scaled,
+          borderWidth: scaled.borderWidth * s,
+          cornerRadius: scaled.cornerRadius * s,
+        };
       return scaled;
     }),
   };

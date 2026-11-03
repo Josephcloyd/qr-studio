@@ -4,18 +4,84 @@
    Self-hosted fonts (OFL). Served from /fonts on our own origin —
    no font CDN requests.
 ---------------------------------------------------------------- */
-@font-face { font-family: "Inter"; src: url("/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Inter"; src: url("/fonts/inter-italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
-@font-face { font-family: "Fraunces"; src: url("/fonts/fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Fraunces"; src: url("/fonts/fraunces-italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
-@font-face { font-family: "Space Grotesk"; src: url("/fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
-@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display.woff2") format("woff2"); font-weight: 400 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display-italic.woff2") format("woff2"); font-weight: 400 900; font-style: italic; font-display: swap; }
-@font-face { font-family: "Outfit"; src: url("/fonts/outfit.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
-@font-face { font-family: "Caveat"; src: url("/fonts/caveat.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
-@font-face { font-family: "DM Serif Display"; src: url("/fonts/dm-serif-display.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Bebas Neue"; src: url("/fonts/bebas-neue.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces-italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/space-grotesk.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-display.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-display-italic.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("/fonts/caveat.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Serif Display";
+  src: url("/fonts/dm-serif-display.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("/fonts/bebas-neue.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
 
 /* ---------------------------------------------------------------
    Design tokens — "print shop": warm paper, ink, one loud accent.
@@ -104,8 +170,12 @@ body {
   background-image:
     radial-gradient(rgb(22 19 15 / 0.035) 1px, transparent 1px),
     radial-gradient(rgb(22 19 15 / 0.025) 1px, transparent 1px);
-  background-size: 18px 18px, 27px 27px;
-  background-position: 0 0, 9px 13px;
+  background-size:
+    18px 18px,
+    27px 27px;
+  background-position:
+    0 0,
+    9px 13px;
 }
 
 /* Editor canvas backdrop: a faint dot grid. */
@@ -123,7 +193,11 @@ body {
     linear-gradient(45deg, transparent 75%, #e9e5dc 75%),
     linear-gradient(-45deg, transparent 75%, #e9e5dc 75%);
   background-size: 14px 14px;
-  background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+  background-position:
+    0 0,
+    0 7px,
+    7px -7px,
+    -7px 0;
 }
 
 /* Native range inputs styled to match. */
@@ -138,7 +212,11 @@ input[type="range"].range {
 input[type="range"].range::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(to right, var(--ink) var(--fill, 50%), var(--line-strong) var(--fill, 50%));
+  background: linear-gradient(
+    to right,
+    var(--ink) var(--fill, 50%),
+    var(--line-strong) var(--fill, 50%)
+  );
 }
 input[type="range"].range::-moz-range-track {
   height: 4px;
@@ -180,19 +258,50 @@ input[type="range"].range::-moz-range-thumb {
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-rise { animation: rise 0.5s var(--ease-out) both; }
+.animate-rise {
+  animation: rise 0.5s var(--ease-out) both;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
-.animate-toast { animation: toast-in 0.28s var(--ease-out) both; }
+.animate-toast {
+  animation: toast-in 0.28s var(--ease-out) both;
+}
 
 @keyframes sheet-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
-.animate-sheet { animation: sheet-up 0.3s var(--ease-out) both; }
+.animate-sheet {
+  animation: sheet-up 0.3s var(--ease-out) both;
+}

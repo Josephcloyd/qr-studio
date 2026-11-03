@@ -50,7 +50,10 @@ export interface QrVerification {
 }
 
 /** Verifies each visible QR element inside a rendered export canvas. */
-export async function verifyDocumentQrCodes(doc: DesignDocument, canvas: HTMLCanvasElement): Promise<QrVerification[]> {
+export async function verifyDocumentQrCodes(
+  doc: DesignDocument,
+  canvas: HTMLCanvasElement,
+): Promise<QrVerification[]> {
   const scale = canvas.width / doc.width;
   const qrs = doc.elements.filter((e): e is QrElement => e.type === "qr" && !e.hidden);
   const results: QrVerification[] = [];
@@ -67,7 +70,13 @@ export async function verifyDocumentQrCodes(doc: DesignDocument, canvas: HTMLCan
           height: (b.maxY - b.minY + pad * 2) * scale,
         })
       : null;
-    results.push({ id: el.id, name: el.name, expected, decoded, ok: expected !== null && decoded === expected });
+    results.push({
+      id: el.id,
+      name: el.name,
+      expected,
+      decoded,
+      ok: expected !== null && decoded === expected,
+    });
   }
   return results;
 }

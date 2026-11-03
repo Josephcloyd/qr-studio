@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { createDocument, createImageElement, createQrElement, createTextElement } from "@/lib/model/factory";
+import {
+  createDocument,
+  createImageElement,
+  createQrElement,
+  createTextElement,
+} from "@/lib/model/factory";
 import { addElements } from "@/lib/model/ops";
 import { isUnsafeSvg, fitWithin, validateImageFile, dataUrlToBlob } from "@/lib/assets/intake";
-import { parseProjectFile, projectFileName, serializeProject, type ProjectAsset } from "@/lib/project/projectFile";
+import {
+  parseProjectFile,
+  projectFileName,
+  serializeProject,
+  type ProjectAsset,
+} from "@/lib/project/projectFile";
 
 const PNG_1PX =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
@@ -98,7 +108,7 @@ describe("intake helpers", () => {
     expect(validateImageFile({ type: "image/png", size: 0 })).toMatch(/empty/);
   });
   it("detects scripted SVGs", () => {
-    expect(isUnsafeSvg('<svg><script>alert(1)</script></svg>')).toBe(true);
+    expect(isUnsafeSvg("<svg><script>alert(1)</script></svg>")).toBe(true);
     expect(isUnsafeSvg('<svg><rect onclick="x()"/></svg>')).toBe(true);
     expect(isUnsafeSvg("<svg><foreignObject></foreignObject></svg>")).toBe(true);
     expect(isUnsafeSvg('<svg><rect width="10"/></svg>')).toBe(false);

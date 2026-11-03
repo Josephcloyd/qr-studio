@@ -29,9 +29,21 @@ export const QR_TYPE_ICONS: Record<QrType, LucideIcon> = {
   event: CalendarDays,
 };
 
-export function TypePicker({ value, onChange, compact = false }: { value: QrType; onChange: (t: QrType) => void; compact?: boolean }) {
+export function TypePicker({
+  value,
+  onChange,
+  compact = false,
+}: {
+  value: QrType;
+  onChange: (t: QrType) => void;
+  compact?: boolean;
+}) {
   return (
-    <div role="radiogroup" aria-label="QR code type" className={cn("grid gap-1.5", compact ? "grid-cols-5" : "grid-cols-5 sm:grid-cols-5")}>
+    <div
+      role="radiogroup"
+      aria-label="QR code type"
+      className={cn("grid gap-1.5", compact ? "grid-cols-5" : "grid-cols-5 sm:grid-cols-5")}
+    >
       {QR_TYPES.map((type) => {
         const Icon = QR_TYPE_ICONS[type];
         const active = type === value;
@@ -49,7 +61,13 @@ export function TypePicker({ value, onChange, compact = false }: { value: QrType
                 : "border-line bg-card text-ink-2 hover:border-ink-3 hover:text-ink",
             )}
           >
-            <Icon className={cn("size-[18px]", active ? "text-accent" : "text-ink-3 group-hover:text-ink")} aria-hidden="true" />
+            <Icon
+              className={cn(
+                "size-[18px]",
+                active ? "text-accent" : "text-ink-3 group-hover:text-ink",
+              )}
+              aria-hidden="true"
+            />
             <span className="truncate">{QR_TYPE_LABELS[type]}</span>
           </button>
         );

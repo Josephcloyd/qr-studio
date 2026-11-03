@@ -112,7 +112,12 @@ const elementBase = {
 };
 
 export const elementSchema = z.discriminatedUnion("type", [
-  z.object({ ...elementBase, type: z.literal("qr"), content: qrContentSchema, style: qrStyleSchema }),
+  z.object({
+    ...elementBase,
+    type: z.literal("qr"),
+    content: qrContentSchema,
+    style: qrStyleSchema,
+  }),
   z.object({
     ...elementBase,
     type: z.literal("text"),

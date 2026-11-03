@@ -17,7 +17,12 @@ export function rasterize(svg: string, width = 600, background = "#ffffff") {
     font: { loadSystemFonts: false },
   });
   const image = resvg.render();
-  return { pixels: new Uint8ClampedArray(image.pixels), width: image.width, height: image.height, png: image.asPng() };
+  return {
+    pixels: new Uint8ClampedArray(image.pixels),
+    width: image.width,
+    height: image.height,
+    png: image.asPng(),
+  };
 }
 
 export function decodeSvg(svg: string, width = 600, background = "#ffffff"): string | null {
@@ -26,7 +31,12 @@ export function decodeSvg(svg: string, width = 600, background = "#ffffff"): str
   return result ? result.data : null;
 }
 
-export function renderQrMarkup(payload: string, style: QrStyle, logo: ResolvedImage | null = null, size = 400): string {
+export function renderQrMarkup(
+  payload: string,
+  style: QrStyle,
+  logo: ResolvedImage | null = null,
+  size = 400,
+): string {
   return renderToStaticMarkup(createElement(QrSvg, { payload, style, size, idPrefix: "t", logo }));
 }
 
@@ -34,5 +44,9 @@ export function renderQrMarkup(payload: string, style: QrStyle, logo: ResolvedIm
 export function makeLogoDataUrl(color = "#e4572e", size = 200): ResolvedImage {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${size / 5}" fill="${color}"/><circle cx="${size / 2}" cy="${size / 2}" r="${size / 4}" fill="#ffffff"/></svg>`;
   const png = new Resvg(svg).render().asPng();
-  return { href: `data:image/png;base64,${Buffer.from(png).toString("base64")}`, width: size, height: size };
+  return {
+    href: `data:image/png;base64,${Buffer.from(png).toString("base64")}`,
+    width: size,
+    height: size,
+  };
 }

@@ -12,13 +12,33 @@ const FONTS = [
   ["@fontsource-variable/inter", "inter-latin-wght-italic.woff2", "inter-italic.woff2"],
   ["@fontsource-variable/fraunces", "fraunces-latin-wght-normal.woff2", "fraunces.woff2"],
   ["@fontsource-variable/fraunces", "fraunces-latin-wght-italic.woff2", "fraunces-italic.woff2"],
-  ["@fontsource-variable/space-grotesk", "space-grotesk-latin-wght-normal.woff2", "space-grotesk.woff2"],
-  ["@fontsource-variable/playfair-display", "playfair-display-latin-wght-normal.woff2", "playfair-display.woff2"],
-  ["@fontsource-variable/playfair-display", "playfair-display-latin-wght-italic.woff2", "playfair-display-italic.woff2"],
+  [
+    "@fontsource-variable/space-grotesk",
+    "space-grotesk-latin-wght-normal.woff2",
+    "space-grotesk.woff2",
+  ],
+  [
+    "@fontsource-variable/playfair-display",
+    "playfair-display-latin-wght-normal.woff2",
+    "playfair-display.woff2",
+  ],
+  [
+    "@fontsource-variable/playfair-display",
+    "playfair-display-latin-wght-italic.woff2",
+    "playfair-display-italic.woff2",
+  ],
   ["@fontsource-variable/outfit", "outfit-latin-wght-normal.woff2", "outfit.woff2"],
-  ["@fontsource-variable/jetbrains-mono", "jetbrains-mono-latin-wght-normal.woff2", "jetbrains-mono.woff2"],
+  [
+    "@fontsource-variable/jetbrains-mono",
+    "jetbrains-mono-latin-wght-normal.woff2",
+    "jetbrains-mono.woff2",
+  ],
   ["@fontsource-variable/caveat", "caveat-latin-wght-normal.woff2", "caveat.woff2"],
-  ["@fontsource/dm-serif-display", "dm-serif-display-latin-400-normal.woff2", "dm-serif-display.woff2"],
+  [
+    "@fontsource/dm-serif-display",
+    "dm-serif-display-latin-400-normal.woff2",
+    "dm-serif-display.woff2",
+  ],
   ["@fontsource/bebas-neue", "bebas-neue-latin-400-normal.woff2", "bebas-neue.woff2"],
 ];
 

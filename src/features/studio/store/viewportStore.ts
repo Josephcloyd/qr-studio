@@ -23,7 +23,13 @@ export interface ViewportState {
 
 export const clampZoom = (z: number): number => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z));
 
-export function fitZoom(docW: number, docH: number, viewW: number, viewH: number, padding = FIT_PADDING): number {
+export function fitZoom(
+  docW: number,
+  docH: number,
+  viewW: number,
+  viewH: number,
+  padding = FIT_PADDING,
+): number {
   const availW = Math.max(40, viewW - padding * 2);
   const availH = Math.max(40, viewH - padding * 2);
   return clampZoom(Math.min(availW / docW, availH / docH));
@@ -51,7 +57,9 @@ export const useViewportStore = create<ViewportState>((set, get) => ({
   zoomStep: (dir) => {
     const { zoom } = get();
     const next =
-      dir > 0 ? (ZOOM_STEPS.find((s) => s > zoom + 0.001) ?? MAX_ZOOM) : ([...ZOOM_STEPS].reverse().find((s) => s < zoom - 0.001) ?? MIN_ZOOM);
+      dir > 0
+        ? (ZOOM_STEPS.find((s) => s > zoom + 0.001) ?? MAX_ZOOM)
+        : ([...ZOOM_STEPS].reverse().find((s) => s < zoom - 0.001) ?? MIN_ZOOM);
     get().zoomAt(next);
   },
   fit: (docWidth, docHeight, padding = FIT_PADDING) => {

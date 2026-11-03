@@ -46,9 +46,13 @@ const assetSchema = z
     height: z.number().min(1).max(20000),
     dataUrl: z.string().max(MAX_DATA_URL_CHARS),
   })
-  .refine((a) => new RegExp(`^data:${a.mime.replace("+", "\\+")};base64,[A-Za-z0-9+/=]+$`).test(a.dataUrl), {
-    message: "Embedded image data doesn't match its declared type.",
-  });
+  .refine(
+    (a) =>
+      new RegExp(`^data:${a.mime.replace("+", "\\+")};base64,[A-Za-z0-9+/=]+$`).test(a.dataUrl),
+    {
+      message: "Embedded image data doesn't match its declared type.",
+    },
+  );
 
 const projectSchema = z.object({
   format: z.literal(PROJECT_FORMAT),
@@ -59,7 +63,11 @@ const projectSchema = z.object({
   assets: z.array(assetSchema).max(MAX_ASSETS),
 });
 
-export function serializeProject(doc: DesignDocument, assets: ProjectAsset[], now = new Date()): string {
+export function serializeProject(
+  doc: DesignDocument,
+  assets: ProjectAsset[],
+  now = new Date(),
+): string {
   const used = referencedAssets(doc);
   const file: ProjectFile = {
     format: PROJECT_FORMAT,
@@ -75,14 +83,22 @@ export function serializeProject(doc: DesignDocument, assets: ProjectAsset[], no
 export type ParseResult = { ok: true; project: ProjectFile } | { ok: false; error: string };
 
 export function parseProjectFile(text: string): ParseResult {
-  if (text.length > MAX_PROJECT_BYTES) return { ok: false, error: "This project file is too large (max 60 MB)." };
+  if (text.length > MAX_PROJECT_BYTES)
+    return { ok: false, error: "This project file is too large (max 60 MB)." };
   let raw: unknown;
   try {
     raw = JSON.parse(text);
   } catch {
-    return { ok: false, error: "This file isn't valid JSON. Choose a .qrstudio.json project file." };
+    return {
+      ok: false,
+      error: "This file isn't valid JSON. Choose a .qrstudio.json project file.",
+    };
   }
-  if (typeof raw !== "object" || raw === null || (raw as { format?: unknown }).format !== PROJECT_FORMAT) {
+  if (
+    typeof raw !== "object" ||
+    raw === null ||
+    (raw as { format?: unknown }).format !== PROJECT_FORMAT
+  ) {
     return { ok: false, error: "This isn't a QR Studio project file." };
   }
   if ((raw as { formatVersion?: unknown }).formatVersion !== PROJECT_FORMAT_VERSION) {
@@ -92,12 +108,16 @@ export function parseProjectFile(text: string): ParseResult {
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
     const where = issue?.path.join(".") || "file";
-    return { ok: false, error: `The project file is damaged or invalid (${where}: ${issue?.message ?? "invalid"}).` };
+    return {
+      ok: false,
+      error: `The project file is damaged or invalid (${where}: ${issue?.message ?? "invalid"}).`,
+    };
   }
   const project = parsed.data as ProjectFile;
   const available = new Set(project.assets.map((a) => a.id));
   const missing = [...referencedAssets(project.document)].filter((id) => !available.has(id));
-  if (missing.length) return { ok: false, error: "The project references images that aren't included in the file." };
+  if (missing.length)
+    return { ok: false, error: "The project references images that aren't included in the file." };
   const elementIds = project.document.elements.map((e) => e.id);
   if (new Set(elementIds).size !== elementIds.length) {
     return { ok: false, error: "The project file contains duplicate element ids." };
@@ -106,14 +126,21 @@ export function parseProjectFile(text: string): ParseResult {
 }
 
 /** Rewrites asset references (imported assets always get fresh local ids). */
-export function remapAssetIds(doc: DesignDocument, map: ReadonlyMap<string, string>): DesignDocument {
+export function remapAssetIds(
+  doc: DesignDocument,
+  map: ReadonlyMap<string, string>,
+): DesignDocument {
   const re = (id: string | null) => (id ? (map.get(id) ?? id) : id);
   return {
     ...doc,
     background: { ...doc.background, imageAssetId: re(doc.background.imageAssetId) },
     elements: doc.elements.map((e) => {
       if (e.type === "image") return { ...e, assetId: re(e.assetId) as string };
-      if (e.type === "qr") return { ...e, style: { ...e.style, logo: { ...e.style.logo, assetId: re(e.style.logo.assetId) } } };
+      if (e.type === "qr")
+        return {
+          ...e,
+          style: { ...e.style, logo: { ...e.style.logo, assetId: re(e.style.logo.assetId) } },
+        };
       return e;
     }),
   };

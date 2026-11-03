@@ -20,7 +20,7 @@ export function SiteHeader() {
   const isActive = (href: string) => pathname?.startsWith(href.replace(/\/$/, ""));
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/85 backdrop-blur-md">
+    <header className="border-line/80 bg-paper/85 sticky top-0 z-40 border-b backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Brand />
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
@@ -41,13 +41,13 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/create/"
-            className="hidden h-10 items-center rounded-xl bg-ink px-4 text-sm font-semibold text-paper transition-colors hover:bg-ink-2 sm:inline-flex"
+            className="bg-ink text-paper hover:bg-ink-2 hidden h-10 items-center rounded-xl px-4 text-sm font-semibold transition-colors sm:inline-flex"
           >
             Create QR code
           </Link>
           <button
             type="button"
-            className="inline-flex size-10 items-center justify-center rounded-xl text-ink md:hidden"
+            className="text-ink inline-flex size-10 items-center justify-center rounded-xl md:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
@@ -57,18 +57,22 @@ export function SiteHeader() {
         </div>
       </div>
       {open && (
-        <nav aria-label="Mobile" className="border-t border-line bg-paper px-4 pt-2 pb-4 md:hidden">
+        <nav aria-label="Mobile" className="border-line bg-paper border-t px-4 pt-2 pb-4 md:hidden">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="block rounded-xl px-3 py-3 text-[15px] font-medium text-ink hover:bg-paper-2"
+              className="text-ink hover:bg-paper-2 block rounded-xl px-3 py-3 text-[15px] font-medium"
             >
               {item.label}
             </Link>
           ))}
-          <Link href="/create/" onClick={() => setOpen(false)} className="mt-2 flex h-12 items-center justify-center rounded-xl bg-ink text-[15px] font-semibold text-paper">
+          <Link
+            href="/create/"
+            onClick={() => setOpen(false)}
+            className="bg-ink text-paper mt-2 flex h-12 items-center justify-center rounded-xl text-[15px] font-semibold"
+          >
             Create QR code
           </Link>
         </nav>

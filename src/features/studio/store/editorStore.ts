@@ -5,7 +5,13 @@
  */
 import { create } from "zustand";
 import { createDocument } from "@/lib/model/factory";
-import { EMPTY_HISTORY, record, redo as redoHistory, undo as undoHistory, type History } from "@/lib/model/history";
+import {
+  EMPTY_HISTORY,
+  record,
+  redo as redoHistory,
+  undo as undoHistory,
+  type History,
+} from "@/lib/model/history";
 import {
   addElements,
   alignElements,
@@ -63,7 +69,11 @@ export interface EditorState {
   setEditingText: (id: string | null) => void;
 
   addElement: (el: DesignElement, select?: boolean) => void;
-  updateElement: <T extends DesignElement>(id: string, patch: ElementPatch<T>, key?: string | null) => void;
+  updateElement: <T extends DesignElement>(
+    id: string,
+    patch: ElementPatch<T>,
+    key?: string | null,
+  ) => void;
   deleteSelection: () => void;
   duplicateSelection: () => void;
   copySelection: () => void;
@@ -89,10 +99,19 @@ const keep = (doc: DesignDocument, ids: string[]) => {
   return ids.filter((id) => present.has(id));
 };
 
-export const DEFAULT_VIEW: ViewState = { showGrid: false, snapToGrid: false, snapToGuides: true, gridSize: 24 };
+export const DEFAULT_VIEW: ViewState = {
+  showGrid: false,
+  snapToGrid: false,
+  snapToGuides: true,
+  gridSize: 24,
+};
 
 export const useEditorStore = create<EditorState>((set, get) => {
-  const commit = (next: DesignDocument, key: string | null = null, extra: Partial<EditorState> = {}) => {
+  const commit = (
+    next: DesignDocument,
+    key: string | null = null,
+    extra: Partial<EditorState> = {},
+  ) => {
     const { doc, history, measure } = get();
     if (next === doc) return;
     const fitted = fitTextHeights(doc, next, measure);
@@ -137,7 +156,9 @@ export const useEditorStore = create<EditorState>((set, get) => {
       set({
         gestureStart: null,
         guides: [],
-        ...(changed ? { history: record(history, gestureStart, null, Date.now()), dirty: true } : {}),
+        ...(changed
+          ? { history: record(history, gestureStart, null, Date.now()), dirty: true }
+          : {}),
       });
     },
     cancelGesture: () => {
@@ -156,14 +177,20 @@ export const useEditorStore = create<EditorState>((set, get) => {
         gestureStart: null,
       }),
     newDocument: (doc) => get().loadDocument(doc ?? createDocument()),
-    renameDocument: (name) => commit({ ...get().doc, name: name.slice(0, 120) || "Untitled design" }, "rename"),
+    renameDocument: (name) =>
+      commit({ ...get().doc, name: name.slice(0, 120) || "Untitled design" }, "rename"),
 
     select: (ids) => set({ selection: keep(get().doc, ids), editingTextId: null }),
     toggleSelect: (id) => {
       const s = get().selection;
       set({ selection: s.includes(id) ? s.filter((x) => x !== id) : [...s, id] });
     },
-    selectAll: () => set({ selection: get().doc.elements.filter((e) => !e.hidden).map((e) => e.id) }),
+    selectAll: () =>
+      set({
+        selection: get()
+          .doc.elements.filter((e) => !e.hidden)
+          .map((e) => e.id),
+      }),
     clearSelection: () => set({ selection: [], editingTextId: null }),
     setEditingText: (id) => set({ editingTextId: id }),
 
@@ -200,22 +227,42 @@ export const useEditorStore = create<EditorState>((set, get) => {
     },
     nudgeSelection: (dx, dy) => {
       const { selection, doc } = get();
-      if (selection.length) commit(moveElements(doc, selection, dx, dy), `nudge:${selection.join(",")}`);
+      if (selection.length)
+        commit(moveElements(doc, selection, dx, dy), `nudge:${selection.join(",")}`);
     },
     reorderSelection: (move) => commit(reorderElements(get().doc, get().selection, move)),
     alignSelection: (alignment) => commit(alignElements(get().doc, get().selection, alignment)),
     distributeSelection: (axis) => commit(distributeElements(get().doc, get().selection, axis)),
-    setSelectionLocked: (locked) => commit(mapElements(get().doc, get().selection, (e) => ({ ...e, locked }))),
+    setSelectionLocked: (locked) =>
+      commit(mapElements(get().doc, get().selection, (e) => ({ ...e, locked }))),
     setElementHidden: (id, hidden) =>
-      commit(updateElementOp(get().doc, id, { hidden }), null, hidden ? { selection: get().selection.filter((s) => s !== id) } : {}),
+      commit(
+        updateElementOp(get().doc, id, { hidden }),
+        null,
+        hidden ? { selection: get().selection.filter((s) => s !== id) } : {},
+      ),
 
     undo: () => {
       const result = undoHistory(get().history, get().doc);
-      if (result) set({ doc: result.doc, history: result.history, dirty: true, selection: keep(result.doc, get().selection), editingTextId: null });
+      if (result)
+        set({
+          doc: result.doc,
+          history: result.history,
+          dirty: true,
+          selection: keep(result.doc, get().selection),
+          editingTextId: null,
+        });
     },
     redo: () => {
       const result = redoHistory(get().history, get().doc);
-      if (result) set({ doc: result.doc, history: result.history, dirty: true, selection: keep(result.doc, get().selection), editingTextId: null });
+      if (result)
+        set({
+          doc: result.doc,
+          history: result.history,
+          dirty: true,
+          selection: keep(result.doc, get().selection),
+          editingTextId: null,
+        });
     },
     setView: (patch) => set({ view: { ...get().view, ...patch } }),
     markSaved: () => set({ dirty: false }),

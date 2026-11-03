@@ -36,7 +36,7 @@ export function TextEditorOverlay({ el, zoom }: { el: TextElement; zoom: number 
         }
       }}
       onPointerDown={(e) => e.stopPropagation()}
-      className="absolute resize-none overflow-hidden border-0 outline-2 outline-offset-2 outline-cobalt outline-dashed"
+      className="outline-cobalt absolute resize-none overflow-hidden border-0 outline-2 outline-offset-2 outline-dashed"
       style={{
         left: el.x * zoom,
         top: el.y * zoom,

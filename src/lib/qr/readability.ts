@@ -5,7 +5,13 @@
 import { contrastRatio, composite, relativeLuminance } from "@/lib/color/color";
 import { paintColors } from "@/lib/model/paint";
 import type { QrLayout } from "./layout";
-import { EC_RECOVERY, RECOMMENDED_MARGIN, effectiveEcLevel, hasActiveLogo, type QrStyle } from "./style";
+import {
+  EC_RECOVERY,
+  RECOMMENDED_MARGIN,
+  effectiveEcLevel,
+  hasActiveLogo,
+  type QrStyle,
+} from "./style";
 
 export type IssueSeverity = "error" | "warning" | "info";
 
@@ -70,7 +76,8 @@ function contrastIssues(style: QrStyle, ctx: ReadabilityContext): ReadabilityIss
       message: `Contrast is weak (${ratio.toFixed(1)}:1). Aim for at least ${CONTRAST_WARNING}:1 for reliable scanning.`,
     });
   }
-  const avg = (cs: string[]) => cs.reduce((s, c) => s + relativeLuminance(composite(c, "#ffffff")), 0) / cs.length;
+  const avg = (cs: string[]) =>
+    cs.reduce((s, c) => s + relativeLuminance(composite(c, "#ffffff")), 0) / cs.length;
   if (fgs.length && avg(fgs) > avg(bgs)) {
     issues.push({
       id: "inverted",
@@ -103,7 +110,8 @@ function logoIssues(style: QrStyle, layout: QrLayout): ReadabilityIssue[] {
     issues.push({
       id: "logo-overlap",
       severity: "warning",
-      message: "The logo is drawn over modules. Turn on “Clear modules behind logo” for cleaner scans.",
+      message:
+        "The logo is drawn over modules. Turn on “Clear modules behind logo” for cleaner scans.",
     });
   }
   if (style.ecLevel !== effectiveEcLevel(style)) {

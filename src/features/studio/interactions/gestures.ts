@@ -43,7 +43,12 @@ export function moveGesture(
     oy = snapToGrid(startBounds.minY + dy, opts.gridSize) - startBounds.minY;
   } else if (opts.snapToGuides) {
     const targets = start.elements.filter((e) => !set.has(e.id) && !e.hidden).map(boundsOf);
-    const shifted = { minX: startBounds.minX + dx, maxX: startBounds.maxX + dx, minY: startBounds.minY + dy, maxY: startBounds.maxY + dy };
+    const shifted = {
+      minX: startBounds.minX + dx,
+      maxX: startBounds.maxX + dx,
+      minY: startBounds.minY + dy,
+      maxY: startBounds.maxY + dy,
+    };
     const snap = snapMove(shifted, targets, start, opts.threshold);
     ox += snap.dx;
     oy += snap.dy;
@@ -80,7 +85,8 @@ export function resizeGesture(
   const keepAspect = locksAspect(el) || (el.type === "text" ? isCorner : opts.shift);
   // With the grid on (and no rotation), the dragged edge lands on grid lines.
   const g = opts.gridSize;
-  const target = g && el.rotation === 0 ? { x: snapToGrid(pointer.x, g), y: snapToGrid(pointer.y, g) } : pointer;
+  const target =
+    g && el.rotation === 0 ? { x: snapToGrid(pointer.x, g), y: snapToGrid(pointer.y, g) } : pointer;
   const box = resizeBox(el, dir, target, { keepAspect, fromCenter: opts.alt, minSize: 8 });
   if (el.type === "text") {
     if (isCorner) {
@@ -105,14 +111,26 @@ export function resizeGesture(
   return updateElement(start, id, { x: box.x, y: box.y, width: box.width, height: box.height });
 }
 
-export function rotateGesture(start: DesignDocument, id: string, pointer: Point, shift: boolean): DesignDocument {
+export function rotateGesture(
+  start: DesignDocument,
+  id: string,
+  pointer: Point,
+  shift: boolean,
+): DesignDocument {
   const el = findElement(start, id);
   if (!el || el.locked) return start;
   return updateElement(start, id, { rotation: rotationFor(el, pointer, shift ? 15 : null) });
 }
 
 export function marqueeHits(doc: DesignDocument, a: Point, b: Point): string[] {
-  const rect = { minX: Math.min(a.x, b.x), minY: Math.min(a.y, b.y), maxX: Math.max(a.x, b.x), maxY: Math.max(a.y, b.y) };
+  const rect = {
+    minX: Math.min(a.x, b.x),
+    minY: Math.min(a.y, b.y),
+    maxX: Math.max(a.x, b.x),
+    maxY: Math.max(a.y, b.y),
+  };
   if (rect.maxX - rect.minX < 2 && rect.maxY - rect.minY < 2) return [];
-  return doc.elements.filter((e) => !e.hidden && !e.locked && boundsIntersect(boundsOf(e), rect)).map((e) => e.id);
+  return doc.elements
+    .filter((e) => !e.hidden && !e.locked && boundsIntersect(boundsOf(e), rect))
+    .map((e) => e.id);
 }

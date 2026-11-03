@@ -12,7 +12,11 @@ export function fitTextElement(el: DesignElement, measure: Measure): DesignEleme
  * Re-fits text elements that changed between `prev` and `next` (by
  * reference), or all of them when `prev` is null.
  */
-export function fitTextHeights(prev: DesignDocument | null, next: DesignDocument, measure: Measure): DesignDocument {
+export function fitTextHeights(
+  prev: DesignDocument | null,
+  next: DesignDocument,
+  measure: Measure,
+): DesignDocument {
   const before = new Map(prev?.elements.map((e) => [e.id, e]) ?? []);
   let changed = false;
   const elements = next.elements.map((e) => {

@@ -41,8 +41,8 @@ export function AlignButtons({ multi }: { multi: boolean }) {
   ];
   return (
     <div className="grid gap-1.5">
-      <p className="text-[12px] text-ink-3">{multi ? "Align to each other" : "Align to page"}</p>
-      <div className="flex flex-wrap gap-0.5 rounded-xl bg-paper-2 p-1">
+      <p className="text-ink-3 text-[12px]">{multi ? "Align to each other" : "Align to page"}</p>
+      <div className="bg-paper-2 flex flex-wrap gap-0.5 rounded-xl p-1">
         {items.map(({ a, label, Icon }) => (
           <IconButton key={a} label={label} size="sm" onClick={() => align(a)} tooltipSide="top">
             <Icon className="size-4" />
@@ -50,10 +50,20 @@ export function AlignButtons({ multi }: { multi: boolean }) {
         ))}
         {multi && (
           <>
-            <IconButton label="Distribute horizontally" size="sm" onClick={() => distribute("horizontal")} tooltipSide="top">
+            <IconButton
+              label="Distribute horizontally"
+              size="sm"
+              onClick={() => distribute("horizontal")}
+              tooltipSide="top"
+            >
               <AlignHorizontalDistributeCenter className="size-4" />
             </IconButton>
-            <IconButton label="Distribute vertically" size="sm" onClick={() => distribute("vertical")} tooltipSide="top">
+            <IconButton
+              label="Distribute vertically"
+              size="sm"
+              onClick={() => distribute("vertical")}
+              tooltipSide="top"
+            >
               <AlignVerticalDistributeCenter className="size-4" />
             </IconButton>
           </>
@@ -66,17 +76,41 @@ export function AlignButtons({ multi }: { multi: boolean }) {
 export function LayerButtons() {
   const reorder = useEditorStore((s) => s.reorderSelection);
   return (
-    <div className="flex gap-0.5 rounded-xl bg-paper-2 p-1">
-      <IconButton label="Bring to front" shortcut="Ctrl Shift ]" size="sm" onClick={() => reorder("front")} tooltipSide="top">
+    <div className="bg-paper-2 flex gap-0.5 rounded-xl p-1">
+      <IconButton
+        label="Bring to front"
+        shortcut="Ctrl Shift ]"
+        size="sm"
+        onClick={() => reorder("front")}
+        tooltipSide="top"
+      >
         <ArrowUpToLine className="size-4" />
       </IconButton>
-      <IconButton label="Bring forward" shortcut="Ctrl ]" size="sm" onClick={() => reorder("forward")} tooltipSide="top">
+      <IconButton
+        label="Bring forward"
+        shortcut="Ctrl ]"
+        size="sm"
+        onClick={() => reorder("forward")}
+        tooltipSide="top"
+      >
         <ChevronUp className="size-4" />
       </IconButton>
-      <IconButton label="Send backward" shortcut="Ctrl [" size="sm" onClick={() => reorder("backward")} tooltipSide="top">
+      <IconButton
+        label="Send backward"
+        shortcut="Ctrl ["
+        size="sm"
+        onClick={() => reorder("backward")}
+        tooltipSide="top"
+      >
         <ChevronDown className="size-4" />
       </IconButton>
-      <IconButton label="Send to back" shortcut="Ctrl Shift [" size="sm" onClick={() => reorder("back")} tooltipSide="top">
+      <IconButton
+        label="Send to back"
+        shortcut="Ctrl Shift ["
+        size="sm"
+        onClick={() => reorder("back")}
+        tooltipSide="top"
+      >
         <ArrowDownToLine className="size-4" />
       </IconButton>
     </div>
@@ -92,10 +126,23 @@ export function SelectionActions({ locked }: { locked: boolean }) {
       <IconButton label="Duplicate" shortcut="Ctrl D" size="sm" onClick={duplicate}>
         <Copy className="size-4" />
       </IconButton>
-      <IconButton label={locked ? "Unlock" : "Lock"} shortcut="Ctrl Shift L" size="sm" active={locked} onClick={() => setLocked(!locked)}>
+      <IconButton
+        label={locked ? "Unlock" : "Lock"}
+        shortcut="Ctrl Shift L"
+        size="sm"
+        active={locked}
+        onClick={() => setLocked(!locked)}
+      >
         {locked ? <Lock className="size-4" /> : <LockOpen className="size-4" />}
       </IconButton>
-      <IconButton label="Delete" shortcut="Del" size="sm" disabled={locked} onClick={remove} className="hover:!bg-danger-soft hover:!text-danger">
+      <IconButton
+        label="Delete"
+        shortcut="Del"
+        size="sm"
+        disabled={locked}
+        onClick={remove}
+        className="hover:!bg-danger-soft hover:!text-danger"
+      >
         <Trash2 className="size-4" />
       </IconButton>
     </div>
@@ -105,7 +152,8 @@ export function SelectionActions({ locked }: { locked: boolean }) {
 export function ArrangeSection({ el, unit }: { el: DesignElement; unit: DisplayUnit }) {
   const update = useEditorStore((s) => s.updateElement);
   const p = PRECISION[unit];
-  const set = (patch: Partial<DesignElement>, key: string) => update(el.id, patch, `${key}:${el.id}`);
+  const set = (patch: Partial<DesignElement>, key: string) =>
+    update(el.id, patch, `${key}:${el.id}`);
   const dim = (field: "x" | "y" | "width" | "height", label: string, prefix: string) => (
     <NumberField
       label={label}
@@ -133,7 +181,10 @@ export function ArrangeSection({ el, unit }: { el: DesignElement; unit: DisplayU
         {dim("y", "Y position", "Y")}
         {dim("width", "Width", "W")}
         {el.type === "text" ? (
-          <div className="flex h-9 items-center gap-2 self-end rounded-lg border border-dashed border-line-strong px-2.5 text-[13px] text-ink-3" title="Text height adjusts to its content">
+          <div
+            className="border-line-strong text-ink-3 flex h-9 items-center gap-2 self-end rounded-lg border border-dashed px-2.5 text-[13px]"
+            title="Text height adjusts to its content"
+          >
             <span className="font-mono text-[11px] font-semibold">H</span>
             <span className="tabular-nums">{Number(fromUnits(el.height, unit).toFixed(p))}</span>
             <span className="ml-auto text-[11px]">auto</span>
@@ -141,11 +192,27 @@ export function ArrangeSection({ el, unit }: { el: DesignElement; unit: DisplayU
         ) : (
           dim("height", "Height", "H")
         )}
-        <NumberField label="Rotation" prefix="↻" value={el.rotation} min={-180} max={180} suffix="°" onValueChange={(rotation) => set({ rotation }, "rotation")} />
+        <NumberField
+          label="Rotation"
+          prefix="↻"
+          value={el.rotation}
+          min={-180}
+          max={180}
+          suffix="°"
+          onValueChange={(rotation) => set({ rotation }, "rotation")}
+        />
       </div>
-      <SliderField label="Opacity" min={0} max={1} step={0.01} value={el.opacity} onValueChange={(opacity) => set({ opacity }, "opacity")} format={(v) => `${Math.round(v * 100)}%`} />
+      <SliderField
+        label="Opacity"
+        min={0}
+        max={1}
+        step={0.01}
+        value={el.opacity}
+        onValueChange={(opacity) => set({ opacity }, "opacity")}
+        format={(v) => `${Math.round(v * 100)}%`}
+      />
       <div className="grid gap-1.5">
-        <p className="text-[12px] text-ink-3">Layer order</p>
+        <p className="text-ink-3 text-[12px]">Layer order</p>
         <LayerButtons />
       </div>
       <AlignButtons multi={false} />

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-export type PanelId = "templates" | "qr" | "text" | "uploads" | "shapes" | "elements" | "background" | "layers";
+export type PanelId =
+  "templates" | "qr" | "text" | "uploads" | "shapes" | "elements" | "background" | "layers";
 export type DialogId = "export" | "preview" | "shortcuts" | "new" | "import-confirm" | null;
 
 interface UiState {

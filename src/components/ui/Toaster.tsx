@@ -33,9 +33,12 @@ const useToasts = create<ToastState>((set, get) => ({
 }));
 
 export const toast = {
-  success: (title: string, description?: string) => useToasts.getState().push({ kind: "success", title, description }),
-  error: (title: string, description?: string) => useToasts.getState().push({ kind: "error", title, description }),
-  info: (title: string, description?: string) => useToasts.getState().push({ kind: "info", title, description }),
+  success: (title: string, description?: string) =>
+    useToasts.getState().push({ kind: "success", title, description }),
+  error: (title: string, description?: string) =>
+    useToasts.getState().push({ kind: "error", title, description }),
+  info: (title: string, description?: string) =>
+    useToasts.getState().push({ kind: "info", title, description }),
 };
 
 const ICONS = { success: CheckCircle2, error: CircleAlert, info: Info };
@@ -55,18 +58,18 @@ export function Toaster() {
           <div
             key={t.id}
             role={t.kind === "error" ? "alert" : "status"}
-            className="animate-toast pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-line bg-card p-3.5 shadow-pop"
+            className="animate-toast border-line bg-card shadow-pop pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border p-3.5"
           >
             <Icon className={cn("mt-0.5 size-5 shrink-0", TONES[t.kind])} aria-hidden="true" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-ink">{t.title}</p>
-              {t.description && <p className="mt-0.5 text-[13px] text-ink-3">{t.description}</p>}
+              <p className="text-ink text-sm font-semibold">{t.title}</p>
+              {t.description && <p className="text-ink-3 mt-0.5 text-[13px]">{t.description}</p>}
             </div>
             <button
               type="button"
               aria-label="Dismiss"
               onClick={() => dismiss(t.id)}
-              className="rounded-md p-0.5 text-ink-3 hover:bg-paper-2 hover:text-ink"
+              className="text-ink-3 hover:bg-paper-2 hover:text-ink rounded-md p-0.5"
             >
               <X className="size-4" />
             </button>

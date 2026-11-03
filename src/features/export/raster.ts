@@ -7,7 +7,9 @@ export const MAX_CANVAS_AREA_MOBILE = 16_000_000;
 
 export function maxCanvasArea(): number {
   if (typeof navigator === "undefined") return MAX_CANVAS_AREA_DESKTOP;
-  const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
+  const mobile =
+    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
   return mobile ? MAX_CANVAS_AREA_MOBILE : MAX_CANVAS_AREA_DESKTOP;
 }
 
@@ -18,7 +20,11 @@ export interface ClampResult {
 }
 
 /** Clamps requested pixel dimensions to what the browser can safely allocate. */
-export function clampPixelSize(width: number, height: number, maxArea = maxCanvasArea()): ClampResult {
+export function clampPixelSize(
+  width: number,
+  height: number,
+  maxArea = maxCanvasArea(),
+): ClampResult {
   let w = Math.max(1, Math.round(width));
   let h = Math.max(1, Math.round(height));
   let clamped = false;
@@ -68,8 +74,16 @@ export async function rasterizeSvg(
   return canvas;
 }
 
-export function canvasToBlob(canvas: HTMLCanvasElement, type = "image/png", quality?: number): Promise<Blob> {
+export function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  type = "image/png",
+  quality?: number,
+): Promise<Blob> {
   return new Promise((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Export failed — the image may be too large."))), type, quality),
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("Export failed — the image may be too large."))),
+      type,
+      quality,
+    ),
   );
 }

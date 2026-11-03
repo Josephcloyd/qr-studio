@@ -30,7 +30,8 @@ export function UploadsPanel() {
   const handleFiles = async (files: FileList | null) => {
     const added = await ingest(files);
     if (added.length === 1) addToCanvas(added[0]);
-    else if (added.length > 1) toast.success(`${added.length} images added`, "Click an image to place it on the canvas.");
+    else if (added.length > 1)
+      toast.success(`${added.length} images added`, "Click an image to place it on the canvas.");
   };
 
   return (
@@ -54,15 +55,20 @@ export function UploadsPanel() {
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed border-line-strong bg-paper/60 px-4 py-6 text-center transition-colors hover:border-ink hover:bg-card"
+          className="border-line-strong bg-paper/60 hover:border-ink hover:bg-card flex flex-col items-center gap-1.5 rounded-2xl border-2 border-dashed px-4 py-6 text-center transition-colors"
         >
-          <ImagePlus className="size-6 text-ink-3" aria-hidden="true" />
-          <span className="text-sm font-semibold text-ink">{busy ? "Reading…" : "Choose images"}</span>
-          <span className="text-[12px] text-ink-3">or drag them onto the canvas · PNG, JPEG, WebP, SVG</span>
+          <ImagePlus className="text-ink-3 size-6" aria-hidden="true" />
+          <span className="text-ink text-sm font-semibold">
+            {busy ? "Reading…" : "Choose images"}
+          </span>
+          <span className="text-ink-3 text-[12px]">
+            or drag them onto the canvas · PNG, JPEG, WebP, SVG
+          </span>
         </button>
-        <p className="flex items-start gap-1.5 text-[12px] leading-snug text-ink-3">
+        <p className="text-ink-3 flex items-start gap-1.5 text-[12px] leading-snug">
           <LockKeyhole className="mt-px size-3.5 shrink-0" aria-hidden="true" />
-          Images are opened by your browser and kept in memory on this device. They are never uploaded.
+          Images are opened by your browser and kept in memory on this device. They are never
+          uploaded.
         </p>
 
         {order.length > 0 ? (
@@ -72,19 +78,41 @@ export function UploadsPanel() {
               if (!a) return null;
               const inUse = isAssetInUse(id);
               return (
-                <li key={id} className="group relative overflow-hidden rounded-xl border border-line bg-card">
-                  <button type="button" onClick={() => addToCanvas(a)} className="checkerboard block aspect-square w-full" aria-label={`Add ${a.name} to the canvas`}>
+                <li
+                  key={id}
+                  className="group border-line bg-card relative overflow-hidden rounded-xl border"
+                >
+                  <button
+                    type="button"
+                    onClick={() => addToCanvas(a)}
+                    className="checkerboard block aspect-square w-full"
+                    aria-label={`Add ${a.name} to the canvas`}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element -- local object URL */}
                     <img src={a.url} alt="" className="size-full object-contain p-2" />
                   </button>
-                  <div className="flex items-center gap-1 border-t border-line px-2 py-1">
-                    <span className="min-w-0 flex-1 truncate text-[11px] text-ink-3" title={`${a.name} · ${formatBytes(a.bytes)}`}>
+                  <div className="border-line flex items-center gap-1 border-t px-2 py-1">
+                    <span
+                      className="text-ink-3 min-w-0 flex-1 truncate text-[11px]"
+                      title={`${a.name} · ${formatBytes(a.bytes)}`}
+                    >
                       {a.name}
                     </span>
-                    <IconButton label="Use as background" size="sm" onClick={() => apply((d) => ({ ...d, background: { ...d.background, imageAssetId: id } }))}>
+                    <IconButton
+                      label="Use as background"
+                      size="sm"
+                      onClick={() =>
+                        apply((d) => ({ ...d, background: { ...d.background, imageAssetId: id } }))
+                      }
+                    >
                       <Wallpaper className="size-3.5" />
                     </IconButton>
-                    <IconButton label={inUse ? "In use in your design" : "Remove image"} size="sm" disabled={inUse} onClick={() => remove(id)}>
+                    <IconButton
+                      label={inUse ? "In use in your design" : "Remove image"}
+                      size="sm"
+                      disabled={inUse}
+                      onClick={() => remove(id)}
+                    >
                       <Trash2 className="size-3.5" />
                     </IconButton>
                   </div>
@@ -93,7 +121,9 @@ export function UploadsPanel() {
             })}
           </ul>
         ) : (
-          <p className="rounded-xl bg-paper-2 px-3 py-4 text-center text-[12.5px] text-ink-3">No images yet.</p>
+          <p className="bg-paper-2 text-ink-3 rounded-xl px-3 py-4 text-center text-[12.5px]">
+            No images yet.
+          </p>
         )}
       </div>
     </div>

@@ -24,7 +24,8 @@ export function useImageUpload() {
           try {
             added.push(add(await processImageFile(file)));
           } catch (error) {
-            const message = error instanceof ImageIntakeError ? error.message : "That image couldn't be added.";
+            const message =
+              error instanceof ImageIntakeError ? error.message : "That image couldn't be added.";
             toast.error(`Couldn't add ${file.name}`, message);
           }
         }

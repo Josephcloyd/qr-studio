@@ -49,10 +49,14 @@ export async function fontFaceCss(fontIds: string[]): Promise<string> {
     const [min, max] = font.weights;
     const weight = min === max ? `${min}` : `${min} ${max}`;
     const normal = await loadFontFile(font.file);
-    rules.push(`@font-face{font-family:'${font.family}';src:url(${normal}) format('woff2');font-weight:${weight};font-style:normal}`);
+    rules.push(
+      `@font-face{font-family:'${font.family}';src:url(${normal}) format('woff2');font-weight:${weight};font-style:normal}`,
+    );
     if (font.italicFile) {
       const italic = await loadFontFile(font.italicFile);
-      rules.push(`@font-face{font-family:'${font.family}';src:url(${italic}) format('woff2');font-weight:${weight};font-style:italic}`);
+      rules.push(
+        `@font-face{font-family:'${font.family}';src:url(${italic}) format('woff2');font-weight:${weight};font-style:italic}`,
+      );
     }
   }
   return rules.join("");

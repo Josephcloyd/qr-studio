@@ -32,7 +32,11 @@ describe("editor store", () => {
     const rect = createShapeElement("rect");
     store().addElement(rect);
     store().beginGesture();
-    for (let i = 1; i <= 10; i++) store().updateGesture((d) => ({ ...d, elements: d.elements.map((e) => ({ ...e, x: i * 10 })) }));
+    for (let i = 1; i <= 10; i++)
+      store().updateGesture((d) => ({
+        ...d,
+        elements: d.elements.map((e) => ({ ...e, x: i * 10 })),
+      }));
     store().endGesture();
     expect(store().doc.elements[0].x).toBe(100);
     store().undo();

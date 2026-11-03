@@ -29,15 +29,34 @@ export interface DocumentSvgProps {
   title?: string;
 }
 
-function BackgroundPattern({ bg, id, width, height }: { bg: DocumentBackground; id: string; width: number; height: number }) {
+function BackgroundPattern({
+  bg,
+  id,
+  width,
+  height,
+}: {
+  bg: DocumentBackground;
+  id: string;
+  width: number;
+  height: number;
+}) {
   if (bg.pattern === "none") return null;
   const s = bg.patternScale;
-  const stroke = { stroke: bg.patternColor, strokeWidth: fmt(Math.max(0.5, s * 0.05)), fill: "none" };
+  const stroke = {
+    stroke: bg.patternColor,
+    strokeWidth: fmt(Math.max(0.5, s * 0.05)),
+    fill: "none",
+  };
   const tile = {
     dots: <circle cx={fmt(s / 2)} cy={fmt(s / 2)} r={fmt(s * 0.12)} fill={bg.patternColor} />,
     grid: <path d={`M${fmt(s)} 0V${fmt(s)}H0`} {...stroke} />,
     diagonal: <path d={`M0 ${fmt(s)}L${fmt(s)} 0`} {...stroke} />,
-    waves: <path d={`M0 ${fmt(s / 2)}Q${fmt(s / 4)} ${fmt(s * 0.2)} ${fmt(s / 2)} ${fmt(s / 2)}T${fmt(s)} ${fmt(s / 2)}`} {...stroke} />,
+    waves: (
+      <path
+        d={`M0 ${fmt(s / 2)}Q${fmt(s / 4)} ${fmt(s * 0.2)} ${fmt(s / 2)} ${fmt(s / 2)}T${fmt(s)} ${fmt(s / 2)}`}
+        {...stroke}
+      />
+    ),
   }[bg.pattern];
   return (
     <>
@@ -46,7 +65,12 @@ function BackgroundPattern({ bg, id, width, height }: { bg: DocumentBackground; 
           {tile}
         </pattern>
       </defs>
-      <rect width={fmt(width)} height={fmt(height)} fill={`url(#${id})`} opacity={bg.patternOpacity} />
+      <rect
+        width={fmt(width)}
+        height={fmt(height)}
+        fill={`url(#${id})`}
+        opacity={bg.patternOpacity}
+      />
     </>
   );
 }
@@ -66,7 +90,10 @@ export function DocumentSvg({
   title,
 }: DocumentSvgProps) {
   // Stable context so memoized elements skip re-rendering when unchanged.
-  const ctx = useMemo<RenderContext>(() => ({ resolveAsset, measure, idPrefix }), [resolveAsset, measure, idPrefix]);
+  const ctx = useMemo<RenderContext>(
+    () => ({ resolveAsset, measure, idPrefix }),
+    [resolveAsset, measure, idPrefix],
+  );
   const { background: bg } = doc;
   const box = { x: 0, y: 0, width: doc.width, height: doc.height };
   const clipId = safeId(idPrefix, "artboard");
@@ -94,7 +121,12 @@ export function DocumentSvg({
       </defs>
       <g clipPath={`url(#${clipId})`}>
         {!transparent && bg.paint.kind !== "none" && (
-          <rect width={fmt(doc.width)} height={fmt(doc.height)} fill={paintFill(bg.paint, bgId)} data-role="background" />
+          <rect
+            width={fmt(doc.width)}
+            height={fmt(doc.height)}
+            fill={paintFill(bg.paint, bgId)}
+            data-role="background"
+          />
         )}
         {bgImage && (
           <image

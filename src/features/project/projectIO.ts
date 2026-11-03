@@ -3,7 +3,12 @@
  * file is written with a Blob download and read with the File API.
  */
 import { toast } from "@/components/ui/Toaster";
-import { dataUrlToBlob, isUnsafeSvg, MAX_IMAGE_SIDE, type ProcessedImage } from "@/lib/assets/intake";
+import {
+  dataUrlToBlob,
+  isUnsafeSvg,
+  MAX_IMAGE_SIDE,
+  type ProcessedImage,
+} from "@/lib/assets/intake";
 import { createId } from "@/lib/model/ids";
 import { referencedAssets } from "@/lib/model/ops";
 import {
@@ -28,14 +33,27 @@ export async function downloadProject(): Promise<void> {
     for (const id of referencedAssets(doc)) {
       const a = assets[id];
       if (!a) continue;
-      list.push({ id, name: a.name, mime: a.mime, width: a.width, height: a.height, dataUrl: await assetDataUrl(a) });
+      list.push({
+        id,
+        name: a.name,
+        mime: a.mime,
+        width: a.width,
+        height: a.height,
+        dataUrl: await assetDataUrl(a),
+      });
     }
     const blob = new Blob([serializeProject(doc, list)], { type: "application/json" });
     downloadBlob(blob, projectFileName(doc.name));
     useEditorStore.getState().markSaved();
-    toast.success("Project file downloaded", `${formatBytes(blob.size)} · open it later with “Open project”.`);
+    toast.success(
+      "Project file downloaded",
+      `${formatBytes(blob.size)} · open it later with “Open project”.`,
+    );
   } catch (error) {
-    toast.error("Couldn't save the project", error instanceof Error ? error.message : "Please try again.");
+    toast.error(
+      "Couldn't save the project",
+      error instanceof Error ? error.message : "Please try again.",
+    );
   }
 }
 
@@ -49,7 +67,8 @@ async function verifyImage(blob: Blob, mime: string): Promise<{ width: number; h
   });
   const size = { width: bitmap.width, height: bitmap.height };
   bitmap.close();
-  if (Math.max(size.width, size.height) > MAX_IMAGE_SIDE * 2) throw new Error("An embedded image is too large.");
+  if (Math.max(size.width, size.height) > MAX_IMAGE_SIDE * 2)
+    throw new Error("An embedded image is too large.");
   return size;
 }
 
@@ -90,7 +109,10 @@ export async function importProjectFile(file: File): Promise<boolean> {
     return true;
   } catch (error) {
     for (const id of added) store.remove(id);
-    toast.error("Couldn't open project", error instanceof Error ? error.message : "The file is damaged.");
+    toast.error(
+      "Couldn't open project",
+      error instanceof Error ? error.message : "The file is damaged.",
+    );
     return false;
   }
 }

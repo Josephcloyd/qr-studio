@@ -48,7 +48,6 @@ function UrlForm({ value, onChange, errors }: FormProps<"url">) {
       onBlur={() => t.touch("url")}
       error={t.show(errors, "url", value.url)}
       hint="We add https:// if you leave it out. The link is stored directly in the code."
-      autoFocus
     />
   );
 }
@@ -64,7 +63,9 @@ function TextForm({ value, onChange, errors }: FormProps<"text">) {
       onValueChange={(text) => onChange({ ...value, text } as TextContent)}
       onBlur={() => t.touch("text")}
       error={t.show(errors, "text", value.text)}
-      trailing={<span className="font-mono text-[11px] text-ink-3">{[...value.text].length} chars</span>}
+      trailing={
+        <span className="text-ink-3 font-mono text-[11px]">{[...value.text].length} chars</span>
+      }
     />
   );
 }
@@ -105,14 +106,23 @@ function WifiForm({ value, onChange, errors }: FormProps<"wifi">) {
           hint="Stored inside the QR code itself — anyone who scans it can see the password."
         />
       )}
-      <SwitchField label="Hidden network" hint="Turn on if the network doesn't broadcast its name." checked={value.hidden} onCheckedChange={(hidden) => set({ hidden })} />
+      <SwitchField
+        label="Hidden network"
+        hint="Turn on if the network doesn't broadcast its name."
+        checked={value.hidden}
+        onCheckedChange={(hidden) => set({ hidden })}
+      />
     </div>
   );
 }
 
 function VCardForm({ value, onChange, errors }: FormProps<"vcard">) {
   const t = useTouched();
-  const field = (key: keyof Omit<VCardContent, "type">, label: string, extra: Record<string, unknown> = {}) => (
+  const field = (
+    key: keyof Omit<VCardContent, "type">,
+    label: string,
+    extra: Record<string, unknown> = {},
+  ) => (
     <TextField
       label={label}
       value={value[key]}
@@ -133,7 +143,11 @@ function VCardForm({ value, onChange, errors }: FormProps<"vcard">) {
         {field("title", "Job title", { autoComplete: "organization-title" })}
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        {field("mobile", "Mobile", { type: "tel", inputMode: "tel", placeholder: "+63 917 123 4567" })}
+        {field("mobile", "Mobile", {
+          type: "tel",
+          inputMode: "tel",
+          placeholder: "+63 917 123 4567",
+        })}
         {field("phone", "Work phone", { type: "tel", inputMode: "tel" })}
       </div>
       {field("email", "Email", { type: "email", inputMode: "email", autoComplete: "email" })}
@@ -147,7 +161,12 @@ function VCardForm({ value, onChange, errors }: FormProps<"vcard">) {
         {field("postalCode", "Postal code")}
         {field("country", "Country")}
       </div>
-      <TextArea label="Note" rows={2} value={value.note} onValueChange={(note) => onChange({ ...value, note })} />
+      <TextArea
+        label="Note"
+        rows={2}
+        value={value.note}
+        onValueChange={(note) => onChange({ ...value, note })}
+      />
     </div>
   );
 }
@@ -157,9 +176,27 @@ function EmailForm({ value, onChange, errors }: FormProps<"email">) {
   const set = (patch: Partial<EmailContent>) => onChange({ ...value, ...patch });
   return (
     <div className="grid gap-4">
-      <TextField label="Send to" type="email" inputMode="email" placeholder="hello@yourbusiness.com" value={value.to} onValueChange={(to) => set({ to })} onBlur={() => t.touch("to")} error={t.show(errors, "to", value.to)} />
-      <TextField label="Subject" value={value.subject} onValueChange={(subject) => set({ subject })} />
-      <TextArea label="Message" rows={4} value={value.body} onValueChange={(body) => set({ body })} />
+      <TextField
+        label="Send to"
+        type="email"
+        inputMode="email"
+        placeholder="hello@yourbusiness.com"
+        value={value.to}
+        onValueChange={(to) => set({ to })}
+        onBlur={() => t.touch("to")}
+        error={t.show(errors, "to", value.to)}
+      />
+      <TextField
+        label="Subject"
+        value={value.subject}
+        onValueChange={(subject) => set({ subject })}
+      />
+      <TextArea
+        label="Message"
+        rows={4}
+        value={value.body}
+        onValueChange={(body) => set({ body })}
+      />
     </div>
   );
 }
@@ -186,8 +223,22 @@ function SmsForm({ value, onChange, errors }: FormProps<"sms">) {
   const set = (patch: Partial<SmsContent>) => onChange({ ...value, ...patch });
   return (
     <div className="grid gap-4">
-      <TextField label="Phone number" type="tel" inputMode="tel" value={value.number} onValueChange={(number) => set({ number })} onBlur={() => t.touch("number")} error={t.show(errors, "number", value.number)} />
-      <TextArea label="Message" rows={4} value={value.message} onValueChange={(message) => set({ message })} hint="Pre-filled — people can edit it before sending." />
+      <TextField
+        label="Phone number"
+        type="tel"
+        inputMode="tel"
+        value={value.number}
+        onValueChange={(number) => set({ number })}
+        onBlur={() => t.touch("number")}
+        error={t.show(errors, "number", value.number)}
+      />
+      <TextArea
+        label="Message"
+        rows={4}
+        value={value.message}
+        onValueChange={(message) => set({ message })}
+        hint="Pre-filled — people can edit it before sending."
+      />
     </div>
   );
 }
@@ -208,7 +259,12 @@ function WhatsAppForm({ value, onChange, errors }: FormProps<"whatsapp">) {
         error={t.show(errors, "number", value.number)}
         hint="International format with country code, no leading 0."
       />
-      <TextArea label="Pre-filled message" rows={3} value={value.message} onValueChange={(message) => set({ message })} />
+      <TextArea
+        label="Pre-filled message"
+        rows={3}
+        value={value.message}
+        onValueChange={(message) => set({ message })}
+      />
     </div>
   );
 }
@@ -229,11 +285,35 @@ function LocationForm({ value, onChange, errors }: FormProps<"location">) {
       />
       {value.mode === "coordinates" ? (
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField label="Latitude" inputMode="decimal" placeholder="14.5547" value={value.latitude} onValueChange={(latitude) => set({ latitude })} onBlur={() => t.touch("latitude")} error={t.show(errors, "latitude", value.latitude)} />
-          <TextField label="Longitude" inputMode="decimal" placeholder="121.0244" value={value.longitude} onValueChange={(longitude) => set({ longitude })} onBlur={() => t.touch("longitude")} error={t.show(errors, "longitude", value.longitude)} />
+          <TextField
+            label="Latitude"
+            inputMode="decimal"
+            placeholder="14.5547"
+            value={value.latitude}
+            onValueChange={(latitude) => set({ latitude })}
+            onBlur={() => t.touch("latitude")}
+            error={t.show(errors, "latitude", value.latitude)}
+          />
+          <TextField
+            label="Longitude"
+            inputMode="decimal"
+            placeholder="121.0244"
+            value={value.longitude}
+            onValueChange={(longitude) => set({ longitude })}
+            onBlur={() => t.touch("longitude")}
+            error={t.show(errors, "longitude", value.longitude)}
+          />
         </div>
       ) : (
-        <TextField label="Address or place" placeholder="Rizal Park, Manila" value={value.address} onValueChange={(address) => set({ address })} onBlur={() => t.touch("address")} error={t.show(errors, "address", value.address)} hint="We don't look this up — the map app does when someone scans." />
+        <TextField
+          label="Address or place"
+          placeholder="Rizal Park, Manila"
+          value={value.address}
+          onValueChange={(address) => set({ address })}
+          onBlur={() => t.touch("address")}
+          error={t.show(errors, "address", value.address)}
+          hint="We don't look this up — the map app does when someone scans."
+        />
       )}
       <SelectField
         label="Open in"
@@ -256,19 +336,65 @@ function EventForm({ value, onChange, errors }: FormProps<"event">) {
   const type = value.allDay ? "date" : "datetime-local";
   return (
     <div className="grid gap-4">
-      <TextField label="Event name" value={value.title} onValueChange={(title) => set({ title })} onBlur={() => t.touch("title")} error={t.show(errors, "title", value.title)} />
-      <SwitchField label="All-day event" checked={value.allDay} onCheckedChange={(allDay) => set({ allDay, start: value.start.slice(0, allDay ? 10 : 16), end: value.end.slice(0, allDay ? 10 : 16) })} />
+      <TextField
+        label="Event name"
+        value={value.title}
+        onValueChange={(title) => set({ title })}
+        onBlur={() => t.touch("title")}
+        error={t.show(errors, "title", value.title)}
+      />
+      <SwitchField
+        label="All-day event"
+        checked={value.allDay}
+        onCheckedChange={(allDay) =>
+          set({
+            allDay,
+            start: value.start.slice(0, allDay ? 10 : 16),
+            end: value.end.slice(0, allDay ? 10 : 16),
+          })
+        }
+      />
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField label="Starts" type={type} value={value.start} onValueChange={(start) => set({ start })} onBlur={() => t.touch("start")} error={t.show(errors, "start", value.start)} />
-        <TextField label="Ends" type={type} value={value.end} onValueChange={(end) => set({ end })} error={t.show(errors, "end", value.end)} />
+        <TextField
+          label="Starts"
+          type={type}
+          value={value.start}
+          onValueChange={(start) => set({ start })}
+          onBlur={() => t.touch("start")}
+          error={t.show(errors, "start", value.start)}
+        />
+        <TextField
+          label="Ends"
+          type={type}
+          value={value.end}
+          onValueChange={(end) => set({ end })}
+          error={t.show(errors, "end", value.end)}
+        />
       </div>
-      <TextField label="Location" value={value.location} onValueChange={(location) => set({ location })} />
-      <TextArea label="Details" rows={3} value={value.description} onValueChange={(description) => set({ description })} />
+      <TextField
+        label="Location"
+        value={value.location}
+        onValueChange={(location) => set({ location })}
+      />
+      <TextArea
+        label="Details"
+        rows={3}
+        value={value.description}
+        onValueChange={(description) => set({ description })}
+      />
     </div>
   );
 }
 
-export function ContentFields({ content, onChange, errors }: { content: QrContent; onChange: (c: QrContent) => void; errors: FieldErrors }) {
+export function ContentFields({
+  content,
+  onChange,
+  errors,
+}: {
+  content: QrContent;
+  onChange: (c: QrContent) => void;
+  errors: FieldErrors;
+}) {
   // Keyed by type so each form's "touched" state resets when switching types.
   switch (content.type) {
     case "url":

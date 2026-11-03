@@ -25,14 +25,18 @@ import { Section } from "../Section";
 type Tab = "content" | "style" | "logo";
 
 function backdropFor(doc: DesignDocument): string | null {
-  return doc.background.paint.kind === "solid" && !doc.background.imageAssetId ? doc.background.paint.color : null;
+  return doc.background.paint.kind === "solid" && !doc.background.imageAssetId
+    ? doc.background.paint.color
+    : null;
 }
 
 export function QrProperties({ el }: { el: QrElement }) {
   const [tab, setTab] = useState<Tab>("content");
   const update = useEditorStore((s) => s.updateElement);
   const doc = useEditorStore((s) => s.doc);
-  const logoAsset = useAssetStore((s) => (el.style.logo.assetId ? s.assets[el.style.logo.assetId] ?? null : null));
+  const logoAsset = useAssetStore((s) =>
+    el.style.logo.assetId ? (s.assets[el.style.logo.assetId] ?? null) : null,
+  );
 
   const encoded = useMemo(() => encodePayload(el.content), [el.content]);
   const payload = encoded.ok ? encoded.payload : null;
@@ -42,17 +46,31 @@ export function QrProperties({ el }: { el: QrElement }) {
     if (!payload) return { issues: [], error: null as string | null };
     const m = buildMatrix(payload, effectiveEcLevel(el.style));
     if (!m.ok) return { issues: [], error: m.error };
-    const layout = computeQrLayout(m.matrix, el.style, { logoAspect: logoAsset ? logoAsset.width / logoAsset.height : 1 });
-    return { issues: analyzeReadability(el.style, layout, { backdrop: backdropFor(doc), printWidthMm }), error: null };
+    const layout = computeQrLayout(m.matrix, el.style, {
+      logoAspect: logoAsset ? logoAsset.width / logoAsset.height : 1,
+    });
+    return {
+      issues: analyzeReadability(el.style, layout, { backdrop: backdropFor(doc), printWidthMm }),
+      error: null,
+    };
   }, [payload, el.style, logoAsset, doc, printWidthMm]);
 
-  const setContent = (content: QrContent) => update<QrElement>(el.id, { content }, `qr-content:${el.id}`);
-  const setStyle = (style: QrStyle, key?: string) => update<QrElement>(el.id, { style }, key ? `qr-${key}:${el.id}` : null);
+  const setContent = (content: QrContent) =>
+    update<QrElement>(el.id, { content }, `qr-content:${el.id}`);
+  const setStyle = (style: QrStyle, key?: string) =>
+    update<QrElement>(el.id, { style }, key ? `qr-${key}:${el.id}` : null);
 
   return (
     <>
-      <Section title="QR code" action={<ScanBadge status={payload && !analysis.error ? scan : "idle"} />}>
-        <div role="tablist" aria-label="QR settings" className="flex gap-1 rounded-xl bg-paper-2 p-1">
+      <Section
+        title="QR code"
+        action={<ScanBadge status={payload && !analysis.error ? scan : "idle"} />}
+      >
+        <div
+          role="tablist"
+          aria-label="QR settings"
+          className="bg-paper-2 flex gap-1 rounded-xl p-1"
+        >
           {(["content", "style", "logo"] as Tab[]).map((t) => (
             <button
               key={t}
@@ -60,7 +78,10 @@ export function QrProperties({ el }: { el: QrElement }) {
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className={cn("h-8 flex-1 rounded-lg text-[13px] font-semibold capitalize transition-all", tab === t ? "bg-card text-ink shadow-sm" : "text-ink-3 hover:text-ink")}
+              className={cn(
+                "h-8 flex-1 rounded-lg text-[13px] font-semibold capitalize transition-all",
+                tab === t ? "bg-card text-ink shadow-sm" : "text-ink-3 hover:text-ink",
+              )}
             >
               {t}
             </button>
@@ -73,7 +94,11 @@ export function QrProperties({ el }: { el: QrElement }) {
               value={el.content.type}
               onChange={(type) => type !== el.content.type && setContent(emptyContent(type))}
             />
-            <ContentFields content={el.content} onChange={setContent} errors={encoded.ok ? {} : encoded.errors} />
+            <ContentFields
+              content={el.content}
+              onChange={setContent}
+              errors={encoded.ok ? {} : encoded.errors}
+            />
           </div>
         )}
         {tab === "style" && (
@@ -82,17 +107,31 @@ export function QrProperties({ el }: { el: QrElement }) {
             <StyleControls style={el.style} onChange={setStyle} />
           </div>
         )}
-        {tab === "logo" && <LogoControls style={el.style} onChange={setStyle} onReleaseAsset={releaseAssetIfUnused} />}
+        {tab === "logo" && (
+          <LogoControls
+            style={el.style}
+            onChange={setStyle}
+            onReleaseAsset={releaseAssetIfUnused}
+          />
+        )}
       </Section>
       <Section title="Readability">
         {analysis.error ? (
-          <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-[12.5px] text-danger">{analysis.error}</p>
+          <p role="alert" className="bg-danger-soft text-danger rounded-xl px-3 py-2 text-[12.5px]">
+            {analysis.error}
+          </p>
         ) : payload ? (
           <ReadabilityList issues={analysis.issues} scanStatus={scan} />
         ) : (
-          <p className="text-[12.5px] text-ink-3">Add content to generate the code. Until then a placeholder is shown.</p>
+          <p className="text-ink-3 text-[12.5px]">
+            Add content to generate the code. Until then a placeholder is shown.
+          </p>
         )}
-        {printWidthMm && <p className="font-mono text-[11px] text-ink-3">Prints at {printWidthMm.toFixed(1)} mm wide</p>}
+        {printWidthMm && (
+          <p className="text-ink-3 font-mono text-[11px]">
+            Prints at {printWidthMm.toFixed(1)} mm wide
+          </p>
+        )}
       </Section>
     </>
   );

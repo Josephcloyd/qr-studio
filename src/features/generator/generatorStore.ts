@@ -23,7 +23,8 @@ export const useGeneratorStore = create<GeneratorState>((set) => ({
   contents: initialContents(),
   style: DEFAULT_QR_STYLE,
   setType: (type) => set({ type }),
-  setContent: (content) => set((s) => ({ contents: { ...s.contents, [content.type]: content }, type: content.type })),
+  setContent: (content) =>
+    set((s) => ({ contents: { ...s.contents, [content.type]: content }, type: content.type })),
   setStyle: (style) => set({ style }),
   reset: () => set({ type: "url", contents: initialContents(), style: DEFAULT_QR_STYLE }),
 }));

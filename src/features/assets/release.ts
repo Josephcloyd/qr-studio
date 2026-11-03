@@ -11,7 +11,10 @@ export function isAssetInUse(id: string): boolean {
   const { doc, history } = useEditorStore.getState();
   if (referencedAssets(doc).has(id)) return true;
   // Keep assets that undo could bring back.
-  if (history.past.some((d) => referencedAssets(d).has(id)) || history.future.some((d) => referencedAssets(d).has(id))) {
+  if (
+    history.past.some((d) => referencedAssets(d).has(id)) ||
+    history.future.some((d) => referencedAssets(d).has(id))
+  ) {
     return true;
   }
   return useGeneratorStore.getState().style.logo.assetId === id;

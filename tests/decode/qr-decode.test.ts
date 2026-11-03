@@ -61,20 +61,31 @@ describe("QR renderer output decodes with an independent decoder", () => {
   it("dark custom colors and finder accents", () => {
     const svg = renderQrMarkup(
       URL_PAYLOAD,
-      style({ foreground: solid("#1d3557"), finderFrameColor: "#c1121f", finderDotColor: "#003049", background: solid("#fdf6e3") }),
+      style({
+        foreground: solid("#1d3557"),
+        finderFrameColor: "#c1121f",
+        finderDotColor: "#003049",
+        background: solid("#fdf6e3"),
+      }),
     );
     expect(decodeSvg(svg)).toBe(URL_PAYLOAD);
   });
 
   it("linear and radial gradient foregrounds", () => {
     const a = renderQrMarkup(URL_PAYLOAD, style({ foreground: linear(45, "#1b263b", "#7b2cbf") }));
-    const b = renderQrMarkup(URL_PAYLOAD, style({ foreground: radial("#000000", "#2b2d42"), dotStyle: "dots" }));
+    const b = renderQrMarkup(
+      URL_PAYLOAD,
+      style({ foreground: radial("#000000", "#2b2d42"), dotStyle: "dots" }),
+    );
     expect(decodeSvg(a)).toBe(URL_PAYLOAD);
     expect(decodeSvg(b)).toBe(URL_PAYLOAD);
   });
 
   it("gradient background", () => {
-    const svg = renderQrMarkup(URL_PAYLOAD, style({ background: linear(90, "#ffffff", "#ffe8d6") }));
+    const svg = renderQrMarkup(
+      URL_PAYLOAD,
+      style({ background: linear(90, "#ffffff", "#ffe8d6") }),
+    );
     expect(decodeSvg(svg)).toBe(URL_PAYLOAD);
   });
 
@@ -84,7 +95,10 @@ describe("QR renderer output decodes with an independent decoder", () => {
   });
 
   it("inverted colors (light on dark)", () => {
-    const svg = renderQrMarkup(URL_PAYLOAD, style({ foreground: solid("#ffffff"), background: solid("#111111") }));
+    const svg = renderQrMarkup(
+      URL_PAYLOAD,
+      style({ foreground: solid("#ffffff"), background: solid("#111111") }),
+    );
     expect(decodeSvg(svg)).toBe(URL_PAYLOAD);
   });
 
@@ -115,7 +129,11 @@ describe("QR codes with logos stay scannable", () => {
   });
 
   it("offset logo", () => {
-    const svg = renderQrMarkup(URL_PAYLOAD, withLogo({ offsetX: 0.12, offsetY: -0.1, size: 0.2 }), logo);
+    const svg = renderQrMarkup(
+      URL_PAYLOAD,
+      withLogo({ offsetX: 0.12, offsetY: -0.1, size: 0.2 }),
+      logo,
+    );
     expect(decodeSvg(svg)).toBe(URL_PAYLOAD);
   });
 
@@ -124,7 +142,12 @@ describe("QR codes with logos stay scannable", () => {
       URL_PAYLOAD,
       withLogo(
         { size: 0.24, plate: "circle" },
-        { dotStyle: "dots", finderFrame: "circle", finderDot: "circle", foreground: linear(135, "#0b132b", "#3a506b") },
+        {
+          dotStyle: "dots",
+          finderFrame: "circle",
+          finderDot: "circle",
+          foreground: linear(135, "#0b132b", "#3a506b"),
+        },
       ),
       logo,
     );
@@ -160,7 +183,9 @@ describe("payload round-trips through rendering", () => {
       hidden: true,
     });
     expect(decoded).toBe(payload);
-    expect(payload).toBe('WIFI:T:WPA;S:Café\\; \\"Guest\\"\\:5G;P:p@ss\\;word\\,with\\:\\\\chars;H:true;;');
+    expect(payload).toBe(
+      'WIFI:T:WPA;S:Café\\; \\"Guest\\"\\:5G;P:p@ss\\;word\\,with\\:\\\\chars;H:true;;',
+    );
   });
 
   it("long text near capacity", () => {

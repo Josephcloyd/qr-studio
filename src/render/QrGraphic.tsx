@@ -24,11 +24,19 @@ export interface QrGraphicProps {
   logo?: ResolvedImage | null;
 }
 
-export function useQrLayout(payload: string | null, style: QrStyle, logo?: ResolvedImage | null): QrLayout | null {
+export function useQrLayout(
+  payload: string | null,
+  style: QrStyle,
+  logo?: ResolvedImage | null,
+): QrLayout | null {
   return useMemo(() => qrLayoutFor(payload, style, logo), [payload, style, logo]);
 }
 
-export function qrLayoutFor(payload: string | null, style: QrStyle, logo?: ResolvedImage | null): QrLayout | null {
+export function qrLayoutFor(
+  payload: string | null,
+  style: QrStyle,
+  logo?: ResolvedImage | null,
+): QrLayout | null {
   if (!payload) return null;
   const effective = logo ? style : { ...style, logo: { ...style.logo, assetId: null } };
   const result = buildMatrix(payload, effectiveEcLevel(effective));
@@ -42,8 +50,24 @@ function QrPlaceholder({ size }: { size: number }) {
   const s = size / 29;
   const block = (x: number, y: number) => (
     <g key={`${x}-${y}`}>
-      <rect x={x * s} y={y * s} width={7 * s} height={7 * s} rx={s} fill="none" stroke="#c9c4ba" strokeWidth={s} />
-      <rect x={(x + 2) * s} y={(y + 2) * s} width={3 * s} height={3 * s} rx={s * 0.5} fill="#c9c4ba" />
+      <rect
+        x={x * s}
+        y={y * s}
+        width={7 * s}
+        height={7 * s}
+        rx={s}
+        fill="none"
+        stroke="#c9c4ba"
+        strokeWidth={s}
+      />
+      <rect
+        x={(x + 2) * s}
+        y={(y + 2) * s}
+        width={3 * s}
+        height={3 * s}
+        rx={s * 0.5}
+        fill="#c9c4ba"
+      />
     </g>
   );
   return (
@@ -70,7 +94,11 @@ export function QrGraphic({ payload, style: rawStyle, size, idPrefix, logo }: Qr
   const fgFill = paintFill(style.foreground, fgId);
   const { logo: logoBox, plate } = layout;
   const plateRadius =
-    style.logo.plate === "circle" ? (plate?.width ?? 0) / 2 : style.logo.plate === "rounded" ? 1.4 : 0;
+    style.logo.plate === "circle"
+      ? (plate?.width ?? 0) / 2
+      : style.logo.plate === "rounded"
+        ? 1.4
+        : 0;
 
   return (
     <g transform={`scale(${fmt(scale)})`}>

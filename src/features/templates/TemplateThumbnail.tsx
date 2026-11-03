@@ -17,7 +17,8 @@ export function TemplateThumbnail({ id, className }: { id: string; className?: s
   useEffect(() => {
     let cancelled = false;
     // Re-measure once web fonts are available.
-    const ready = typeof document !== "undefined" && document.fonts ? document.fonts.ready : Promise.resolve();
+    const ready =
+      typeof document !== "undefined" && document.fonts ? document.fonts.ready : Promise.resolve();
     ready.then(() => !cancelled && setMounted(true));
     return () => {
       cancelled = true;
@@ -27,7 +28,17 @@ export function TemplateThumbnail({ id, className }: { id: string; className?: s
   // Fit inside a box: portrait layouts fill the height, landscape the width.
   const portrait = doc.height > doc.width;
   return (
-    <div className={cn("overflow-hidden", portrait ? "h-full w-auto max-w-full" : "h-auto w-full max-h-full", className)} style={{ aspectRatio: `${doc.width} / ${doc.height}`, borderRadius: `${(doc.cornerRadius / doc.width) * 100}% / ${(doc.cornerRadius / doc.height) * 100}%` }}>
+    <div
+      className={cn(
+        "overflow-hidden",
+        portrait ? "h-full w-auto max-w-full" : "h-auto max-h-full w-full",
+        className,
+      )}
+      style={{
+        aspectRatio: `${doc.width} / ${doc.height}`,
+        borderRadius: `${(doc.cornerRadius / doc.width) * 100}% / ${(doc.cornerRadius / doc.height) * 100}%`,
+      }}
+    >
       <DocumentSvg
         doc={doc}
         resolveAsset={() => null}

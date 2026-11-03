@@ -24,8 +24,7 @@ import { isValidEmail, normalizePhone, normalizeWebUrl, parseCoordinate } from "
 export type FieldErrors = Record<string, string>;
 
 export type EncodeResult =
-  | { ok: true; payload: string; warnings: string[] }
-  | { ok: false; errors: FieldErrors };
+  { ok: true; payload: string; warnings: string[] } | { ok: false; errors: FieldErrors };
 
 const ok = (payload: string, warnings: string[] = []): EncodeResult => ({
   ok: true,
@@ -73,7 +72,10 @@ function encodeWifi(c: WifiContent): EncodeResult {
 
 function vcardLines(c: VCardContent, website: string | null): string[] {
   const t = (v: string) => escapeText(v.trim());
-  const fullName = [c.firstName, c.lastName].map((s) => s.trim()).filter(Boolean).join(" ");
+  const fullName = [c.firstName, c.lastName]
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(" ");
   const lines = ["BEGIN:VCARD", "VERSION:3.0"];
   lines.push(`N:${t(c.lastName)};${t(c.firstName)};;;`);
   lines.push(`FN:${t(fullName || c.organization)}`);
@@ -194,7 +196,8 @@ function encodeEvent(c: EventContent): EncodeResult {
   const end = c.allDay ? c.end.slice(0, 10) : c.end;
   if (!pattern.test(start)) errors.start = "Choose a start date and time.";
   if (end && !pattern.test(end)) errors.end = "Choose a valid end date.";
-  if (!errors.start && end && !errors.end && end < start) errors.end = "End must be after the start.";
+  if (!errors.start && end && !errors.end && end < start)
+    errors.end = "End must be after the start.";
   if (Object.keys(errors).length) return fail(errors);
 
   const dateParam = c.allDay ? ";VALUE=DATE" : "";

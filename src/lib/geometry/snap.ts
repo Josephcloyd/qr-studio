@@ -25,7 +25,11 @@ interface Line {
 const xLines = (b: Bounds): number[] => [b.minX, (b.minX + b.maxX) / 2, b.maxX];
 const yLines = (b: Bounds): number[] => [b.minY, (b.minY + b.maxY) / 2, b.maxY];
 
-function bestOffset(moving: number[], targets: Line[], threshold: number): { offset: number; line: Line | null } {
+function bestOffset(
+  moving: number[],
+  targets: Line[],
+  threshold: number,
+): { offset: number; line: Line | null } {
   let best: { offset: number; line: Line | null } = { offset: 0, line: null };
   let bestDist = threshold;
   for (const m of moving) {
@@ -48,8 +52,12 @@ export function snapMove(
 ): SnapResult {
   const canvasBounds: Bounds = { minX: 0, minY: 0, maxX: canvas.width, maxY: canvas.height };
   const all = [canvasBounds, ...targets];
-  const vTargets: Line[] = all.flatMap((b) => xLines(b).map((value) => ({ value, start: b.minY, end: b.maxY })));
-  const hTargets: Line[] = all.flatMap((b) => yLines(b).map((value) => ({ value, start: b.minX, end: b.maxX })));
+  const vTargets: Line[] = all.flatMap((b) =>
+    xLines(b).map((value) => ({ value, start: b.minY, end: b.maxY })),
+  );
+  const hTargets: Line[] = all.flatMap((b) =>
+    yLines(b).map((value) => ({ value, start: b.minX, end: b.maxX })),
+  );
 
   const sx = bestOffset(xLines(moving), vTargets, threshold);
   const sy = bestOffset(yLines(moving), hTargets, threshold);

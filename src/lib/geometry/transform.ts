@@ -109,7 +109,9 @@ export function resizeBox(box: Box, dir: HandleDir, pointer: Point, opts: Resize
   const min = opts.minSize ?? 4;
   const [hx, hy] = HANDLE_VECTORS[dir];
   const c = center(box);
-  const anchorLocal = opts.fromCenter ? { x: 0, y: 0 } : { x: (-hx * box.width) / 2, y: (-hy * box.height) / 2 };
+  const anchorLocal = opts.fromCenter
+    ? { x: 0, y: 0 }
+    : { x: (-hx * box.width) / 2, y: (-hy * box.height) / 2 };
   const anchorOffset = rotate(anchorLocal, box.rotation);
   const anchor = { x: c.x + anchorOffset.x, y: c.y + anchorOffset.y };
   const q = rotate({ x: pointer.x - anchor.x, y: pointer.y - anchor.y }, -box.rotation);
@@ -131,7 +133,9 @@ export function resizeBox(box: Box, dir: HandleDir, pointer: Point, opts: Resize
     }
   }
 
-  const offsetLocal = opts.fromCenter ? { x: 0, y: 0 } : { x: (hx * width) / 2, y: (hy * height) / 2 };
+  const offsetLocal = opts.fromCenter
+    ? { x: 0, y: 0 }
+    : { x: (hx * width) / 2, y: (hy * height) / 2 };
   // Edge handles with keepAspect grow symmetrically on the other axis.
   const offset = rotate(offsetLocal, box.rotation);
   const newCenter = { x: anchor.x + offset.x, y: anchor.y + offset.y };

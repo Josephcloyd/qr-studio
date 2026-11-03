@@ -20,7 +20,12 @@ export type Measure = (text: string, spec: TextMetricsSpec) => number;
 export const approximateMeasure: Measure = (text, spec) =>
   [...text].length * spec.fontSize * (0.56 + spec.letterSpacing);
 
-function breakWord(word: string, maxWidth: number, spec: TextMetricsSpec, measure: Measure): string[] {
+function breakWord(
+  word: string,
+  maxWidth: number,
+  spec: TextMetricsSpec,
+  measure: Measure,
+): string[] {
   const pieces: string[] = [];
   let current = "";
   for (const char of word) {
@@ -35,7 +40,12 @@ function breakWord(word: string, maxWidth: number, spec: TextMetricsSpec, measur
   return pieces;
 }
 
-function wrapParagraph(paragraph: string, maxWidth: number, spec: TextMetricsSpec, measure: Measure): string[] {
+function wrapParagraph(
+  paragraph: string,
+  maxWidth: number,
+  spec: TextMetricsSpec,
+  measure: Measure,
+): string[] {
   if (!paragraph) return [""];
   const words = paragraph.split(/(\s+)/).filter((w) => w.length > 0);
   const lines: string[] = [];
@@ -67,7 +77,12 @@ function wrapParagraph(paragraph: string, maxWidth: number, spec: TextMetricsSpe
   return lines;
 }
 
-export function wrapText(text: string, maxWidth: number, spec: TextMetricsSpec, measure: Measure): string[] {
+export function wrapText(
+  text: string,
+  maxWidth: number,
+  spec: TextMetricsSpec,
+  measure: Measure,
+): string[] {
   const width = Math.max(1, maxWidth);
   return text.split(/\r\n|\r|\n/).flatMap((p) => wrapParagraph(p, width, spec, measure));
 }

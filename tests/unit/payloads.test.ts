@@ -23,17 +23,25 @@ describe("empty inputs", () => {
 
 describe("url", () => {
   it("adds https when missing", () => {
-    expect(payload(encodePayload({ type: "url", url: "getlaunch.ph/tools" }))).toBe("https://getlaunch.ph/tools");
+    expect(payload(encodePayload({ type: "url", url: "getlaunch.ph/tools" }))).toBe(
+      "https://getlaunch.ph/tools",
+    );
   });
   it("keeps explicit http(s)", () => {
-    expect(payload(encodePayload({ type: "url", url: "http://example.com/a?b=1#c" }))).toBe("http://example.com/a?b=1#c");
+    expect(payload(encodePayload({ type: "url", url: "http://example.com/a?b=1#c" }))).toBe(
+      "http://example.com/a?b=1#c",
+    );
   });
-  it.each(["javascript:alert(1)", "data:text/html,hi", "ftp://x.com", "not a url", "localhostish", "https://"])(
-    "rejects %s",
-    (url) => {
-      expect(errors(encodePayload({ type: "url", url })).url).toBeTruthy();
-    },
-  );
+  it.each([
+    "javascript:alert(1)",
+    "data:text/html,hi",
+    "ftp://x.com",
+    "not a url",
+    "localhostish",
+    "https://",
+  ])("rejects %s", (url) => {
+    expect(errors(encodePayload({ type: "url", url })).url).toBeTruthy();
+  });
   it("accepts IPs and localhost", () => {
     expect(normalizeWebUrl("192.168.1.1:8080").ok).toBe(true);
     expect(normalizeWebUrl("http://localhost:3000").ok).toBe(true);
@@ -54,15 +62,25 @@ describe("text", () => {
 });
 
 describe("wifi", () => {
-  const base = { type: "wifi" as const, ssid: "Home", password: "supersecret", encryption: "WPA" as const, hidden: false };
+  const base = {
+    type: "wifi" as const,
+    ssid: "Home",
+    password: "supersecret",
+    encryption: "WPA" as const,
+    hidden: false,
+  };
   it("formats WPA networks", () => {
     expect(payload(encodePayload(base))).toBe("WIFI:T:WPA;S:Home;P:supersecret;;");
   });
   it("formats open networks without a password", () => {
-    expect(payload(encodePayload({ ...base, encryption: "nopass", password: "ignored" }))).toBe("WIFI:T:nopass;S:Home;;");
+    expect(payload(encodePayload({ ...base, encryption: "nopass", password: "ignored" }))).toBe(
+      "WIFI:T:nopass;S:Home;;",
+    );
   });
   it("marks hidden networks", () => {
-    expect(payload(encodePayload({ ...base, hidden: true }))).toBe("WIFI:T:WPA;S:Home;P:supersecret;H:true;;");
+    expect(payload(encodePayload({ ...base, hidden: true }))).toBe(
+      "WIFI:T:WPA;S:Home;P:supersecret;H:true;;",
+    );
   });
   it("escapes special characters", () => {
     expect(escapeWifi('a\\b;c,d:e"f')).toBe('a\\\\b\\;c\\,d\\:e\\"f');
@@ -85,7 +103,14 @@ describe("wifi", () => {
 describe("vcard", () => {
   const contact = { ...emptyContent("vcard"), firstName: "Ana", lastName: "Reyes" };
   it("produces a vCard 3.0 with CRLF line endings", () => {
-    const p = payload(encodePayload({ ...contact, organization: "Acme, Inc.", email: "ana@acme.ph", phone: "+63 (2) 8123-4567" }));
+    const p = payload(
+      encodePayload({
+        ...contact,
+        organization: "Acme, Inc.",
+        email: "ana@acme.ph",
+        phone: "+63 (2) 8123-4567",
+      }),
+    );
     expect(p.startsWith("BEGIN:VCARD\r\nVERSION:3.0\r\n")).toBe(true);
     expect(p).toContain("N:Reyes;Ana;;;");
     expect(p).toContain("FN:Ana Reyes");
@@ -94,10 +119,14 @@ describe("vcard", () => {
     expect(p.endsWith("END:VCARD")).toBe(true);
   });
   it("allows company-only cards", () => {
-    expect(payload(encodePayload({ ...emptyContent("vcard"), organization: "GetLaunch Ph" }))).toContain("FN:GetLaunch Ph");
+    expect(
+      payload(encodePayload({ ...emptyContent("vcard"), organization: "GetLaunch Ph" })),
+    ).toContain("FN:GetLaunch Ph");
   });
   it("validates email, phone and website", () => {
-    const e = errors(encodePayload({ ...contact, email: "nope", phone: "abc", website: "javascript:x" }));
+    const e = errors(
+      encodePayload({ ...contact, email: "nope", phone: "abc", website: "javascript:x" }),
+    );
     expect(Object.keys(e).sort()).toEqual(["email", "phone", "website"]);
   });
   it("includes address and folds long lines", () => {
@@ -109,26 +138,36 @@ describe("vcard", () => {
 
 describe("email / phone / sms / whatsapp", () => {
   it("builds mailto with encoded subject and body", () => {
-    expect(payload(encodePayload({ type: "email", to: "hi@x.ph", subject: "Hello & bye", body: "Line\nTwo" }))).toBe(
-      "mailto:hi@x.ph?subject=Hello%20%26%20bye&body=Line%0ATwo",
+    expect(
+      payload(
+        encodePayload({ type: "email", to: "hi@x.ph", subject: "Hello & bye", body: "Line\nTwo" }),
+      ),
+    ).toBe("mailto:hi@x.ph?subject=Hello%20%26%20bye&body=Line%0ATwo");
+    expect(payload(encodePayload({ type: "email", to: "hi@x.ph", subject: "", body: "" }))).toBe(
+      "mailto:hi@x.ph",
     );
-    expect(payload(encodePayload({ type: "email", to: "hi@x.ph", subject: "", body: "" }))).toBe("mailto:hi@x.ph");
   });
   it("normalizes phone numbers", () => {
-    expect(payload(encodePayload({ type: "phone", number: "+63 917-123-4567" }))).toBe("tel:+639171234567");
+    expect(payload(encodePayload({ type: "phone", number: "+63 917-123-4567" }))).toBe(
+      "tel:+639171234567",
+    );
     expect(normalizePhone("12")).toBeNull();
     expect(normalizePhone("call me")).toBeNull();
   });
   it("builds SMSTO payloads", () => {
-    expect(payload(encodePayload({ type: "sms", number: "0917 123 4567", message: "Hi: there" }))).toBe(
-      "SMSTO:09171234567:Hi: there",
-    );
+    expect(
+      payload(encodePayload({ type: "sms", number: "0917 123 4567", message: "Hi: there" })),
+    ).toBe("SMSTO:09171234567:Hi: there");
   });
   it("builds wa.me links and requires international format", () => {
-    expect(payload(encodePayload({ type: "whatsapp", number: "+63 917 123 4567", message: "Hello po!" }))).toBe(
-      "https://wa.me/639171234567?text=Hello%20po!",
-    );
-    expect(errors(encodePayload({ type: "whatsapp", number: "0917 123 4567", message: "" })).number).toMatch(/leading 0/);
+    expect(
+      payload(
+        encodePayload({ type: "whatsapp", number: "+63 917 123 4567", message: "Hello po!" }),
+      ),
+    ).toBe("https://wa.me/639171234567?text=Hello%20po!");
+    expect(
+      errors(encodePayload({ type: "whatsapp", number: "0917 123 4567", message: "" })).number,
+    ).toMatch(/leading 0/);
   });
 });
 
@@ -148,16 +187,24 @@ describe("location", () => {
     expect(e.latitude && e.longitude).toBeTruthy();
   });
   it("builds search links from an address without any geocoding call", () => {
-    const p = payload(encodePayload({ ...base, mode: "address", address: "SM Mall of Asia, Pasay" }));
-    expect(p).toBe("https://www.google.com/maps/search/?api=1&query=SM%20Mall%20of%20Asia%2C%20Pasay");
+    const p = payload(
+      encodePayload({ ...base, mode: "address", address: "SM Mall of Asia, Pasay" }),
+    );
+    expect(p).toBe(
+      "https://www.google.com/maps/search/?api=1&query=SM%20Mall%20of%20Asia%2C%20Pasay",
+    );
   });
 });
 
 describe("event", () => {
   const base = { ...emptyContent("event"), title: "Kasal; Ana, Ben" };
   it("formats timed events", () => {
-    const p = payload(encodePayload({ ...base, start: "2026-12-05T15:00", end: "2026-12-05T21:30" }));
-    expect(p).toBe("BEGIN:VEVENT\r\nSUMMARY:Kasal\\; Ana\\, Ben\r\nDTSTART:20261205T150000\r\nDTEND:20261205T213000\r\nEND:VEVENT");
+    const p = payload(
+      encodePayload({ ...base, start: "2026-12-05T15:00", end: "2026-12-05T21:30" }),
+    );
+    expect(p).toBe(
+      "BEGIN:VEVENT\r\nSUMMARY:Kasal\\; Ana\\, Ben\r\nDTSTART:20261205T150000\r\nDTEND:20261205T213000\r\nEND:VEVENT",
+    );
   });
   it("formats all-day events with an exclusive end date", () => {
     const p = payload(encodePayload({ ...base, allDay: true, start: "2026-12-31", end: "" }));
@@ -165,7 +212,9 @@ describe("event", () => {
     expect(p).toContain("DTEND;VALUE=DATE:20270101");
   });
   it("rejects end before start", () => {
-    expect(errors(encodePayload({ ...base, start: "2026-12-05T15:00", end: "2026-12-05T10:00" })).end).toBeTruthy();
+    expect(
+      errors(encodePayload({ ...base, start: "2026-12-05T15:00", end: "2026-12-05T10:00" })).end,
+    ).toBeTruthy();
   });
 });
 

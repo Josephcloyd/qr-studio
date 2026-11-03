@@ -40,19 +40,50 @@ export function createQrElement(
   style: QrStyle = DEFAULT_QR_STYLE,
 ): QrElement {
   const size = at.width ?? 240;
-  return { ...base("QR code", at, size, size), height: size, width: size, type: "qr", content, style };
+  return {
+    ...base("QR code", at, size, size),
+    height: size,
+    width: size,
+    type: "qr",
+    content,
+    style,
+  };
 }
 
 export type TextPreset = "heading" | "subheading" | "body" | "label";
 
 const TEXT_PRESETS: Record<TextPreset, Partial<TextElement>> = {
-  heading: { fontFamily: "fraunces", fontSize: 56, fontWeight: 700, lineHeight: 1.05, letterSpacing: -0.02 },
-  subheading: { fontFamily: "inter", fontSize: 28, fontWeight: 600, lineHeight: 1.2, letterSpacing: -0.01 },
+  heading: {
+    fontFamily: "fraunces",
+    fontSize: 56,
+    fontWeight: 700,
+    lineHeight: 1.05,
+    letterSpacing: -0.02,
+  },
+  subheading: {
+    fontFamily: "inter",
+    fontSize: 28,
+    fontWeight: 600,
+    lineHeight: 1.2,
+    letterSpacing: -0.01,
+  },
   body: { fontFamily: "inter", fontSize: 18, fontWeight: 400, lineHeight: 1.45, letterSpacing: 0 },
-  label: { fontFamily: "inter", fontSize: 14, fontWeight: 700, lineHeight: 1.2, letterSpacing: 0.12, uppercase: true },
+  label: {
+    fontFamily: "inter",
+    fontSize: 14,
+    fontWeight: 700,
+    lineHeight: 1.2,
+    letterSpacing: 0.12,
+    uppercase: true,
+  },
 };
 
-export function createTextElement(text: string, at: At = {}, preset: TextPreset = "body", patch: Partial<TextElement> = {}): TextElement {
+export function createTextElement(
+  text: string,
+  at: At = {},
+  preset: TextPreset = "body",
+  patch: Partial<TextElement> = {},
+): TextElement {
   const p = { ...TEXT_PRESETS[preset], ...patch };
   const fontSize = p.fontSize ?? 18;
   return {
@@ -101,7 +132,11 @@ const SHAPE_NAMES: Record<ShapeKind, string> = {
   arrow: "Arrow",
 };
 
-export function createShapeElement(shape: ShapeKind, at: At = {}, patch: Partial<ShapeElement> = {}): ShapeElement {
+export function createShapeElement(
+  shape: ShapeKind,
+  at: At = {},
+  patch: Partial<ShapeElement> = {},
+): ShapeElement {
   const isLine = shape === "line" || shape === "arrow";
   return {
     ...base(SHAPE_NAMES[shape], at, isLine ? 240 : 200, isLine ? 24 : 200),
@@ -133,7 +168,10 @@ export const DEFAULT_BACKGROUND: DocumentBackground = {
   patternScale: 24,
 };
 
-export function createDocument(preset: CanvasPreset = DEFAULT_PRESET, name = "Untitled design"): DesignDocument {
+export function createDocument(
+  preset: CanvasPreset = DEFAULT_PRESET,
+  name = "Untitled design",
+): DesignDocument {
   return {
     version: DOCUMENT_VERSION,
     id: createId("doc"),

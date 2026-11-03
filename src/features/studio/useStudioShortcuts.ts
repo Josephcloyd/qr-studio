@@ -66,37 +66,46 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       const key = e.key.toLowerCase();
       const handled = () => e.preventDefault();
 
-      if (mod && key === "z") return handled(), e.shiftKey ? s.redo() : s.undo();
-      if (mod && key === "y") return handled(), s.redo();
-      if (mod && key === "c") return s.selection.length ? (handled(), s.copySelection()) : undefined;
+      if (mod && key === "z") return (handled(), e.shiftKey ? s.redo() : s.undo());
+      if (mod && key === "y") return (handled(), s.redo());
+      if (mod && key === "c")
+        return s.selection.length ? (handled(), s.copySelection()) : undefined;
       if (mod && key === "x") return s.selection.length ? (handled(), s.cutSelection()) : undefined;
-      if (mod && key === "d") return handled(), s.duplicateSelection();
-      if (mod && key === "a") return handled(), s.selectAll();
-      if (mod && key === "s") return handled(), onSaveProject();
-      if (mod && key === "e") return handled(), useUiStore.getState().openDialog("export");
+      if (mod && key === "d") return (handled(), s.duplicateSelection());
+      if (mod && key === "a") return (handled(), s.selectAll());
+      if (mod && key === "s") return (handled(), onSaveProject());
+      if (mod && key === "e") return (handled(), useUiStore.getState().openDialog("export"));
       if (mod && e.shiftKey && key === "l") {
         handled();
         const anyUnlocked = s.doc.elements.some((el) => s.selection.includes(el.id) && !el.locked);
         return s.setSelectionLocked(anyUnlocked);
       }
-      if (mod && (e.key === "]" || e.key === "}")) return handled(), s.reorderSelection(e.shiftKey ? "front" : "forward");
-      if (mod && (e.key === "[" || e.key === "{")) return handled(), s.reorderSelection(e.shiftKey ? "back" : "backward");
+      if (mod && (e.key === "]" || e.key === "}"))
+        return (handled(), s.reorderSelection(e.shiftKey ? "front" : "forward"));
+      if (mod && (e.key === "[" || e.key === "{"))
+        return (handled(), s.reorderSelection(e.shiftKey ? "back" : "backward"));
       if (mod) return;
 
-      if (e.key === "Delete" || e.key === "Backspace") return handled(), s.deleteSelection();
+      if (e.key === "Delete" || e.key === "Backspace") return (handled(), s.deleteSelection());
       if (e.key === "Escape") return s.clearSelection();
       if (e.key === "Enter" && s.selection.length === 1) {
         const el = s.doc.elements.find((x) => x.id === s.selection[0]);
-        if (el?.type === "text" && !el.locked) return handled(), s.setEditingText(el.id);
+        if (el?.type === "text" && !el.locked) return (handled(), s.setEditingText(el.id));
       }
       const step = e.shiftKey ? 10 : 1;
-      const arrows: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
-      if (arrows[e.key] && s.selection.length) return handled(), s.nudgeSelection(...arrows[e.key]);
-      if (e.key === "+" || e.key === "=") return handled(), vp.zoomStep(1);
-      if (e.key === "-" || e.key === "_") return handled(), vp.zoomStep(-1);
-      if (e.shiftKey && e.code === "Digit1") return handled(), vp.fit(s.doc.width, s.doc.height);
-      if (e.shiftKey && e.code === "Digit0") return handled(), vp.zoomAt(1);
-      if (e.key === "?") return handled(), useUiStore.getState().openDialog("shortcuts");
+      const arrows: Record<string, [number, number]> = {
+        ArrowLeft: [-step, 0],
+        ArrowRight: [step, 0],
+        ArrowUp: [0, -step],
+        ArrowDown: [0, step],
+      };
+      if (arrows[e.key] && s.selection.length)
+        return (handled(), s.nudgeSelection(...arrows[e.key]));
+      if (e.key === "+" || e.key === "=") return (handled(), vp.zoomStep(1));
+      if (e.key === "-" || e.key === "_") return (handled(), vp.zoomStep(-1));
+      if (e.shiftKey && e.code === "Digit1") return (handled(), vp.fit(s.doc.width, s.doc.height));
+      if (e.shiftKey && e.code === "Digit0") return (handled(), vp.zoomAt(1));
+      if (e.key === "?") return (handled(), useUiStore.getState().openDialog("shortcuts"));
     };
 
     // Paste: images from the system clipboard become image elements (read
@@ -117,7 +126,15 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       for (const asset of added) {
         const w = Math.min(s.doc.width * 0.5, asset.width);
         const h = w * (asset.height / asset.width);
-        useEditorStore.getState().addElement(createImageElement(asset.id, { x: (s.doc.width - w) / 2, y: (s.doc.height - h) / 2, width: w, height: h }, asset.name));
+        useEditorStore
+          .getState()
+          .addElement(
+            createImageElement(
+              asset.id,
+              { x: (s.doc.width - w) / 2, y: (s.doc.height - h) / 2, width: w, height: h },
+              asset.name,
+            ),
+          );
       }
     };
 

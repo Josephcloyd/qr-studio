@@ -12,10 +12,25 @@ import {
   rotationFor,
   unionBounds,
 } from "@/lib/geometry/transform";
-import { circlePath, heartPath, polygonPath, regularPolygonPoints, roundedRectPath, starPoints, fmt } from "@/lib/geometry/paths";
+import {
+  circlePath,
+  heartPath,
+  polygonPath,
+  regularPolygonPoints,
+  roundedRectPath,
+  starPoints,
+  fmt,
+} from "@/lib/geometry/paths";
 import type { Box } from "@/lib/model/types";
 
-const box = (patch: Partial<Box> = {}): Box => ({ x: 100, y: 100, width: 200, height: 100, rotation: 0, ...patch });
+const box = (patch: Partial<Box> = {}): Box => ({
+  x: 100,
+  y: 100,
+  width: 200,
+  height: 100,
+  rotation: 0,
+  ...patch,
+});
 const close = (a: number, b: number) => expect(a).toBeCloseTo(b, 6);
 
 describe("transform basics", () => {
@@ -107,7 +122,12 @@ describe("snapping", () => {
     expect(r.guides.some((g) => g.axis === "x" && g.position === 500)).toBe(true);
   });
   it("snaps to other elements' edges", () => {
-    const r = snapMove({ minX: 0, minY: 205, maxX: 50, maxY: 255 }, [{ minX: 300, minY: 100, maxX: 400, maxY: 200 }], canvas, 8);
+    const r = snapMove(
+      { minX: 0, minY: 205, maxX: 50, maxY: 255 },
+      [{ minX: 300, minY: 100, maxX: 400, maxY: 200 }],
+      canvas,
+      8,
+    );
     expect(r.dy).toBe(-5);
   });
   it("does nothing outside the threshold", () => {

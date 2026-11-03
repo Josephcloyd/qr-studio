@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { composite, contrastRatio, normalizeHex, parseHex, toHex, isLight } from "@/lib/color/color";
+import {
+  composite,
+  contrastRatio,
+  normalizeHex,
+  parseHex,
+  toHex,
+  isLight,
+} from "@/lib/color/color";
 import { convertPaint, linear, paintColors, solid, NO_PAINT } from "@/lib/model/paint";
 import { computeQrLayout } from "@/lib/qr/layout";
 import { alignmentCoords, buildMatrix, isFunctionalModule } from "@/lib/qr/matrix";
@@ -89,31 +96,49 @@ describe("layout", () => {
   });
   it("clears modules behind the logo and reports coverage", () => {
     const plain = computeQrLayout(m, style());
-    const withLogo = computeQrLayout(m, style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.25 } }));
+    const withLogo = computeQrLayout(
+      m,
+      style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.25 } }),
+    );
     expect(withLogo.darkModules).toBeLessThan(plain.darkModules);
     expect(withLogo.logoCoverage).toBeGreaterThan(0.05);
     expect(withLogo.plate).not.toBeNull();
   });
   it("keeps the logo away from finder patterns even with extreme offsets", () => {
-    const l = computeQrLayout(m, style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", offsetX: -1, offsetY: -1 } }));
+    const l = computeQrLayout(
+      m,
+      style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", offsetX: -1, offsetY: -1 } }),
+    );
     expect(l.plate!.x).toBeGreaterThanOrEqual(l.margin + 8 - 0.001);
     expect(l.plate!.y).toBeGreaterThanOrEqual(l.margin + 8 - 0.001);
   });
   it("supports wide logos", () => {
-    const l = computeQrLayout(m, style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a" } }), { logoAspect: 3 });
+    const l = computeQrLayout(m, style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a" } }), {
+      logoAspect: 3,
+    });
     expect(l.logo!.width / l.logo!.height).toBeCloseTo(3, 3);
   });
 });
 
 describe("style constraints", () => {
   it("raises error correction when a logo is present", () => {
-    expect(effectiveEcLevel(style({ ecLevel: "L", logo: { ...DEFAULT_LOGO, assetId: "a" } }))).toBe("Q");
-    expect(effectiveEcLevel(style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a" } }))).toBe("H");
+    expect(effectiveEcLevel(style({ ecLevel: "L", logo: { ...DEFAULT_LOGO, assetId: "a" } }))).toBe(
+      "Q",
+    );
+    expect(effectiveEcLevel(style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a" } }))).toBe(
+      "H",
+    );
     expect(effectiveEcLevel(style({ ecLevel: "L" }))).toBe("L");
-    expect(effectiveEcLevel(style({ ecLevel: "L", logo: { ...DEFAULT_LOGO, assetId: "a", visible: false } }))).toBe("L");
+    expect(
+      effectiveEcLevel(
+        style({ ecLevel: "L", logo: { ...DEFAULT_LOGO, assetId: "a", visible: false } }),
+      ),
+    ).toBe("L");
   });
   it("clamps margin and logo size", () => {
-    const s = sanitizeQrStyle(style({ margin: 0, ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.9 } }));
+    const s = sanitizeQrStyle(
+      style({ margin: 0, ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.9 } }),
+    );
     expect(s.margin).toBe(2);
     expect(s.logo.size).toBe(MAX_LOGO_SIZE.H);
   });
@@ -130,13 +155,29 @@ describe("readability", () => {
     expect(issues.find((i) => i.id === "contrast-low")?.severity).toBe("error");
   });
   it("flags weak contrast and gradients with a light stop", () => {
-    expect(analyze(style({ foreground: solid("#8a8a8a") })).some((i) => i.id === "contrast-weak")).toBe(true);
-    expect(analyze(style({ foreground: linear(0, "#000000", "#cccccc") })).some((i) => i.id.startsWith("contrast"))).toBe(true);
+    expect(
+      analyze(style({ foreground: solid("#8a8a8a") })).some((i) => i.id === "contrast-weak"),
+    ).toBe(true);
+    expect(
+      analyze(style({ foreground: linear(0, "#000000", "#cccccc") })).some((i) =>
+        i.id.startsWith("contrast"),
+      ),
+    ).toBe(true);
   });
   it("flags inverted codes and transparent backgrounds", () => {
-    expect(analyze(style({ foreground: solid("#ffffff"), background: solid("#000000") })).some((i) => i.id === "inverted")).toBe(true);
-    expect(analyze(style({ background: NO_PAINT })).some((i) => i.id === "transparent-bg")).toBe(true);
-    expect(analyze(style({ background: NO_PAINT }), { backdrop: "#ffffff" }).some((i) => i.id === "transparent-bg")).toBe(false);
+    expect(
+      analyze(style({ foreground: solid("#ffffff"), background: solid("#000000") })).some(
+        (i) => i.id === "inverted",
+      ),
+    ).toBe(true);
+    expect(analyze(style({ background: NO_PAINT })).some((i) => i.id === "transparent-bg")).toBe(
+      true,
+    );
+    expect(
+      analyze(style({ background: NO_PAINT }), { backdrop: "#ffffff" }).some(
+        (i) => i.id === "transparent-bg",
+      ),
+    ).toBe(false);
   });
   it("flags a small quiet zone and small print sizes", () => {
     expect(analyze(style({ margin: 2 })).some((i) => i.id === "quiet-zone")).toBe(true);
@@ -144,9 +185,15 @@ describe("readability", () => {
     expect(analyze(style(), { printWidthMm: 30 }).some((i) => i.id === "print-small")).toBe(false);
   });
   it("flags logo issues", () => {
-    const big = style({ ecLevel: "Q", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.26, platePadding: 3 } });
+    const big = style({
+      ecLevel: "Q",
+      logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.26, platePadding: 3 },
+    });
     expect(analyze(big).some((i) => i.id.startsWith("logo"))).toBe(true);
-    const overlap = style({ ecLevel: "H", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.12, plate: "none", clearBehind: false } });
+    const overlap = style({
+      ecLevel: "H",
+      logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.12, plate: "none", clearBehind: false },
+    });
     expect(analyze(overlap).some((i) => i.id === "logo-overlap")).toBe(true);
     const raised = style({ ecLevel: "M", logo: { ...DEFAULT_LOGO, assetId: "a", size: 0.12 } });
     expect(analyze(raised).some((i) => i.id === "ec-raised")).toBe(true);

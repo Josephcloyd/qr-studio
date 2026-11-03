@@ -1,6 +1,16 @@
 "use client";
 
-import { Image as ImageIcon, Layers, LayoutTemplate, PaintBucket, QrCode, Shapes, Sparkles, Type, type LucideIcon } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Layers,
+  LayoutTemplate,
+  PaintBucket,
+  QrCode,
+  Shapes,
+  Sparkles,
+  Type,
+  type LucideIcon,
+} from "lucide-react";
 import type { ComponentType } from "react";
 import { BackgroundPanel } from "./panels/left/BackgroundPanel";
 import { ElementsPanel } from "./panels/left/ElementsPanel";

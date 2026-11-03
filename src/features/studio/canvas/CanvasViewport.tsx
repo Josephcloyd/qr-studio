@@ -31,12 +31,18 @@ export function CanvasViewport({ className }: { className?: string }) {
   const view = useEditorStore((s) => s.view);
   const editingTextId = useEditorStore((s) => s.editingTextId);
   const selected = useEditorStore(useShallow(selectSelectedElements));
-  const { zoom, panX, panY } = useViewportStore(useShallow((s) => ({ zoom: s.zoom, panX: s.panX, panY: s.panY })));
+  const { zoom, panX, panY } = useViewportStore(
+    useShallow((s) => ({ zoom: s.zoom, panX: s.panX, panY: s.panY })),
+  );
   const resolveAsset = useAssetResolver();
   const { ingest } = useImageUpload();
   const setPanel = useUiStore((s) => s.setPanel);
   const { handlers, marquee, hoveredId, interacting, panning } = useCanvasGestures(containerRef);
-  const coarse = useSyncExternalStore(subscribeCoarse, () => window.matchMedia(COARSE).matches, () => false);
+  const coarse = useSyncExternalStore(
+    subscribeCoarse,
+    () => window.matchMedia(COARSE).matches,
+    () => false,
+  );
   const [dragOver, setDragOver] = useState(false);
 
   // Track viewport size; fit the artboard when the document size changes.
@@ -68,7 +74,9 @@ export function CanvasViewport({ className }: { className?: string }) {
   }, [fitKey, doc.width, doc.height]);
 
   const hovered = hoveredId ? (doc.elements.find((e) => e.id === hoveredId) ?? null) : null;
-  const editing = editingTextId ? doc.elements.find((e): e is TextElement => e.id === editingTextId && e.type === "text") : undefined;
+  const editing = editingTextId
+    ? doc.elements.find((e): e is TextElement => e.id === editingTextId && e.type === "text")
+    : undefined;
   const hiddenIds = useMemo(() => new Set(editing ? [editing.id] : []), [editing]);
 
   const onDrop = async (e: DragEvent<HTMLDivElement>) => {
@@ -84,7 +92,13 @@ export function CanvasViewport({ className }: { className?: string }) {
     added.forEach((asset, i) => {
       const w = Math.min(doc.width * 0.5, asset.width);
       const h = w * (asset.height / asset.width);
-      editor.addElement(createImageElement(asset.id, { x: x - w / 2 + i * 16, y: y - h / 2 + i * 16, width: w, height: h }, asset.name));
+      editor.addElement(
+        createImageElement(
+          asset.id,
+          { x: x - w / 2 + i * 16, y: y - h / 2 + i * 16, width: w, height: h },
+          asset.name,
+        ),
+      );
     });
   };
 
@@ -92,7 +106,11 @@ export function CanvasViewport({ className }: { className?: string }) {
     <div
       ref={containerRef}
       data-testid="canvas-viewport"
-      className={cn("workspace-dots relative h-full w-full touch-none overflow-hidden select-none", panning && "cursor-grab", className)}
+      className={cn(
+        "workspace-dots relative h-full w-full touch-none overflow-hidden select-none",
+        panning && "cursor-grab",
+        className,
+      )}
       {...handlers}
       onDragOver={(e) => {
         e.preventDefault();
@@ -101,12 +119,22 @@ export function CanvasViewport({ className }: { className?: string }) {
       onDragLeave={() => setDragOver(false)}
       onDrop={onDrop}
     >
-      <div className="absolute top-0 left-0 will-change-transform" style={{ transform: `translate3d(${panX}px, ${panY}px, 0)` }}>
+      <div
+        className="absolute top-0 left-0 will-change-transform"
+        style={{ transform: `translate3d(${panX}px, ${panY}px, 0)` }}
+      >
         <div
           className="relative shadow-[0_1px_2px_rgb(22_19_15/0.1),0_24px_60px_-24px_rgb(22_19_15/0.45)]"
-          style={{ width: doc.width * zoom, height: doc.height * zoom, borderRadius: doc.cornerRadius * zoom }}
+          style={{
+            width: doc.width * zoom,
+            height: doc.height * zoom,
+            borderRadius: doc.cornerRadius * zoom,
+          }}
         >
-          <div className="checkerboard absolute inset-0 -z-10" style={{ borderRadius: doc.cornerRadius * zoom }} />
+          <div
+            className="checkerboard absolute inset-0 -z-10"
+            style={{ borderRadius: doc.cornerRadius * zoom }}
+          />
           <DocumentSvg
             doc={doc}
             resolveAsset={resolveAsset}
@@ -138,27 +166,49 @@ export function CanvasViewport({ className }: { className?: string }) {
 
       {doc.elements.length === 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center px-4">
-          <div className="animate-rise pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-line bg-card/95 p-2 shadow-pop backdrop-blur">
-            <span className="px-2 text-[13px] font-medium text-ink-2">Start your design:</span>
-            <EmptyAction icon={LayoutTemplate} label="Pick a template" onClick={() => setPanel("templates")} />
+          <div className="animate-rise border-line bg-card/95 shadow-pop pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 backdrop-blur">
+            <span className="text-ink-2 px-2 text-[13px] font-medium">Start your design:</span>
+            <EmptyAction
+              icon={LayoutTemplate}
+              label="Pick a template"
+              onClick={() => setPanel("templates")}
+            />
             <EmptyAction icon={QrCode} label="Add a QR code" onClick={() => setPanel("qr")} />
-            <EmptyAction icon={ImagePlus} label="Add an image" onClick={() => setPanel("uploads")} />
+            <EmptyAction
+              icon={ImagePlus}
+              label="Add an image"
+              onClick={() => setPanel("uploads")}
+            />
           </div>
         </div>
       )}
 
       {dragOver && (
-        <div className="pointer-events-none absolute inset-3 flex items-center justify-center rounded-3xl border-2 border-dashed border-cobalt bg-cobalt-soft/40">
-          <span className="rounded-full bg-card px-4 py-2 text-sm font-semibold text-ink shadow-pop">Drop images to add them — they stay on your device</span>
+        <div className="border-cobalt bg-cobalt-soft/40 pointer-events-none absolute inset-3 flex items-center justify-center rounded-3xl border-2 border-dashed">
+          <span className="bg-card text-ink shadow-pop rounded-full px-4 py-2 text-sm font-semibold">
+            Drop images to add them — they stay on your device
+          </span>
         </div>
       )}
     </div>
   );
 }
 
-function EmptyAction({ icon: Icon, label, onClick }: { icon: typeof QrCode; label: string; onClick: () => void }) {
+function EmptyAction({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: typeof QrCode;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <button type="button" onClick={onClick} className="inline-flex h-9 items-center gap-2 rounded-xl bg-paper-2 px-3 text-[13px] font-semibold text-ink transition-colors hover:bg-ink hover:text-paper">
+    <button
+      type="button"
+      onClick={onClick}
+      className="bg-paper-2 text-ink hover:bg-ink hover:text-paper inline-flex h-9 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold transition-colors"
+    >
       <Icon className="size-4" aria-hidden="true" />
       {label}
     </button>

@@ -33,7 +33,11 @@ export function QuickDownload({ content, style, disabled, scanStatus }: QuickDow
   const assets = useAssetStore((s) => s.assets);
 
   const run = async () => {
-    if (scanStatus === "fail" && !window.confirm("This design didn't pass the scan check. Download anyway?")) return;
+    if (
+      scanStatus === "fail" &&
+      !window.confirm("This design didn't pass the scan check. Download anyway?")
+    )
+      return;
     setBusy(true);
     const name = `qr-${slugify(QR_TYPE_LABELS[content.type])}`;
     try {
@@ -42,14 +46,24 @@ export function QuickDownload({ content, style, disabled, scanStatus }: QuickDow
         const doc = qrOnlyDocument(content, style, size);
         const result = await exportPng(doc, assets, { dpi: 96, transparent: false });
         downloadBlob(result.blob, `${name}-${size}px.png`);
-        toast.success("PNG downloaded", `${result.width} × ${result.height}px · ${formatBytes(result.blob.size)}`);
+        toast.success(
+          "PNG downloaded",
+          `${result.width} × ${result.height}px · ${formatBytes(result.blob.size)}`,
+        );
       } else if (format === "svg") {
         const blob = await exportSvg(qrOnlyDocument(content, style, 512), assets, false);
         downloadBlob(blob, `${name}.svg`);
         toast.success("SVG downloaded", `Vector · ${formatBytes(blob.size)}`);
       } else {
         const doc = qrOnlyDocument(content, style, PDF_SIZE_UNITS);
-        const result = await exportPdf(doc, assets, { page: "design", orientation: "auto", customWidthMm: 0, customHeightMm: 0, marginMm: 0, dpi: 600 });
+        const result = await exportPdf(doc, assets, {
+          page: "design",
+          orientation: "auto",
+          customWidthMm: 0,
+          customHeightMm: 0,
+          marginMm: 0,
+          dpi: 600,
+        });
         downloadBlob(result.blob, `${name}.pdf`);
         toast.success("PDF downloaded", `64 × 64 mm at 600 DPI · ${formatBytes(result.blob.size)}`);
       }
@@ -61,7 +75,7 @@ export function QuickDownload({ content, style, disabled, scanStatus }: QuickDow
   };
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-line bg-paper/50 p-3">
+    <div className="border-line bg-paper/50 grid gap-3 rounded-2xl border p-3">
       <div className="flex items-end gap-2">
         <Segmented
           className="flex-1"
@@ -85,8 +99,18 @@ export function QuickDownload({ content, style, disabled, scanStatus }: QuickDow
           />
         )}
       </div>
-      <Button variant="primary" size="md" disabled={disabled || busy} onClick={run} className="w-full">
-        {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <Download className="size-4" aria-hidden="true" />}
+      <Button
+        variant="primary"
+        size="md"
+        disabled={disabled || busy}
+        onClick={run}
+        className="w-full"
+      >
+        {busy ? (
+          <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+        ) : (
+          <Download className="size-4" aria-hidden="true" />
+        )}
         {busy ? "Preparing…" : `Download ${format.toUpperCase()}`}
       </Button>
     </div>

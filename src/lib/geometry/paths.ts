@@ -58,7 +58,11 @@ export function polygonPath(points: { x: number; y: number }[]): string {
 }
 
 /** Regular polygon inscribed in the w×h box, first vertex at the top. */
-export function regularPolygonPoints(w: number, h: number, sides: number): { x: number; y: number }[] {
+export function regularPolygonPoints(
+  w: number,
+  h: number,
+  sides: number,
+): { x: number; y: number }[] {
   const n = Math.max(3, Math.round(sides));
   return Array.from({ length: n }, (_, i) => {
     const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;

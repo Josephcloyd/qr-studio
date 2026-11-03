@@ -87,12 +87,14 @@ export function alignmentCoords(version: number): number[] {
 export function isFunctionalModule(matrix: QrMatrix, row: number, col: number): boolean {
   const { size } = matrix;
   if (isFinderModule(size, row, col)) return false;
-  if ((row === 6 && col >= 8 && col < size - 8) || (col === 6 && row >= 8 && row < size - 8)) return true;
+  if ((row === 6 && col >= 8 && col < size - 8) || (col === 6 && row >= 8 && row < size - 8))
+    return true;
   const coords = alignmentCoords(matrix.version);
   const last = coords.length - 1;
   for (let i = 0; i <= last; i++) {
     for (let j = 0; j <= last; j++) {
-      const overlapsFinder = (i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0);
+      const overlapsFinder =
+        (i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0);
       if (overlapsFinder) continue;
       if (Math.abs(row - coords[i]) <= 2 && Math.abs(col - coords[j]) <= 2) return true;
     }

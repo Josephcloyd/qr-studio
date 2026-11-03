@@ -68,7 +68,9 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
 
   // Space-to-pan.
   useEffect(() => {
-    const isTyping = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+    const isTyping = (t: EventTarget | null) =>
+      t instanceof HTMLElement &&
+      (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
     const down = (e: KeyboardEvent) => {
       if (e.code === "Space" && !isTyping(e.target)) {
         spaceDown.current = true;
@@ -117,10 +119,17 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
 
       if (pointers.current.size === 2) {
         // Second finger: switch to pinch-zoom, abandoning any element drag.
-        if (drag.current && drag.current.kind !== "pan" && drag.current.kind !== "pinch") editor.cancelGesture();
+        if (drag.current && drag.current.kind !== "pan" && drag.current.kind !== "pinch")
+          editor.cancelGesture();
         const [a, b] = [...pointers.current.values()];
         const vp = useViewportStore.getState();
-        drag.current = { kind: "pinch", d0: distance(a, b), mid0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, zoom0: vp.zoom, pan0: { x: vp.panX, y: vp.panY } };
+        drag.current = {
+          kind: "pinch",
+          d0: distance(a, b),
+          mid0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+          zoom0: vp.zoom,
+          pan0: { x: vp.panX, y: vp.panY },
+        };
         setMarquee(null);
         return;
       }
@@ -138,7 +147,10 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
       const selectedId = editor.selection[0];
       if (handle && selectedId) {
         editor.beginGesture();
-        drag.current = handle === "rotate" ? { kind: "rotate", id: selectedId } : { kind: "resize", id: selectedId, dir: handle as HandleDir };
+        drag.current =
+          handle === "rotate"
+            ? { kind: "rotate", id: selectedId }
+            : { kind: "resize", id: selectedId, dir: handle as HandleDir };
         setInteracting(true);
         return;
       }
@@ -154,7 +166,9 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
           editor.select([hitId]);
           ids = [hitId];
         }
-        drag.current = ids.includes(hitId) ? { kind: "pending", start: doc, client: { x: e.clientX, y: e.clientY }, ids } : null;
+        drag.current = ids.includes(hitId)
+          ? { kind: "pending", start: doc, client: { x: e.clientX, y: e.clientY }, ids }
+          : null;
         return;
       }
 
@@ -177,7 +191,9 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
       const d = drag.current;
       if (!d) {
         if (e.pointerType === "mouse") {
-          const id = (e.target as Element).closest("[data-element-id]")?.getAttribute("data-element-id") ?? null;
+          const id =
+            (e.target as Element).closest("[data-element-id]")?.getAttribute("data-element-id") ??
+            null;
           setHoveredId((prev) => (prev === id ? prev : id));
         }
         return;
@@ -226,7 +242,11 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
         case "resize": {
           const { view } = editor;
           editor.updateGesture((start) =>
-            resizeGesture(start, d.id, d.dir, doc, { shift: e.shiftKey, alt: e.altKey, gridSize: view.snapToGrid ? view.gridSize : null }),
+            resizeGesture(start, d.id, d.dir, doc, {
+              shift: e.shiftKey,
+              alt: e.altKey,
+              gridSize: view.snapToGrid ? view.gridSize : null,
+            }),
           );
           return;
         }
@@ -236,7 +256,12 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
         case "marquee": {
           const x = Math.min(d.start.x, doc.x);
           const y = Math.min(d.start.y, doc.y);
-          setMarquee({ x, y, width: Math.abs(doc.x - d.start.x), height: Math.abs(doc.y - d.start.y) });
+          setMarquee({
+            x,
+            y,
+            width: Math.abs(doc.x - d.start.x),
+            height: Math.abs(doc.y - d.start.y),
+          });
           const hits = marqueeHits(editor.doc, d.start, doc);
           useEditorStore.setState({ selection: [...new Set([...d.base, ...hits])] });
           return;
@@ -255,7 +280,8 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
       drag.current = rest ? { kind: "pan", last: rest } : null;
       return;
     }
-    if (d && (d.kind === "move" || d.kind === "resize" || d.kind === "rotate")) useEditorStore.getState().endGesture();
+    if (d && (d.kind === "move" || d.kind === "resize" || d.kind === "rotate"))
+      useEditorStore.getState().endGesture();
     drag.current = null;
     setMarquee(null);
     setInteracting(false);
@@ -276,7 +302,13 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
   }, []);
 
   return {
-    handlers: { onPointerDown, onPointerMove, onPointerUp: end, onPointerCancel: end, onDoubleClick },
+    handlers: {
+      onPointerDown,
+      onPointerMove,
+      onPointerUp: end,
+      onPointerCancel: end,
+      onDoubleClick,
+    },
     marquee,
     hoveredId,
     interacting,

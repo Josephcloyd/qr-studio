@@ -3,7 +3,12 @@
  * browser and (if huge) downscaled on a canvas. Nothing leaves the device.
  */
 
-export const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"] as const;
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/svg+xml",
+] as const;
 export type AcceptedImageType = (typeof ACCEPTED_IMAGE_TYPES)[number];
 export const ACCEPT_ATTRIBUTE = ACCEPTED_IMAGE_TYPES.join(",");
 
@@ -38,7 +43,11 @@ export function isUnsafeSvg(markup: string): boolean {
 }
 
 /** Scales (w, h) down to fit within `max` on the longest side. */
-export function fitWithin(width: number, height: number, max: number): { width: number; height: number } {
+export function fitWithin(
+  width: number,
+  height: number,
+  max: number,
+): { width: number; height: number } {
   const longest = Math.max(width, height);
   if (longest <= max) return { width, height };
   const s = max / longest;
@@ -49,14 +58,16 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new ImageIntakeError("That image couldn't be read. It may be damaged."));
+    img.onerror = () =>
+      reject(new ImageIntakeError("That image couldn't be read. It may be damaged."));
     img.src = url;
   });
 }
 
 async function processSvg(file: Blob, name: string): Promise<ProcessedImage> {
   const markup = await file.text();
-  if (isUnsafeSvg(markup)) throw new ImageIntakeError("This SVG contains scripts or embedded HTML and can't be used.");
+  if (isUnsafeSvg(markup))
+    throw new ImageIntakeError("This SVG contains scripts or embedded HTML and can't be used.");
   const blob = new Blob([markup], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
   try {
@@ -69,7 +80,11 @@ async function processSvg(file: Blob, name: string): Promise<ProcessedImage> {
   }
 }
 
-async function processRaster(file: Blob, mime: AcceptedImageType, name: string): Promise<ProcessedImage> {
+async function processRaster(
+  file: Blob,
+  mime: AcceptedImageType,
+  name: string,
+): Promise<ProcessedImage> {
   let bitmap: ImageBitmap;
   try {
     bitmap = await createImageBitmap(file);
@@ -90,7 +105,11 @@ async function processRaster(file: Blob, mime: AcceptedImageType, name: string):
     ctx.drawImage(bitmap, 0, 0, target.width, target.height);
     const outMime = mime === "image/jpeg" ? "image/jpeg" : "image/png";
     const blob = await new Promise<Blob>((resolve, reject) =>
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new ImageIntakeError("Resizing failed."))), outMime, 0.92),
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new ImageIntakeError("Resizing failed."))),
+        outMime,
+        0.92,
+      ),
     );
     return { blob, mime: outMime, width: target.width, height: target.height, name };
   } finally {

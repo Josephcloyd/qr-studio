@@ -9,8 +9,10 @@ type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
   primary: "bg-ink text-paper hover:bg-ink-2 active:translate-y-px shadow-[0_1px_0_rgb(0_0_0/0.2)]",
-  accent: "bg-accent text-ink hover:brightness-95 active:translate-y-px shadow-[inset_0_-2px_0_rgb(0_0_0/0.12)]",
-  secondary: "bg-card text-ink border border-line-strong hover:border-ink hover:bg-white active:translate-y-px",
+  accent:
+    "bg-accent text-ink hover:brightness-95 active:translate-y-px shadow-[inset_0_-2px_0_rgb(0_0_0/0.12)]",
+  secondary:
+    "bg-card text-ink border border-line-strong hover:border-ink hover:bg-white active:translate-y-px",
   ghost: "text-ink-2 hover:text-ink hover:bg-paper-3/70",
   danger: "bg-card text-danger border border-danger/30 hover:bg-danger-soft",
 };
@@ -27,7 +29,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: Ref<HTMLButtonElement>;
 }
 
-export function Button({ variant = "secondary", size = "md", className, type = "button", ...rest }: ButtonProps) {
+export function Button({
+  variant = "secondary",
+  size = "md",
+  className,
+  type = "button",
+  ...rest
+}: ButtonProps) {
   return (
     <button
       type={type}
@@ -74,7 +82,7 @@ export function IconButton({
           aria-label={label}
           aria-pressed={active || undefined}
           className={cn(
-            "inline-flex shrink-0 items-center justify-center text-ink-2 transition-colors duration-150 hover:bg-paper-3/80 hover:text-ink disabled:pointer-events-none disabled:opacity-35",
+            "text-ink-2 hover:bg-paper-3/80 hover:text-ink inline-flex shrink-0 items-center justify-center transition-colors duration-150 disabled:pointer-events-none disabled:opacity-35",
             active && "bg-ink text-paper hover:bg-ink hover:text-paper",
             ICON_SIZES[size],
             className,
@@ -88,10 +96,10 @@ export function IconButton({
         <Tooltip.Content
           side={tooltipSide}
           sideOffset={6}
-          className="z-[100] flex items-center gap-2 rounded-lg bg-ink px-2.5 py-1.5 text-xs font-medium text-paper shadow-pop"
+          className="bg-ink text-paper shadow-pop z-[100] flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium"
         >
           {label}
-          {shortcut && <kbd className="font-mono text-[11px] text-paper/60">{shortcut}</kbd>}
+          {shortcut && <kbd className="text-paper/60 font-mono text-[11px]">{shortcut}</kbd>}
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>

@@ -41,11 +41,17 @@ function MultiProperties({ elements }: { elements: DesignElement[] }) {
   const opacity = elements.reduce((s, e) => s + e.opacity, 0) / elements.length;
   return (
     <>
-      <PanelHeading title={`${elements.length} elements`} subtitle="Shift-click to add or remove from the selection." />
-      <Section title="Arrange" action={<SelectionActions locked={elements.every((e) => e.locked)} />}>
+      <PanelHeading
+        title={`${elements.length} elements`}
+        subtitle="Shift-click to add or remove from the selection."
+      />
+      <Section
+        title="Arrange"
+        action={<SelectionActions locked={elements.every((e) => e.locked)} />}
+      >
         <AlignButtons multi />
         <div className="grid gap-1.5">
-          <p className="text-[12px] text-ink-3">Layer order</p>
+          <p className="text-ink-3 text-[12px]">Layer order</p>
           <LayerButtons />
         </div>
         <SliderField
@@ -54,7 +60,12 @@ function MultiProperties({ elements }: { elements: DesignElement[] }) {
           max={1}
           step={0.01}
           value={opacity}
-          onValueChange={(v) => apply((d) => mapElements(d, ids, (e) => ({ ...e, opacity: v })), `multi-opacity:${ids.join()}`)}
+          onValueChange={(v) =>
+            apply(
+              (d) => mapElements(d, ids, (e) => ({ ...e, opacity: v })),
+              `multi-opacity:${ids.join()}`,
+            )
+          }
           format={(v) => `${Math.round(v * 100)}%`}
         />
       </Section>
@@ -84,8 +95,14 @@ export function PropertiesPanel() {
   const el = selected[0];
   return (
     <div data-testid="properties-panel" key={el.id}>
-      <PanelHeading title={TITLES[el.type]} subtitle={el.locked ? "Locked — unlock to move or edit it." : undefined} />
-      <div className={el.locked ? "pointer-events-none opacity-50" : undefined} aria-disabled={el.locked || undefined}>
+      <PanelHeading
+        title={TITLES[el.type]}
+        subtitle={el.locked ? "Locked — unlock to move or edit it." : undefined}
+      />
+      <div
+        className={el.locked ? "pointer-events-none opacity-50" : undefined}
+        aria-disabled={el.locked || undefined}
+      >
         <TypeProperties el={el} />
       </div>
       <ArrangeSection el={el} unit={unit} />

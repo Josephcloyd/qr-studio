@@ -1,6 +1,19 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Eye, EyeOff, Image as ImageIcon, Lock, LockOpen, QrCode, Shapes, Sticker, Type, type LucideIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff,
+  Image as ImageIcon,
+  Lock,
+  LockOpen,
+  QrCode,
+  Shapes,
+  Sticker,
+  Type,
+  type LucideIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { IconButton } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
@@ -9,7 +22,13 @@ import type { DesignElement } from "@/lib/model/types";
 import { useEditorStore } from "../../store/editorStore";
 import { PanelHeading } from "../Section";
 
-const TYPE_ICONS: Record<DesignElement["type"], LucideIcon> = { qr: QrCode, text: Type, image: ImageIcon, shape: Shapes, icon: Sticker };
+const TYPE_ICONS: Record<DesignElement["type"], LucideIcon> = {
+  qr: QrCode,
+  text: Type,
+  image: ImageIcon,
+  shape: Shapes,
+  icon: Sticker,
+};
 
 export function LayersPanel() {
   const elements = useEditorStore((s) => s.doc.elements);
@@ -29,7 +48,9 @@ export function LayersPanel() {
     <div className="pb-6">
       <PanelHeading title="Layers" subtitle="Top of the list is in front. Drag to reorder." />
       {rows.length === 0 ? (
-        <p className="mx-4 rounded-xl bg-paper-2 px-3 py-4 text-center text-[12.5px] text-ink-3">Nothing on the canvas yet.</p>
+        <p className="bg-paper-2 text-ink-3 mx-4 rounded-xl px-3 py-4 text-center text-[12.5px]">
+          Nothing on the canvas yet.
+        </p>
       ) : (
         <ul className="grid gap-1 px-2" aria-label="Layers">
           {rows.map((el) => {
@@ -43,16 +64,19 @@ export function LayersPanel() {
                 onDragStart={() => setDragId(el.id)}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => {
-                  if (dragId && dragId !== el.id) apply((d) => moveElementTo(d, dragId, indexOf(el.id)));
+                  if (dragId && dragId !== el.id)
+                    apply((d) => moveElementTo(d, dragId, indexOf(el.id)));
                   setDragId(null);
                 }}
                 className={cn(
                   "group flex items-center gap-2 rounded-xl border px-2 py-1.5 transition-colors",
-                  active ? "border-cobalt bg-cobalt-soft/60" : "border-transparent hover:bg-paper-2",
+                  active
+                    ? "border-cobalt bg-cobalt-soft/60"
+                    : "hover:bg-paper-2 border-transparent",
                   dragId === el.id && "opacity-50",
                 )}
               >
-                <Icon className="size-4 shrink-0 text-ink-3" aria-hidden="true" />
+                <Icon className="text-ink-3 size-4 shrink-0" aria-hidden="true" />
                 {renaming === el.id ? (
                   <input
                     autoFocus
@@ -67,30 +91,52 @@ export function LayersPanel() {
                       if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                       if (e.key === "Escape") setRenaming(null);
                     }}
-                    className="h-7 min-w-0 flex-1 rounded-md border border-ink bg-card px-1.5 text-[13px] focus:outline-none"
+                    className="border-ink bg-card h-7 min-w-0 flex-1 rounded-md border px-1.5 text-[13px] focus:outline-none"
                   />
                 ) : (
                   <button
                     type="button"
                     onClick={(e) => (e.shiftKey ? toggleSelect(el.id) : select([el.id]))}
                     onDoubleClick={() => setRenaming(el.id)}
-                    className={cn("min-w-0 flex-1 truncate text-left text-[13px] font-medium", el.hidden ? "text-ink-3 line-through" : "text-ink")}
+                    className={cn(
+                      "min-w-0 flex-1 truncate text-left text-[13px] font-medium",
+                      el.hidden ? "text-ink-3 line-through" : "text-ink",
+                    )}
                     title="Click to select, double-click to rename"
                   >
                     {el.name}
                   </button>
                 )}
                 <div className="flex items-center opacity-70 group-hover:opacity-100">
-                  <IconButton label="Move up" size="sm" disabled={idx === elements.length - 1} onClick={() => apply((d) => moveElementTo(d, el.id, idx + 1))}>
+                  <IconButton
+                    label="Move up"
+                    size="sm"
+                    disabled={idx === elements.length - 1}
+                    onClick={() => apply((d) => moveElementTo(d, el.id, idx + 1))}
+                  >
                     <ChevronUp className="size-3.5" />
                   </IconButton>
-                  <IconButton label="Move down" size="sm" disabled={idx === 0} onClick={() => apply((d) => moveElementTo(d, el.id, idx - 1))}>
+                  <IconButton
+                    label="Move down"
+                    size="sm"
+                    disabled={idx === 0}
+                    onClick={() => apply((d) => moveElementTo(d, el.id, idx - 1))}
+                  >
                     <ChevronDown className="size-3.5" />
                   </IconButton>
-                  <IconButton label={el.hidden ? "Show" : "Hide"} size="sm" onClick={() => setHidden(el.id, !el.hidden)}>
+                  <IconButton
+                    label={el.hidden ? "Show" : "Hide"}
+                    size="sm"
+                    onClick={() => setHidden(el.id, !el.hidden)}
+                  >
                     {el.hidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
                   </IconButton>
-                  <IconButton label={el.locked ? "Unlock" : "Lock"} size="sm" active={el.locked} onClick={() => apply((d) => updateElement(d, el.id, { locked: !el.locked }))}>
+                  <IconButton
+                    label={el.locked ? "Unlock" : "Lock"}
+                    size="sm"
+                    active={el.locked}
+                    onClick={() => apply((d) => updateElement(d, el.id, { locked: !el.locked }))}
+                  >
                     {el.locked ? <Lock className="size-3.5" /> : <LockOpen className="size-3.5" />}
                   </IconButton>
                 </div>

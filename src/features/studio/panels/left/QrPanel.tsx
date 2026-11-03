@@ -20,33 +20,49 @@ export function QrPanel() {
 
   const add = (type: QrType) => {
     const box = centeredBox(0.4);
-    insertElements([createQrElement({ x: box.x, y: box.y, width: box.width }, sampleContent(type))]);
+    insertElements([
+      createQrElement({ x: box.x, y: box.y, width: box.width }, sampleContent(type)),
+    ]);
   };
   const addFromGenerator = () => {
     const box = centeredBox(0.4);
-    insertElements([createQrElement({ x: box.x, y: box.y, width: box.width }, structuredClone(genContent), gen.style)]);
+    insertElements([
+      createQrElement(
+        { x: box.x, y: box.y, width: box.width },
+        structuredClone(genContent),
+        gen.style,
+      ),
+    ]);
   };
 
   return (
     <div>
-      <PanelHeading title="QR codes" subtitle="Add a code, then edit its content and style on the right." />
+      <PanelHeading
+        title="QR codes"
+        subtitle="Add a code, then edit its content and style on the right."
+      />
       <div className="grid gap-4 px-4 pb-6">
         {genReady && (
           <button
             type="button"
             onClick={addFromGenerator}
-            className="group flex items-center gap-3 rounded-2xl border border-ink bg-ink p-3 text-left text-paper transition-transform hover:-translate-y-0.5"
+            className="group border-ink bg-ink text-paper flex items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5"
           >
-            <span className="rounded-lg bg-paper p-1">
+            <span className="bg-paper rounded-lg p-1">
               <QrSvg payload={genPayload} style={gen.style} size={44} idPrefix="from-gen" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1 text-[11px] font-semibold tracking-wide text-accent uppercase">
+              <span className="text-accent flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase">
                 <Sparkles className="size-3" aria-hidden="true" /> From the generator
               </span>
-              <span className="block truncate text-sm font-semibold">Use the {QR_TYPE_LABELS[genContent.type]} code you made</span>
+              <span className="block truncate text-sm font-semibold">
+                Use the {QR_TYPE_LABELS[genContent.type]} code you made
+              </span>
             </span>
-            <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            <ArrowRight
+              className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
           </button>
         )}
         <div className="grid grid-cols-2 gap-2">
@@ -57,16 +73,17 @@ export function QrPanel() {
                 key={type}
                 type="button"
                 onClick={() => add(type)}
-                className="flex items-center gap-2.5 rounded-xl border border-line bg-card px-3 py-2.5 text-left text-[13px] font-semibold text-ink transition-colors hover:border-ink"
+                className="border-line bg-card text-ink hover:border-ink flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-[13px] font-semibold transition-colors"
               >
-                <Icon className="size-4 text-accent-ink" aria-hidden="true" />
+                <Icon className="text-accent-ink size-4" aria-hidden="true" />
                 {QR_TYPE_LABELS[type]}
               </button>
             );
           })}
         </div>
-        <p className="text-[12px] leading-relaxed text-ink-3">
-          Codes are static: the content is stored in the pattern itself. No redirects, no tracking, no expiry.
+        <p className="text-ink-3 text-[12px] leading-relaxed">
+          Codes are static: the content is stored in the pattern itself. No redirects, no tracking,
+          no expiry.
         </p>
       </div>
     </div>

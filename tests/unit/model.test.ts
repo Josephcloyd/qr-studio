@@ -27,7 +27,8 @@ import { findPreset } from "@/lib/model/presets";
 import { formatLength, fromUnits, pixelSize, toUnits } from "@/lib/model/units";
 import { approximateMeasure, layoutText, naturalWidth, wrapText } from "@/lib/text/layout";
 
-const docWith = (...elements: Parameters<typeof addElements>[1]) => addElements(createDocument(), elements);
+const docWith = (...elements: Parameters<typeof addElements>[1]) =>
+  addElements(createDocument(), elements);
 
 describe("units & presets", () => {
   it("converts between mm, in and px", () => {
@@ -119,8 +120,14 @@ describe("ops are immutable", () => {
   });
   it("collects referenced assets", () => {
     const qr = createQrElement();
-    const withLogo = { ...qr, style: { ...qr.style, logo: { ...qr.style.logo, assetId: "logo-1" } } };
-    const d = { ...docWith(createImageElement("img-1"), withLogo), background: { ...createDocument().background, imageAssetId: "bg-1" } };
+    const withLogo = {
+      ...qr,
+      style: { ...qr.style, logo: { ...qr.style.logo, assetId: "logo-1" } },
+    };
+    const d = {
+      ...docWith(createImageElement("img-1"), withLogo),
+      background: { ...createDocument().background, imageAssetId: "bg-1" },
+    };
     expect([...referencedAssets(d)].sort()).toEqual(["bg-1", "img-1", "logo-1"]);
   });
 });
@@ -154,7 +161,13 @@ describe("history", () => {
 });
 
 describe("text layout", () => {
-  const spec = { fontFamily: "inter", fontSize: 10, fontWeight: 400, italic: false, letterSpacing: 0 };
+  const spec = {
+    fontFamily: "inter",
+    fontSize: 10,
+    fontWeight: 400,
+    italic: false,
+    letterSpacing: 0,
+  };
   it("wraps on words and keeps explicit newlines", () => {
     // approx 5.6 units per char
     expect(wrapText("aaa bbb ccc", 30, spec, approximateMeasure)).toEqual(["aaa", "bbb", "ccc"]);
@@ -168,7 +181,11 @@ describe("text layout", () => {
     expect(lines.join("")).toBe("abcdefghijklmnop");
   });
   it("computes height and natural width, honoring uppercase", () => {
-    const el = createTextElement("Scan me to connect", { width: 100 }, "body", { fontSize: 20, uppercase: true, padding: 8 });
+    const el = createTextElement("Scan me to connect", { width: 100 }, "body", {
+      fontSize: 20,
+      uppercase: true,
+      padding: 8,
+    });
     const layout = layoutText(el, approximateMeasure);
     expect(layout.lines.every((l) => l === l.toUpperCase())).toBe(true);
     expect(layout.height).toBeCloseTo(layout.lines.length * 20 * el.lineHeight + 16);

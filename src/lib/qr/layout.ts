@@ -78,11 +78,17 @@ function finderFrame(style: FinderFrameStyle, x: number, y: number): string {
     case "square":
       return rectPath(x, y, 7, 7) + rectPath(x + 1, y + 1, 5, 5);
     case "rounded":
-      return roundedRectPath(x, y, 7, 7, [2, 2, 2, 2]) + roundedRectPath(x + 1, y + 1, 5, 5, [1.2, 1.2, 1.2, 1.2]);
+      return (
+        roundedRectPath(x, y, 7, 7, [2, 2, 2, 2]) +
+        roundedRectPath(x + 1, y + 1, 5, 5, [1.2, 1.2, 1.2, 1.2])
+      );
     case "circle":
       return circlePath(x + 3.5, y + 3.5, 3.5) + circlePath(x + 3.5, y + 3.5, 2.5);
     case "leaf":
-      return roundedRectPath(x, y, 7, 7, [3, 0, 3, 0]) + roundedRectPath(x + 1, y + 1, 5, 5, [2, 0, 2, 0]);
+      return (
+        roundedRectPath(x, y, 7, 7, [3, 0, 3, 0]) +
+        roundedRectPath(x + 1, y + 1, 5, 5, [2, 0, 2, 0])
+      );
   }
 }
 
@@ -159,13 +165,18 @@ export interface LayoutOptions {
   logoAspect?: number;
 }
 
-export function computeQrLayout(matrix: QrMatrix, rawStyle: QrStyle, options: LayoutOptions = {}): QrLayout {
+export function computeQrLayout(
+  matrix: QrMatrix,
+  rawStyle: QrStyle,
+  options: LayoutOptions = {},
+): QrLayout {
   const style = sanitizeQrStyle(rawStyle);
   const { size } = matrix;
   const margin = style.margin;
   const withLogo = hasActiveLogo(style);
   const geo = withLogo ? logoGeometry(style, size, margin, options.logoAspect ?? 1) : null;
-  const clearPlate = geo && (style.logo.clearBehind || style.logo.plate !== "none") ? geo.plate : null;
+  const clearPlate =
+    geo && (style.logo.clearBehind || style.logo.plate !== "none") ? geo.plate : null;
   const circlePlate = style.logo.plate === "circle";
 
   const cleared = (row: number, col: number) =>
@@ -182,7 +193,8 @@ export function computeQrLayout(matrix: QrMatrix, rawStyle: QrStyle, options: La
       // Isolated-shape styles (dots, diamonds) would break alignment/timing
       // detection, so functional modules always draw as connected squares.
       const functional =
-        (style.dotStyle === "dots" || style.dotStyle === "diamond") && isFunctionalModule(matrix, row, col);
+        (style.dotStyle === "dots" || style.dotStyle === "diamond") &&
+        isFunctionalModule(matrix, row, col);
       parts.push(
         moduleShape(functional ? "square" : style.dotStyle, col + margin, row + margin, {
           top: on(row - 1, col),

@@ -53,7 +53,19 @@ function cursorFor(dir: HandleDir, rotation: number): string {
   return CURSORS[order[idx]];
 }
 
-export function SelectionOverlay({ width, height, zoom, selected, hovered, guides, marquee, coarse, showGrid, gridSize, interacting }: SelectionOverlayProps) {
+export function SelectionOverlay({
+  width,
+  height,
+  zoom,
+  selected,
+  hovered,
+  guides,
+  marquee,
+  coarse,
+  showGrid,
+  gridSize,
+  interacting,
+}: SelectionOverlayProps) {
   const px = 1 / zoom;
   const hs = (coarse ? 18 : 9) * px;
   const single = selected.length === 1 ? selected[0] : null;
@@ -70,8 +82,18 @@ export function SelectionOverlay({ width, height, zoom, selected, hovered, guide
       {showGrid && gridSize * zoom >= 6 && (
         <>
           <defs>
-            <pattern id="studio-grid" width={gridSize} height={gridSize} patternUnits="userSpaceOnUse">
-              <path d={`M${gridSize} 0V${gridSize}H0`} fill="none" stroke="rgb(43 59 255 / 0.18)" strokeWidth={px} />
+            <pattern
+              id="studio-grid"
+              width={gridSize}
+              height={gridSize}
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d={`M${gridSize} 0V${gridSize}H0`}
+                fill="none"
+                stroke="rgb(43 59 255 / 0.18)"
+                strokeWidth={px}
+              />
             </pattern>
           </defs>
           <rect width={width} height={height} fill="url(#studio-grid)" />
@@ -92,7 +114,10 @@ export function SelectionOverlay({ width, height, zoom, selected, hovered, guide
       )}
 
       {selected.map((el) => (
-        <g key={el.id} transform={`translate(${fmt(el.x)} ${fmt(el.y)}) rotate(${fmt(el.rotation)} ${fmt(el.width / 2)} ${fmt(el.height / 2)})`}>
+        <g
+          key={el.id}
+          transform={`translate(${fmt(el.x)} ${fmt(el.y)}) rotate(${fmt(el.rotation)} ${fmt(el.width / 2)} ${fmt(el.height / 2)})`}
+        >
           <rect
             width={el.width}
             height={el.height}
@@ -118,8 +143,17 @@ export function SelectionOverlay({ width, height, zoom, selected, hovered, guide
       )}
 
       {single && !single.locked && !interacting && (
-        <g transform={`translate(${fmt(single.x)} ${fmt(single.y)}) rotate(${fmt(single.rotation)} ${fmt(single.width / 2)} ${fmt(single.height / 2)})`}>
-          <line x1={single.width / 2} y1={0} x2={single.width / 2} y2={-28 * px} stroke="var(--cobalt)" strokeWidth={1.5 * px} />
+        <g
+          transform={`translate(${fmt(single.x)} ${fmt(single.y)}) rotate(${fmt(single.rotation)} ${fmt(single.width / 2)} ${fmt(single.height / 2)})`}
+        >
+          <line
+            x1={single.width / 2}
+            y1={0}
+            x2={single.width / 2}
+            y2={-28 * px}
+            stroke="var(--cobalt)"
+            strokeWidth={1.5 * px}
+          />
           <circle
             data-handle="rotate"
             cx={single.width / 2}
@@ -156,9 +190,25 @@ export function SelectionOverlay({ width, height, zoom, selected, hovered, guide
 
       {guides.map((g, i) =>
         g.axis === "x" ? (
-          <line key={i} x1={g.position} x2={g.position} y1={g.start} y2={g.end} stroke="var(--accent)" strokeWidth={1 * px} />
+          <line
+            key={i}
+            x1={g.position}
+            x2={g.position}
+            y1={g.start}
+            y2={g.end}
+            stroke="var(--accent)"
+            strokeWidth={1 * px}
+          />
         ) : (
-          <line key={i} y1={g.position} y2={g.position} x1={g.start} x2={g.end} stroke="var(--accent)" strokeWidth={1 * px} />
+          <line
+            key={i}
+            y1={g.position}
+            y2={g.position}
+            x1={g.start}
+            x2={g.end}
+            stroke="var(--accent)"
+            strokeWidth={1 * px}
+          />
         ),
       )}
 

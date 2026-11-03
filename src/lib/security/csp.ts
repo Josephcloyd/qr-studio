@@ -1,6 +1,6 @@
 /**
  * Content-Security-Policy for the static build. `connect-src 'self'` means the
- * browser itself refuses fetch/XHR/WebSocket/beacon requests to any other
+ * browser itself refuses scripted network connections (fetch, sockets, beacons) to any other
  * origin, so a bug or a compromised dependency can't quietly send designs
  * elsewhere. Static exports can't use per-request nonces, so inline scripts
  * (Next's hydration payload) need 'unsafe-inline'.

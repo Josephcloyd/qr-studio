@@ -24,17 +24,35 @@ export interface PngOptions {
   transparent: boolean;
 }
 
-async function renderCanvas(doc: DesignDocument, assets: Record<string, Asset>, dpi: number, transparent: boolean) {
+async function renderCanvas(
+  doc: DesignDocument,
+  assets: Record<string, Asset>,
+  dpi: number,
+  transparent: boolean,
+) {
   const requested = pixelSize(doc.width, doc.height, dpi);
   const size = clampPixelSize(requested.width, requested.height);
-  const svg = await buildDocumentSvg(doc, assets, { transparent, width: size.width, height: size.height });
+  const svg = await buildDocumentSvg(doc, assets, {
+    transparent,
+    width: size.width,
+    height: size.height,
+  });
   const canvas = await rasterizeSvg(svg, size.width, size.height);
   const effectiveDpi = Math.round((size.width / doc.width) * UNITS_PER_INCH);
   return { canvas, size, effectiveDpi };
 }
 
-export async function exportPng(doc: DesignDocument, assets: Record<string, Asset>, opts: PngOptions): Promise<RasterResult> {
-  const { canvas, size, effectiveDpi } = await renderCanvas(doc, assets, opts.dpi, opts.transparent);
+export async function exportPng(
+  doc: DesignDocument,
+  assets: Record<string, Asset>,
+  opts: PngOptions,
+): Promise<RasterResult> {
+  const { canvas, size, effectiveDpi } = await renderCanvas(
+    doc,
+    assets,
+    opts.dpi,
+    opts.transparent,
+  );
   // Scan-check on an opaque copy so transparent exports are verified fairly.
   const verification = await verifyDocumentQrCodes(doc, canvas);
   const raw = await canvasToBlob(canvas, "image/png");
@@ -49,7 +67,11 @@ export async function exportPng(doc: DesignDocument, assets: Record<string, Asse
   };
 }
 
-export async function exportSvg(doc: DesignDocument, assets: Record<string, Asset>, transparent: boolean): Promise<Blob> {
+export async function exportSvg(
+  doc: DesignDocument,
+  assets: Record<string, Asset>,
+  transparent: boolean,
+): Promise<Blob> {
   const svg = await buildDocumentSvg(doc, assets, { transparent });
   return new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
 }
@@ -72,18 +94,33 @@ const PAGE_MM: Record<Exclude<PdfPage, "design" | "custom">, [number, number]> =
   letter: [215.9, 279.4],
 };
 
-export function pdfPageSize(doc: DesignDocument, opts: PdfOptions): { width: number; height: number } {
-  const docMm = { width: (doc.width / UNITS_PER_INCH) * 25.4, height: (doc.height / UNITS_PER_INCH) * 25.4 };
+export function pdfPageSize(
+  doc: DesignDocument,
+  opts: PdfOptions,
+): { width: number; height: number } {
+  const docMm = {
+    width: (doc.width / UNITS_PER_INCH) * 25.4,
+    height: (doc.height / UNITS_PER_INCH) * 25.4,
+  };
   if (opts.page === "design") return docMm;
-  const [w, h] = opts.page === "custom" ? [opts.customWidthMm, opts.customHeightMm] : PAGE_MM[opts.page];
-  const landscape = opts.orientation === "landscape" || (opts.orientation === "auto" && docMm.width > docMm.height);
+  const [w, h] =
+    opts.page === "custom" ? [opts.customWidthMm, opts.customHeightMm] : PAGE_MM[opts.page];
+  const landscape =
+    opts.orientation === "landscape" || (opts.orientation === "auto" && docMm.width > docMm.height);
   const [short, long] = [Math.min(w, h), Math.max(w, h)];
   return landscape ? { width: long, height: short } : { width: short, height: long };
 }
 
 /** Where the design sits on the page: scaled to fit inside margins, centered, proportions kept. */
-export function pdfPlacement(doc: DesignDocument, page: { width: number; height: number }, marginMm: number) {
-  const docMm = { width: (doc.width / UNITS_PER_INCH) * 25.4, height: (doc.height / UNITS_PER_INCH) * 25.4 };
+export function pdfPlacement(
+  doc: DesignDocument,
+  page: { width: number; height: number },
+  marginMm: number,
+) {
+  const docMm = {
+    width: (doc.width / UNITS_PER_INCH) * 25.4,
+    height: (doc.height / UNITS_PER_INCH) * 25.4,
+  };
   const availW = Math.max(1, page.width - marginMm * 2);
   const availH = Math.max(1, page.height - marginMm * 2);
   const scale = Math.min(availW / docMm.width, availH / docMm.height);
@@ -114,7 +151,14 @@ export async function exportPdf(
   pdf.setProperties({ title: doc.name, creator: "QR Studio by GetLaunch Ph" });
   pdf.addImage(canvas, "PNG", place.x, place.y, place.width, place.height, undefined, "FAST");
   const blob = pdf.output("blob");
-  return { blob, width: size.width, height: size.height, clamped: size.clamped, effectiveDpi: Math.round(effectiveDpi / place.scale), verification };
+  return {
+    blob,
+    width: size.width,
+    height: size.height,
+    clamped: size.clamped,
+    effectiveDpi: Math.round(effectiveDpi / place.scale),
+    verification,
+  };
 }
 
 export const mmToDocUnits = (mm: number): number => toUnits(mm, "mm");

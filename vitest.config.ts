@@ -13,8 +13,18 @@ export default defineConfig({
     setupFiles: ["tests/setup.ts"],
     coverage: {
       provider: "v8",
-      include: ["src/lib/**/*.{ts,tsx}", "src/features/export/**/*.ts", "src/features/studio/store/**/*.ts"],
-      exclude: ["**/*.d.ts", "**/index.ts"],
+      // Unit coverage targets pure logic. Browser-bound modules (canvas
+      // rasterization, PDF, File API decoding, font fetching, downloads) can't
+      // run in Node and are exercised end-to-end in real browsers (e2e/).
+      include: [
+        "src/lib/**/*.{ts,tsx}",
+        "src/render/**/*.{ts,tsx}",
+        "src/features/studio/store/**/*.ts",
+        "src/features/studio/interactions/**/*.ts",
+        "src/features/export/qrDocument.ts",
+        "src/features/templates/**/*.ts",
+      ],
+      exclude: ["**/*.d.ts", "src/lib/text/measure.ts", "src/lib/security/csp.ts"],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 70 },
     },
   },

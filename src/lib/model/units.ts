@@ -33,7 +33,11 @@ export function formatLength(value: number, unit: DisplayUnit): string {
 }
 
 /** Pixel dimensions of a document exported at `dpi`. */
-export function pixelSize(width: number, height: number, dpi: number): { width: number; height: number } {
+export function pixelSize(
+  width: number,
+  height: number,
+  dpi: number,
+): { width: number; height: number } {
   const scale = dpi / UNITS_PER_INCH;
   return { width: Math.round(width * scale), height: Math.round(height * scale) };
 }
