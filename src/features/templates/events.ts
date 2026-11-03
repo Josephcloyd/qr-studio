@@ -1,0 +1,81 @@
+import { C, frame, icon, linear, page, qr, radial, shape, solid, text, NO_PAINT, type TemplateDef } from "./kit";
+
+export const EVENT_TEMPLATES: TemplateDef[] = [
+  {
+    id: "wedding-invitation",
+    name: "Wedding invitation",
+    category: "Events",
+    description: "Romantic serif invitation with an RSVP code.",
+    build: () => {
+      const f = frame("a5");
+      return page("a5", "Wedding invitation", { paint: solid("#fbf7f1") }, [
+        shape(f, "rect", 0.05, 0.035, 0.9, 0.93, { fill: NO_PAINT, stroke: C.gold, strokeWidth: 1.5, cornerRadius: 4, name: "Inner border" }),
+        icon(f, "flower", 0.45, 0.08, 0.1, C.gold, 1.25),
+        text(f, "Together with their families", 0.1, 0.17, 0.8, { fontFamily: "inter", fontSize: 12, letterSpacing: 0.22, uppercase: true, color: "#7d6a4a", align: "center" }),
+        text(f, "Ana & Ben", 0.08, 0.22, 0.84, { fontFamily: "playfair-display", fontSize: 64, fontWeight: 500, italic: true, color: C.ink, align: "center" }),
+        text(f, "request the pleasure of your company", 0.1, 0.34, 0.8, { fontFamily: "playfair-display", fontSize: 16, italic: true, color: C.ink2, align: "center" }),
+        text(f, "Saturday, 12 December 2026\nFour o'clock in the afternoon", 0.1, 0.41, 0.8, { fontFamily: "inter", fontSize: 14, color: C.ink, align: "center", lineHeight: 1.6 }),
+        text(f, "Casa San Pablo · Laguna", 0.1, 0.5, 0.8, { fontFamily: "inter", fontSize: 13, fontWeight: 600, letterSpacing: 0.12, uppercase: true, color: "#7d6a4a", align: "center" }),
+        qr(f, { type: "event", title: "Ana & Ben's Wedding", location: "Casa San Pablo, Laguna", start: "2026-12-12T16:00", end: "2026-12-12T22:00", allDay: false, description: "Kindly RSVP by 15 November." }, 0.37, 0.6, 0.26, { margin: 2, dotStyle: "rounded", finderFrame: "rounded", finderDot: "rounded", foreground: solid("#5c4a2e"), background: solid("#fbf7f1") }, "RSVP QR"),
+        text(f, "Scan to save the date & RSVP", 0.1, 0.81, 0.8, { fontFamily: "caveat", fontSize: 24, color: "#7d6a4a", align: "center" }),
+      ]);
+    },
+  },
+  {
+    id: "event-registration",
+    name: "Event registration",
+    category: "Events",
+    description: "High-energy flyer for a meetup or conference sign-up.",
+    build: () => {
+      const f = frame("flyer");
+      return page("flyer", "Event registration", { paint: solid(C.ink), pattern: "grid", patternColor: "#ffffff", patternOpacity: 0.06, patternScale: 48 }, [
+        text(f, "MANILA BUILDERS MEETUP · VOL. 07", 0.07, 0.06, 0.86, { fontFamily: "jetbrains-mono", fontSize: 15, fontWeight: 600, letterSpacing: 0.16, color: C.vermilion }),
+        text(f, "BUILD\nIN PUBLIC\nNIGHT", 0.07, 0.1, 0.86, { fontFamily: "bebas-neue", fontSize: 168, lineHeight: 0.86, color: C.paper }),
+        shape(f, "rect", 0.07, 0.55, 0.86, 0.004, { fill: solid("#3a332a"), name: "Rule" }),
+        text(f, "Friday · 21 Nov 2026\n6:30 PM onwards\nBGC, Taguig", 0.07, 0.6, 0.45, { fontSize: 24, fontWeight: 600, lineHeight: 1.45, color: C.paper }),
+        text(f, "Lightning talks, demos and good people. Free entry, limited seats.", 0.07, 0.78, 0.4, { fontSize: 17, lineHeight: 1.45, color: "#b8ae9f" }),
+        shape(f, "rect", 0.55, 0.59, 0.38, 0.33, { fill: solid(C.vermilion), cornerRadius: 28, name: "Code panel" }),
+        qr(f, { type: "url", url: "https://example.com/register" }, 0.6, 0.615, 0.28, { margin: 2, dotStyle: "square", foreground: solid(C.ink), background: solid(C.white) }, "Register QR"),
+        text(f, "SCAN TO REGISTER", 0.55, 0.88, 0.38, { fontSize: 15, fontWeight: 800, letterSpacing: 0.18, color: C.ink, align: "center" }),
+      ]);
+    },
+  },
+  {
+    id: "event-information",
+    name: "Event information",
+    category: "Events",
+    description: "Vertical story-format card that adds the event to calendars.",
+    build: () => {
+      const f = frame("story");
+      return page("story", "Event information", { paint: linear(170, "#2b3bff", "#0b1033") }, [
+        text(f, "SAVE THE DATE", 0.08, 0.08, 0.84, { fontFamily: "jetbrains-mono", fontSize: 40, fontWeight: 700, letterSpacing: 0.3, color: "#aab3ff", align: "center" }),
+        text(f, "Lantern Festival 2026", 0.06, 0.13, 0.88, { fontFamily: "fraunces", fontSize: 132, fontWeight: 700, lineHeight: 1, color: C.white, align: "center", letterSpacing: -0.02 }),
+        text(f, "Dec 19 · 5PM · Rizal Park", 0.08, 0.36, 0.84, { fontSize: 46, fontWeight: 600, color: C.sun, align: "center" }),
+        shape(f, "rect", 0.17, 0.44, 0.66, 0.37, { fill: solid(C.white), cornerRadius: 56, name: "Code card" }),
+        qr(f, { type: "event", title: "Lantern Festival 2026", location: "Rizal Park, Manila", start: "2026-12-19T17:00", end: "2026-12-19T23:00", allDay: false, description: "Bring your own lantern!" }, 0.23, 0.475, 0.54, { margin: 1, dotStyle: "fluid", finderFrame: "rounded", finderDot: "circle", foreground: solid("#0b1033") }, "Calendar QR"),
+        text(f, "Scan to add it to your calendar", 0.08, 0.85, 0.84, { fontSize: 42, color: "#dfe3ff", align: "center" }),
+      ]);
+    },
+  },
+  {
+    id: "digital-invitation",
+    name: "Digital invitation",
+    category: "Events",
+    description: "Playful party invite sized for social sharing.",
+    build: () => {
+      const f = frame("social-square");
+      return page("social-square", "Party invitation", { paint: radial("#fff3d6", "#ffd28a") }, [
+        shape(f, "star", 0.06, 0.06, 0.16, 0.16, { fill: solid(C.vermilion), sides: 14, innerRatio: 0.78, name: "Burst", rotation: -10 }),
+        shape(f, "ellipse", 0.82, 0.1, 0.1, 0.1, { fill: solid(C.cobalt), name: "Dot" }),
+        shape(f, "ellipse", 0.88, 0.72, 0.06, 0.06, { fill: solid(C.vermilion), name: "Dot" }),
+        text(f, "You're invited!", 0.1, 0.1, 0.8, { fontFamily: "caveat", fontSize: 92, fontWeight: 700, color: C.rust, align: "center" }),
+        text(f, "MIGUEL TURNS 7", 0.1, 0.24, 0.8, { fontFamily: "bebas-neue", fontSize: 120, color: C.ink, align: "center", letterSpacing: 0.02 }),
+        text(f, "Sat, Nov 28 · 2–6 PM · Our place", 0.1, 0.37, 0.8, { fontSize: 36, fontWeight: 600, color: C.ink2, align: "center" }),
+        shape(f, "rect", 0.3, 0.46, 0.4, 0.4, { fill: solid(C.white), cornerRadius: 40, stroke: C.ink, strokeWidth: 6, name: "Code card" }),
+        qr(f, { type: "location", mode: "address", latitude: "", longitude: "", address: "Quezon City, Metro Manila", provider: "google" }, 0.34, 0.5, 0.32, { margin: 1, dotStyle: "rounded", finderFrame: "rounded", finderDot: "rounded", foreground: solid(C.ink) }, "Directions QR"),
+        icon(f, "party", 0.12, 0.74, 0.1, C.ink, 1.75),
+        text(f, "Scan for directions", 0.1, 0.9, 0.8, { fontSize: 30, fontWeight: 700, color: C.ink, align: "center", letterSpacing: 0.04 }),
+      ]);
+    },
+  },
+];
