@@ -1,6 +1,11 @@
 /** Field-level validators shared by the payload encoders. */
 
-const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/;
+// URL-significant characters (? & = # % /) are excluded so an address can't
+// smuggle extra mailto parameters such as `?bcc=`.
+const EMAIL_PATTERN =
+  /^[^\s@<>()[\]\\,;:"?&=#%/]+@[^\s@<>()[\]\\,;:"?&=#%/]+\.[^\s@<>()[\]\\,;:"?&=#%/]{2,}$/;
+/** Control, zero-width and bidi-override characters used to disguise links. */
+const DECEPTIVE_CHARS = /[\u0000-\u001F\u007F-\u009F​-‏‪-‮⁠-⁤﻿\\]/;
 const PHONE_CHARS = /^[+\d\s().-]+$/;
 
 export function isValidEmail(value: string): boolean {
@@ -27,7 +32,11 @@ export function normalizeWebUrl(raw: string): UrlCheck {
   const trimmed = raw.trim();
   if (!trimmed) return { ok: false, error: "Enter a web address." };
   if (/\s/.test(trimmed)) return { ok: false, error: "Web addresses can't contain spaces." };
-  const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(trimmed);
+  if (DECEPTIVE_CHARS.test(trimmed)) {
+    return { ok: false, error: "This address contains hidden or unusual characters." };
+  }
+  // A colon followed by a digit is a port (localhost:3000), not a scheme.
+  const hasScheme = /^[a-z][a-z\d+.-]*:(?!\d)/i.test(trimmed);
   if (hasScheme && !/^https?:\/\//i.test(trimmed)) {
     return { ok: false, error: "Only http:// and https:// links are supported." };
   }
@@ -43,8 +52,24 @@ export function normalizeWebUrl(raw: string): UrlCheck {
   if (!isIp && host !== "localhost" && !/\.[a-z\d-]{2,}$/i.test(host)) {
     return { ok: false, error: "Include the full domain, like example.com." };
   }
-  // Keep the user's original casing/path; only add the scheme when missing.
-  return { ok: true, url: candidate };
+  // Encode exactly what was validated: the normalized URL (punycode host,
+  // percent-encoded path) is what scanners and browsers will open.
+  return { ok: true, url: parsed.href };
+}
+
+/** True for a real calendar date `YYYY-MM-DD` (rejects 2026-13-01, 2026-02-30). */
+export function isRealDate(value: string): boolean {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!m) return false;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const date = new Date(Date.UTC(y, mo - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === mo - 1 && date.getUTCDate() === d;
+}
+
+/** True for `YYYY-MM-DDTHH:mm` with a real date and a valid time of day. */
+export function isRealDateTime(value: string): boolean {
+  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  return !!m && isRealDate(m[1]) && Number(m[2]) < 24 && Number(m[3]) < 60;
 }
 
 export function parseCoordinate(value: string, limit: number): number | null {

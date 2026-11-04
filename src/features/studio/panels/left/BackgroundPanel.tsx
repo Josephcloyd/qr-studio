@@ -154,7 +154,7 @@ export function BackgroundPanel() {
             </div>
           ) : (
             <p className="text-ink-3 text-[12.5px]">
-              Add images in Uploads to use them as a background.
+              Add images in the Images tab to use them as a background.
             </p>
           )}
         </div>

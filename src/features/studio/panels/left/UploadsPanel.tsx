@@ -19,8 +19,18 @@ export function UploadsPanel() {
   const { ingest, busy } = useImageUpload();
   const assets = useAssetStore((s) => s.assets);
   const order = useAssetStore((s) => s.order);
-  const remove = useAssetStore((s) => s.remove);
+  const removeAsset = useAssetStore((s) => s.remove);
   const apply = useEditorStore((s) => s.apply);
+  // Re-render when the design or its undo history changes, so "in use" stays accurate.
+  useEditorStore((s) => s.doc);
+  useEditorStore((s) => s.history);
+  const remove = (id: string) => {
+    if (isAssetInUse(id)) {
+      toast.info("This image is in your design", "Delete it from the canvas first.");
+      return;
+    }
+    removeAsset(id);
+  };
 
   const addToCanvas = (a: Asset) => {
     const box = centeredBox(0.5, a.width / a.height);
@@ -36,7 +46,7 @@ export function UploadsPanel() {
 
   return (
     <div>
-      <PanelHeading title="Uploads" subtitle="Logos, photos and artwork for your design." />
+      <PanelHeading title="Images" subtitle="Logos, photos and artwork from your device." />
       <div className="grid gap-4 px-4 pb-6">
         <input
           ref={inputRef}

@@ -19,7 +19,14 @@ import type {
   WifiContent,
 } from "./content";
 import { escapeText, escapeWifi, foldLine, utf8Length } from "./escape";
-import { isValidEmail, normalizePhone, normalizeWebUrl, parseCoordinate } from "./validators";
+import {
+  isRealDate,
+  isRealDateTime,
+  isValidEmail,
+  normalizePhone,
+  normalizeWebUrl,
+  parseCoordinate,
+} from "./validators";
 
 export type FieldErrors = Record<string, string>;
 
@@ -173,9 +180,6 @@ function encodeLocation(c: LocationContent): EncodeResult {
   return ok(urls[c.provider]);
 }
 
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-
 function icalDate(value: string, allDay: boolean): string {
   const [date, time = "00:00"] = value.split("T");
   const d = date.replace(/-/g, "");
@@ -191,11 +195,11 @@ function nextDay(date: string): string {
 function encodeEvent(c: EventContent): EncodeResult {
   const errors: FieldErrors = {};
   if (!c.title.trim()) errors.title = "Give the event a title.";
-  const pattern = c.allDay ? DATE_PATTERN : DATETIME_PATTERN;
+  const valid = c.allDay ? isRealDate : isRealDateTime;
   const start = c.allDay ? c.start.slice(0, 10) : c.start;
   const end = c.allDay ? c.end.slice(0, 10) : c.end;
-  if (!pattern.test(start)) errors.start = "Choose a start date and time.";
-  if (end && !pattern.test(end)) errors.end = "Choose a valid end date.";
+  if (!valid(start)) errors.start = "Choose a start date and time.";
+  if (end && !valid(end)) errors.end = "Choose a valid end date.";
   if (!errors.start && end && !errors.end && end < start)
     errors.end = "End must be after the start.";
   if (Object.keys(errors).length) return fail(errors);
@@ -227,6 +231,12 @@ const ENCODERS: { [K in QrType]: Encoder<K> } = {
 };
 
 export function encodePayload(content: QrContent): EncodeResult {
-  const encoder = ENCODERS[content.type] as Encoder<QrType>;
-  return encoder(content);
+  const encoder = ENCODERS[content.type] as Encoder<QrType> | undefined;
+  if (!encoder) return fail({ type: "Unknown QR code type." });
+  try {
+    return encoder(content);
+  } catch {
+    // Defensive: content can come from imported files. Never crash rendering.
+    return fail({ content: "This QR content couldn't be encoded." });
+  }
 }

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createImageElement } from "@/lib/model/factory";
 import { useImageUpload } from "@/features/assets/useImageUpload";
+import { isInteractiveTarget, isTextEntry } from "./focusContext";
 import { useEditorStore } from "./store/editorStore";
 import { useUiStore } from "./store/uiStore";
 import { useViewportStore } from "./store/viewportStore";
@@ -51,20 +52,24 @@ export const SHORTCUTS: { group: string; items: Shortcut[] }[] = [
   },
 ];
 
-const isTyping = (t: EventTarget | null) =>
-  t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
-
 export function useStudioShortcuts(onSaveProject: () => void): void {
   const { ingest } = useImageUpload();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (isTyping(e.target) || useUiStore.getState().dialog) return;
+      if (e.defaultPrevented || useUiStore.getState().dialog) return;
       const s = useEditorStore.getState();
       const vp = useViewportStore.getState();
       const mod = e.ctrlKey || e.metaKey;
       const key = e.key.toLowerCase();
       const handled = () => e.preventDefault();
+      const typing = isTextEntry(e.target);
+
+      // Save/export work everywhere (and beat the browser's own Ctrl+S).
+      if (mod && key === "s") return (handled(), onSaveProject());
+      if (mod && key === "e") return (handled(), useUiStore.getState().openDialog("export"));
+      // Everything else leaves text fields alone (native undo, copy, select-all…).
+      if (typing) return;
 
       if (mod && key === "z") return (handled(), e.shiftKey ? s.redo() : s.undo());
       if (mod && key === "y") return (handled(), s.redo());
@@ -73,8 +78,6 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       if (mod && key === "x") return s.selection.length ? (handled(), s.cutSelection()) : undefined;
       if (mod && key === "d") return (handled(), s.duplicateSelection());
       if (mod && key === "a") return (handled(), s.selectAll());
-      if (mod && key === "s") return (handled(), onSaveProject());
-      if (mod && key === "e") return (handled(), useUiStore.getState().openDialog("export"));
       if (mod && e.shiftKey && key === "l") {
         handled();
         const anyUnlocked = s.doc.elements.some((el) => s.selection.includes(el.id) && !el.locked);
@@ -85,6 +88,8 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       if (mod && (e.key === "[" || e.key === "{"))
         return (handled(), s.reorderSelection(e.shiftKey ? "back" : "backward"));
       if (mod) return;
+      // Buttons, radios, menus, sliders and pickers own Enter/Space/arrows/Delete.
+      if (isInteractiveTarget(e.target)) return;
 
       if (e.key === "Delete" || e.key === "Backspace") return (handled(), s.deleteSelection());
       if (e.key === "Escape") return s.clearSelection();
@@ -111,7 +116,7 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
     // Paste: images from the system clipboard become image elements (read
     // locally); otherwise paste copied design elements.
     const onPaste = async (e: ClipboardEvent) => {
-      if (isTyping(e.target) || useUiStore.getState().dialog) return;
+      if (isTextEntry(e.target) || useUiStore.getState().dialog) return;
       const files = [...(e.clipboardData?.files ?? [])].filter((f) => f.type.startsWith("image/"));
       const s = useEditorStore.getState();
       if (!files.length) {
@@ -124,17 +129,17 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       e.preventDefault();
       const added = await ingest(files);
       for (const asset of added) {
-        const w = Math.min(s.doc.width * 0.5, asset.width);
+        // Read the document after the await — it may have changed meanwhile.
+        const { doc, addElement } = useEditorStore.getState();
+        const w = Math.min(doc.width * 0.5, asset.width);
         const h = w * (asset.height / asset.width);
-        useEditorStore
-          .getState()
-          .addElement(
-            createImageElement(
-              asset.id,
-              { x: (s.doc.width - w) / 2, y: (s.doc.height - h) / 2, width: w, height: h },
-              asset.name,
-            ),
-          );
+        addElement(
+          createImageElement(
+            asset.id,
+            { x: (doc.width - w) / 2, y: (doc.height - h) / 2, width: w, height: h },
+            asset.name,
+          ),
+        );
       }
     };
 
@@ -145,18 +150,4 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       window.removeEventListener("paste", onPaste);
     };
   }, [ingest, onSaveProject]);
-}
-
-/** Warn before closing the tab with unsaved work — nothing is auto-saved. */
-export function useUnsavedWarning(): void {
-  const dirty = useEditorStore((s) => s.dirty && s.doc.elements.length > 0);
-  useEffect(() => {
-    if (!dirty) return;
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [dirty]);
 }

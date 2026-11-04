@@ -164,7 +164,7 @@ export function CanvasProperties() {
           value={doc.background.imageAssetId ?? "none"}
           onValueChange={(v) => setBg({ imageAssetId: v === "none" ? null : v })}
           options={[
-            { value: "none", label: order.length ? "None" : "None — add images in Uploads" },
+            { value: "none", label: order.length ? "None" : "None — add images in the Images tab" },
             ...order.map((id) => ({ value: id, label: assets[id]?.name ?? id })),
           ]}
         />

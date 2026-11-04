@@ -15,6 +15,7 @@ import {
 import {
   addElements,
   alignElements,
+  findElement as findEl,
   cloneElement,
   distributeElements,
   duplicateElements,
@@ -112,8 +113,10 @@ export const useEditorStore = create<EditorState>((set, get) => {
     key: string | null = null,
     extra: Partial<EditorState> = {},
   ) => {
-    const { doc, history, measure } = get();
-    if (next === doc) return;
+    const { doc, history, measure, gestureStart } = get();
+    // A pointer drag owns the document until it ends; mid-drag keyboard edits
+    // would otherwise be overwritten from the stale gesture snapshot.
+    if (next === doc || gestureStart) return;
     const fitted = fitTextHeights(doc, next, measure);
     set({
       doc: fitted,
@@ -175,6 +178,8 @@ export const useEditorStore = create<EditorState>((set, get) => {
         editingTextId: null,
         guides: [],
         gestureStart: null,
+        // Copied elements may reference images released with the old design.
+        clipboard: [],
       }),
     newDocument: (doc) => get().loadDocument(doc ?? createDocument()),
     renameDocument: (name) =>
@@ -192,7 +197,17 @@ export const useEditorStore = create<EditorState>((set, get) => {
           .map((e) => e.id),
       }),
     clearSelection: () => set({ selection: [], editingTextId: null }),
-    setEditingText: (id) => set({ editingTextId: id }),
+    setEditingText: (id) => {
+      const { editingTextId, doc } = get();
+      const finished = editingTextId && editingTextId !== id ? findEl(doc, editingTextId) : null;
+      set({ editingTextId: id });
+      // Don't leave invisible, empty text boxes behind.
+      if (finished?.type === "text" && !finished.text.trim()) {
+        commit(removeElements(get().doc, [finished.id]), null, {
+          selection: get().selection.filter((s) => s !== finished.id),
+        });
+      }
+    },
 
     addElement: (el, select = true) =>
       commit(addElements(get().doc, [el]), null, select ? { selection: [el.id] } : {}),
@@ -243,6 +258,7 @@ export const useEditorStore = create<EditorState>((set, get) => {
       ),
 
     undo: () => {
+      if (get().gestureStart) return;
       const result = undoHistory(get().history, get().doc);
       if (result)
         set({
@@ -254,6 +270,7 @@ export const useEditorStore = create<EditorState>((set, get) => {
         });
     },
     redo: () => {
+      if (get().gestureStart) return;
       const result = redoHistory(get().history, get().doc);
       if (result)
         set({

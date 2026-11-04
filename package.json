@@ -5,7 +5,9 @@
   "description": "QR Studio — a free, privacy-first QR code generator and design studio by GetLaunch Ph. Everything runs in your browser.",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/build-notices.mjs",
     "build": "next build",
+    "notices": "node scripts/build-notices.mjs",
     "serve": "node scripts/serve-static.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

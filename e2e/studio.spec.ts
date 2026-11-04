@@ -117,7 +117,7 @@ test.describe("Design studio", () => {
 
   test("uploaded images are embedded in SVG and visible in PNG exports", async ({ page }) => {
     await openStudio(page);
-    await page.getByRole("button", { name: "Uploads", exact: true }).click();
+    await page.getByRole("button", { name: "Images", exact: true }).click();
     await page
       .locator('input[type="file"][multiple]')
       .setInputFiles({ name: "brand-logo.png", mimeType: "image/png", buffer: makePng(200, 200) });
@@ -152,7 +152,7 @@ test.describe("Design studio", () => {
 
   test("project file round trip; refresh does not recover the design", async ({ page }) => {
     await openStudio(page, "digital-menu");
-    await page.getByRole("button", { name: "Uploads", exact: true }).click();
+    await page.getByRole("button", { name: "Images", exact: true }).click();
     await page
       .locator('input[type="file"][multiple]')
       .setInputFiles({ name: "photo.png", mimeType: "image/png", buffer: makePng(160, 90) });

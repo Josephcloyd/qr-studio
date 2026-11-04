@@ -4,6 +4,7 @@
  * `measureText`; tests use the deterministic approximation.
  */
 import type { TextElement } from "@/lib/model/types";
+import { stripInvalidXml } from "./xml";
 
 export interface TextMetricsSpec {
   fontFamily: string;
@@ -105,7 +106,8 @@ export function textSpec(el: TextElement): TextMetricsSpec {
 }
 
 export function displayText(el: Pick<TextElement, "text" | "uppercase">): string {
-  return el.uppercase ? el.text.toUpperCase() : el.text;
+  const text = stripInvalidXml(el.text);
+  return el.uppercase ? text.toUpperCase() : text;
 }
 
 export function layoutText(el: TextElement, measure: Measure): TextLayout {

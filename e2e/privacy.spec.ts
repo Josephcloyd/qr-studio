@@ -40,7 +40,7 @@ test.describe("Privacy guarantees", () => {
     // Studio: send the code over, add an image, export every format.
     await page.getByRole("button", { name: "Design a layout around it" }).click();
     await expect(page.getByTestId("canvas-viewport")).toBeVisible();
-    await page.getByRole("button", { name: "Uploads", exact: true }).click();
+    await page.getByRole("button", { name: "Images", exact: true }).click();
     await page
       .locator('input[type="file"][multiple]')
       .setInputFiles({
@@ -126,7 +126,7 @@ test.describe("Privacy guarantees", () => {
     const live = () =>
       page.evaluate(() => (window as unknown as { __liveUrls: () => number }).__liveUrls());
     const before = await live();
-    await page.getByRole("button", { name: "Uploads", exact: true }).click();
+    await page.getByRole("button", { name: "Images", exact: true }).click();
     await page.locator('input[type="file"][multiple]').setInputFiles([
       { name: "a.png", mimeType: "image/png", buffer: makePng() },
       { name: "b.png", mimeType: "image/png", buffer: makePng(50, 50) },

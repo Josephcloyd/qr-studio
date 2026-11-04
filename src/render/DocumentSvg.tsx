@@ -3,6 +3,7 @@
  * every export (SVG/PNG/PDF) use this exact component, so they always match.
  */
 import { useMemo } from "react";
+import { stripInvalidXml } from "@/lib/text/xml";
 import { fmt } from "@/lib/geometry/paths";
 import type { DesignDocument, DocumentBackground } from "@/lib/model/types";
 import type { Measure } from "@/lib/text/layout";
@@ -110,7 +111,7 @@ export function DocumentSvg({
       height={fmt(height ?? doc.height)}
       className={className}
       role="img"
-      aria-label={title ?? doc.name}
+      aria-label={stripInvalidXml(title ?? doc.name)}
     >
       <defs>
         {fontCss ? <style>{fontCss}</style> : null}

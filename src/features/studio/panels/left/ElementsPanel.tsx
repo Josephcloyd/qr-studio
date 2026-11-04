@@ -116,7 +116,7 @@ export function ElementsPanel() {
 
   return (
     <div className="pb-6">
-      <PanelHeading title="Elements" subtitle="Icons and ready-made decorations." />
+      <PanelHeading title="Icons & decorations" subtitle="Ready-made accents for your layout." />
       <h3 className="text-ink-3 px-4 pt-1 pb-2 font-mono text-[10.5px] font-semibold tracking-[0.14em] uppercase">
         Ready-made
       </h3>

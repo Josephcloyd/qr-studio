@@ -106,8 +106,13 @@ export function CanvasViewport({ className }: { className?: string }) {
     <div
       ref={containerRef}
       data-testid="canvas-viewport"
+      // Focusable so keyboard shortcuts (arrows, Delete, Enter) act on the design.
+      tabIndex={0}
+      role="application"
+      aria-roledescription="design canvas"
+      aria-label={`${doc.name}. Select elements with the Layers panel or by clicking; arrow keys move, Delete removes, Enter edits text. Press question mark for all shortcuts.`}
       className={cn(
-        "workspace-dots relative h-full w-full touch-none overflow-hidden select-none",
+        "workspace-dots focus-visible:outline-cobalt relative h-full w-full touch-none overflow-hidden select-none focus-visible:outline-2 focus-visible:-outline-offset-2",
         panning && "cursor-grab",
         className,
       )}

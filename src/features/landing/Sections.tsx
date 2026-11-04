@@ -93,60 +93,10 @@ export function Hero() {
               Explore designs
             </Link>
           </div>
-          <dl className="border-line mt-10 grid max-w-lg grid-cols-3 gap-4 border-t pt-6">
-            {[
-              ["10", "QR types"],
-              ["20", "editable templates"],
-              ["0", "bytes uploaded"],
-            ].map(([n, label]) => (
-              <div key={label}>
-                <dt className="sr-only">{label}</dt>
-                <dd className="font-display text-ink text-3xl font-semibold">{n}</dd>
-                <dd className="text-ink-3 mt-0.5 text-[12.5px]">{label}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
         <HeroPlayground />
       </div>
     </section>
-  );
-}
-
-const USES = [
-  "Restaurant menus",
-  "Wi-Fi cards",
-  "Business cards",
-  "Event invites",
-  "Product labels",
-  "Social posters",
-  "Table tents",
-  "Printable flyers",
-  "Stickers",
-  "Contact cards",
-];
-
-export function UseStrip() {
-  return (
-    <div
-      className="border-line bg-ink text-paper overflow-hidden border-b py-4"
-      aria-label="Things you can make"
-    >
-      <ul className="flex w-max animate-[marquee_40s_linear_infinite] gap-10 font-mono text-[12px] font-semibold tracking-[0.18em] uppercase motion-reduce:animate-none">
-        {[...USES, ...USES].map((u, i) => (
-          <li
-            key={i}
-            className="flex items-center gap-10"
-            aria-hidden={i >= USES.length || undefined}
-          >
-            {u}
-            <span className="text-accent" aria-hidden="true">
-              ✦
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
 

@@ -15,8 +15,14 @@ interface UiState {
   openDialog: (dialog: DialogId) => void;
 }
 
+/** Desktop opens with Templates showing; phones start with the canvas visible. */
+const initialPanel = (): PanelId | null =>
+  typeof window !== "undefined" && !window.matchMedia("(min-width: 1024px)").matches
+    ? null
+    : "templates";
+
 export const useUiStore = create<UiState>((set, get) => ({
-  panel: "templates",
+  panel: initialPanel(),
   propertiesOpen: false,
   dialog: null,
   setPanel: (panel) => set({ panel }),

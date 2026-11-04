@@ -8,6 +8,7 @@ import { createId } from "@/lib/model/ids";
 import { createObjectUrl, revokeObjectUrl } from "@/lib/assets/objectUrls";
 import type { AcceptedImageType, ProcessedImage } from "@/lib/assets/intake";
 import type { AssetResolver } from "@/render/elements";
+import type { ResolvedImage } from "@/render/QrGraphic";
 
 export interface Asset {
   id: string;
@@ -66,10 +67,19 @@ export const useAssetStore = create<AssetState>((set, get) => ({
   },
 }));
 
+/** One stable resolved object per asset, so memoized QR layouts aren't recomputed every frame. */
+const resolvedCache = new WeakMap<Asset, ResolvedImage>();
+
 export function resolveFrom(assets: Record<string, Asset>): AssetResolver {
   return (id) => {
     const a = assets[id];
-    return a ? { href: a.url, width: a.width, height: a.height } : null;
+    if (!a) return null;
+    let resolved = resolvedCache.get(a);
+    if (!resolved) {
+      resolved = { href: a.url, width: a.width, height: a.height };
+      resolvedCache.set(a, resolved);
+    }
+    return resolved;
   };
 }
 

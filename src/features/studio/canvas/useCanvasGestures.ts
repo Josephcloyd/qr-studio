@@ -10,11 +10,14 @@ import {
   type RefObject,
 } from "react";
 import type { HandleDir, Point } from "@/lib/geometry/transform";
+import { isInteractiveTarget, isTextEntry } from "../focusContext";
 import { useEditorStore } from "../store/editorStore";
+import { useUiStore } from "../store/uiStore";
 import { clampZoom, useViewportStore } from "../store/viewportStore";
 import { marqueeHits, moveGesture, resizeGesture, rotateGesture } from "../interactions/gestures";
 
-const DRAG_THRESHOLD = 3;
+/** Pixels a pointer must travel before a press becomes a drag (fingers jitter more). */
+const DRAG_THRESHOLD = { mouse: 3, pen: 4, touch: 10 } as const;
 const SNAP_THRESHOLD_PX = 6;
 
 type Drag =
@@ -66,29 +69,31 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
     [local],
   );
 
-  // Space-to-pan.
+  // Space-to-pan (only when focus isn't on a control that uses Space itself).
   useEffect(() => {
-    const isTyping = (t: EventTarget | null) =>
-      t instanceof HTMLElement &&
-      (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+    const release = () => {
+      spaceDown.current = false;
+      setPanning(false);
+    };
     const down = (e: KeyboardEvent) => {
-      if (e.code === "Space" && !isTyping(e.target)) {
-        spaceDown.current = true;
-        setPanning(true);
-        e.preventDefault();
-      }
+      if (e.code !== "Space" || e.defaultPrevented || useUiStore.getState().dialog) return;
+      if (isTextEntry(e.target) || isInteractiveTarget(e.target)) return;
+      spaceDown.current = true;
+      setPanning(true);
+      e.preventDefault();
     };
-    const up = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        spaceDown.current = false;
-        setPanning(false);
-      }
-    };
+    const up = (e: KeyboardEvent) => e.code === "Space" && release();
+    // A released key is never reported if the window loses focus mid-press.
+    const onVisibility = () => document.hidden && release();
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", release);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      window.removeEventListener("blur", release);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
@@ -99,11 +104,15 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const vp = useViewportStore.getState();
+      // Firefox mouse wheels report lines/pages rather than pixels.
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vp.height || 800 : 1;
+      const dx = e.deltaX * unit;
+      const dy = e.deltaY * unit;
       if (e.ctrlKey || e.metaKey) {
         const p = local(e);
-        vp.zoomAt(clampZoom(vp.zoom * Math.exp(-e.deltaY * 0.0022)), p.x, p.y);
+        vp.zoomAt(clampZoom(vp.zoom * Math.exp(-dy * 0.0022)), p.x, p.y);
       } else {
-        vp.panBy(-e.deltaX, -e.deltaY);
+        vp.panBy(-dx, -dy);
       }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -112,9 +121,14 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
 
   const onPointerDown = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
+      // Overlay UI (empty-state buttons, mobile bars) handles its own clicks.
+      if ((e.target as Element).closest("button, a, input, [data-canvas-ui]")) return;
       const editor = useEditorStore.getState();
-      if (editor.editingTextId) return;
+      // Clicking away from inline text editing finishes it and still acts on the click.
+      if (editor.editingTextId) editor.setEditingText(null);
+      if (pointers.current.size >= 2) return; // ignore a third finger during a pinch
       containerRef.current?.setPointerCapture(e.pointerId);
+      containerRef.current?.focus({ preventScroll: true });
       pointers.current.set(e.pointerId, local(e));
 
       if (pointers.current.size === 2) {
@@ -220,7 +234,8 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
           return;
         }
         case "pending": {
-          if (Math.hypot(e.clientX - d.client.x, e.clientY - d.client.y) < DRAG_THRESHOLD) return;
+          const threshold = DRAG_THRESHOLD[e.pointerType as keyof typeof DRAG_THRESHOLD] ?? 3;
+          if (Math.hypot(e.clientX - d.client.x, e.clientY - d.client.y) < threshold) return;
           editor.beginGesture();
           drag.current = { kind: "move", start: d.start, ids: d.ids };
           setInteracting(true);
@@ -301,12 +316,18 @@ export function useCanvasGestures(containerRef: RefObject<HTMLDivElement | null>
     }
   }, []);
 
+  // Drop the hover outline when the pointer leaves the canvas.
+  const onPointerLeave = useCallback(() => {
+    if (!drag.current) setHoveredId(null);
+  }, []);
+
   return {
     handlers: {
       onPointerDown,
       onPointerMove,
       onPointerUp: end,
       onPointerCancel: end,
+      onPointerLeave,
       onDoubleClick,
     },
     marquee,

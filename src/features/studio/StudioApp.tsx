@@ -1,23 +1,27 @@
 "use client";
 
-import { PanelLeftClose, SlidersHorizontal, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Maximize, Minus, PanelLeftClose, Plus, SlidersHorizontal, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/components/ui/cn";
 import { IconButton, TooltipProvider } from "@/components/ui/Button";
+import { toast } from "@/components/ui/Toaster";
 import { downloadProject } from "@/features/project/projectIO";
+import { getTemplate } from "@/features/templates";
 import { CanvasViewport } from "./canvas/CanvasViewport";
 import { ExportDialog } from "./dialogs/ExportDialog";
 import { NewDesignDialog, PreviewDialog, ShortcutsDialog } from "./dialogs/OtherDialogs";
 import { MobileContextBar } from "./MobileContextBar";
+import { loadTemplate } from "./panels/left/TemplatesPanel";
 import { PropertiesPanel } from "./panels/right/PropertiesPanel";
 import { selectSelectedElements, useEditorStore } from "./store/editorStore";
 import { useUiStore } from "./store/uiStore";
+import { useViewportStore } from "./store/viewportStore";
+import { StudioAnnouncer } from "./StudioAnnouncer";
 import { ActivePanel, TOOLS } from "./ToolPanels";
 import { TopBar } from "./TopBar";
 import { useFontsReady } from "./useFontsReady";
-import { useStudioShortcuts, useUnsavedWarning } from "./useStudioShortcuts";
-import { loadTemplate } from "./panels/left/TemplatesPanel";
+import { useStudioShortcuts } from "./useStudioShortcuts";
 
 function useIsDesktop(): boolean | null {
   const [desktop, setDesktop] = useState<boolean | null>(null);
@@ -35,9 +39,13 @@ function useIsDesktop(): boolean | null {
 function useTemplateParam() {
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("template");
-    if (!id || !/^[a-z0-9-]{1,60}$/.test(id)) return;
-    loadTemplate(id, true);
+    if (!id) return;
     window.history.replaceState(null, "", window.location.pathname);
+    if (!/^[a-z0-9-]{1,60}$/.test(id) || !getTemplate(id)) {
+      toast.error("Template not found", "Pick one from the Templates tab instead.");
+      return;
+    }
+    loadTemplate(id, true);
   }, []);
 }
 
@@ -51,7 +59,7 @@ function ToolRail({ vertical }: { vertical: boolean }) {
         "bg-card flex shrink-0",
         vertical
           ? "border-line w-[76px] flex-col gap-0.5 border-r px-1.5 py-2"
-          : "border-line h-[68px] [scrollbar-width:none] items-stretch gap-0.5 overflow-x-auto border-t px-1",
+          : "border-line h-[68px] [scrollbar-width:none] items-stretch gap-0.5 overflow-x-auto border-t px-1 py-1",
       )}
     >
       {TOOLS.map(({ id, label, Icon }) => {
@@ -115,6 +123,10 @@ function DesktopStudio() {
   );
 }
 
+/**
+ * Non-modal sheet for phones: moves focus in when opened, closes on Escape
+ * and returns focus to whatever opened it.
+ */
 function BottomSheet({
   title,
   onClose,
@@ -122,24 +134,36 @@ function BottomSheet({
 }: {
   title: string;
   onClose: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    ref.current?.focus({ preventScroll: true });
+    return () => {
+      if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
+    };
+  }, []);
   return (
     <div className="absolute inset-x-0 bottom-0 z-30 flex max-h-[62%] flex-col">
       <div
-        className="animate-sheet border-line bg-card flex min-h-0 flex-col rounded-t-3xl border-t shadow-[0_-12px_40px_-12px_rgb(22_19_15/0.35)]"
+        ref={ref}
+        tabIndex={-1}
         role="dialog"
         aria-label={title}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
+        className="animate-sheet border-line bg-card flex min-h-0 flex-col rounded-t-3xl border-t shadow-[0_-12px_40px_-12px_rgb(22_19_15/0.35)] focus:outline-none"
       >
-        <div className="flex items-center justify-between px-4 pt-2">
-          <span
-            className="bg-line-strong mx-auto mb-1 h-1.5 w-10 rounded-full"
-            aria-hidden="true"
-          />
+        <div className="flex items-center justify-between px-3 pt-2">
+          <span className="bg-line-strong mx-auto h-1.5 w-10 rounded-full" aria-hidden="true" />
         </div>
-        <div className="flex items-center justify-between px-3">
-          <span className="sr-only">{title}</span>
-          <IconButton label={`Close ${title}`} size="sm" className="ml-auto" onClick={onClose}>
+        <div className="flex items-center justify-end px-3">
+          <IconButton label={`Close ${title}`} size="md" onClick={onClose}>
             <X className="size-4" />
           </IconButton>
         </div>
@@ -147,6 +171,28 @@ function BottomSheet({
           {children}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Zoom buttons for touch screens — pinch is not the only way to zoom (WCAG 2.5.1). */
+function MobileZoom() {
+  const zoomStep = useViewportStore((s) => s.zoomStep);
+  const fit = () => {
+    const { doc } = useEditorStore.getState();
+    useViewportStore.getState().fit(doc.width, doc.height);
+  };
+  return (
+    <div className="border-line bg-card shadow-sheet absolute top-3 left-3 flex rounded-xl border p-0.5">
+      <IconButton label="Zoom out" size="md" onClick={() => zoomStep(-1)}>
+        <Minus className="size-4" />
+      </IconButton>
+      <IconButton label="Zoom to fit" size="md" onClick={fit}>
+        <Maximize className="size-4" />
+      </IconButton>
+      <IconButton label="Zoom in" size="md" onClick={() => zoomStep(1)}>
+        <Plus className="size-4" />
+      </IconButton>
     </div>
   );
 }
@@ -159,8 +205,6 @@ function MobileStudio() {
   const selected = useEditorStore(useShallow(selectSelectedElements));
   const tool = TOOLS.find((t) => t.id === panel);
 
-  // Start with the canvas visible on phones.
-  useEffect(() => setPanel(null), [setPanel]);
   useEffect(() => {
     if (!selected.length) setPropertiesOpen(false);
   }, [selected.length, setPropertiesOpen]);
@@ -170,6 +214,7 @@ function MobileStudio() {
       <TopBar compact />
       <main className="relative min-h-0 flex-1" aria-label="Canvas">
         <CanvasViewport />
+        {!tool && !propertiesOpen && <MobileZoom />}
         {selected.length > 0 && !panel && !propertiesOpen && (
           <MobileContextBar onEdit={() => setPropertiesOpen(true)} />
         )}
@@ -177,7 +222,7 @@ function MobileStudio() {
           <button
             type="button"
             onClick={() => setPropertiesOpen(true)}
-            className="border-line bg-card text-ink shadow-sheet absolute top-3 right-3 inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-[13px] font-semibold"
+            className="border-line bg-card text-ink shadow-sheet absolute top-3 right-3 inline-flex h-11 items-center gap-2 rounded-xl border px-3 text-[13px] font-semibold"
           >
             <SlidersHorizontal className="size-4" aria-hidden="true" /> Canvas
           </button>
@@ -203,11 +248,11 @@ export function StudioApp() {
   const save = useCallback(() => void downloadProject(), []);
   useFontsReady();
   useStudioShortcuts(save);
-  useUnsavedWarning();
   useTemplateParam();
 
   return (
     <TooltipProvider delayDuration={350}>
+      <h1 className="sr-only">QR Studio design editor</h1>
       {desktop === null ? (
         <div className="bg-paper text-ink-3 flex h-dvh items-center justify-center text-sm">
           Opening the studio…
@@ -217,6 +262,7 @@ export function StudioApp() {
       ) : (
         <MobileStudio />
       )}
+      <StudioAnnouncer />
       <ExportDialog />
       <PreviewDialog />
       <ShortcutsDialog />

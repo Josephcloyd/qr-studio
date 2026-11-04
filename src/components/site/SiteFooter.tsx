@@ -32,8 +32,20 @@ export function SiteFooter() {
       </div>
       <div className="border-line/70 border-t">
         <div className="text-ink-3 mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 font-mono text-[11px] tracking-wide sm:flex-row sm:justify-between sm:px-6">
-          <span>© {new Date().getFullYear()} GetLaunch Ph · QR Studio</span>
+          <span>© GetLaunch Ph · QR Studio</span>
           <span>No accounts · No uploads · No tracking</span>
+        </div>
+        <div className="text-ink-3 mx-auto flex max-w-7xl flex-col gap-1 px-4 pb-5 text-[11.5px] leading-relaxed sm:flex-row sm:justify-between sm:gap-6 sm:px-6">
+          <p>
+            Provided free and as-is. Always test-scan your codes before printing or sharing.
+            &ldquo;QR Code&rdquo; is a registered trademark of DENSO WAVE INCORPORATED.
+          </p>
+          <a
+            href="/third-party-notices.txt"
+            className="hover:text-ink shrink-0 underline-offset-2 hover:underline"
+          >
+            Open-source notices
+          </a>
         </div>
       </div>
     </footer>

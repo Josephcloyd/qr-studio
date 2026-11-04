@@ -50,7 +50,8 @@ export function Toaster() {
   return (
     <div
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[200] flex flex-col items-center gap-2 p-4 sm:items-end sm:p-6"
+      // Top on phones so toasts never cover the studio's bottom tool dock.
+      className="pointer-events-none fixed inset-x-0 top-14 z-[200] flex flex-col items-center gap-2 p-3 sm:top-auto sm:bottom-0 sm:items-end sm:p-6"
     >
       {items.map((t) => {
         const Icon = ICONS[t.kind];

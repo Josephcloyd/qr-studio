@@ -271,15 +271,6 @@ input[type="range"].range::-moz-range-thumb {
   animation: rise 0.5s var(--ease-out) both;
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @keyframes toast-in {
   from {
     opacity: 0;
