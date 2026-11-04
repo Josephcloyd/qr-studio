@@ -2,14 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/components/ui/cn";
-import { approximateMeasure } from "@/lib/text/layout";
 import { canvasMeasure } from "@/lib/text/measure";
 import { DocumentSvg } from "@/render/DocumentSvg";
 import { getTemplate } from "./index";
 
 /**
- * Live thumbnail rendered by the real engine (no screenshots). Text is
- * measured after mount so server and client markup match.
+ * Live thumbnail rendered by the real engine (no screenshots). The SVG is
+ * drawn only in the browser: templates get fresh random ids on every build,
+ * so server-rendered markup could never match, and inlining 20 SVGs would
+ * bloat the static HTML. The server renders a correctly sized placeholder.
  */
 export function TemplateThumbnail({ id, className }: { id: string; className?: string }) {
   const doc = useMemo(() => getTemplate(id)?.build() ?? null, [id]);
@@ -39,17 +40,21 @@ export function TemplateThumbnail({ id, className }: { id: string; className?: s
         borderRadius: `${(doc.cornerRadius / doc.width) * 100}% / ${(doc.cornerRadius / doc.height) * 100}%`,
       }}
     >
-      <DocumentSvg
-        doc={doc}
-        resolveAsset={() => null}
-        measure={mounted ? canvasMeasure : approximateMeasure}
-        idPrefix={`tpl-${id}`}
-        mode="export"
-        className="block h-full w-full"
-        width={doc.width}
-        height={doc.height}
-        title={`${doc.name} template preview`}
-      />
+      {mounted ? (
+        <DocumentSvg
+          doc={doc}
+          resolveAsset={() => null}
+          measure={canvasMeasure}
+          idPrefix={`tpl-${id}`}
+          mode="export"
+          className="block h-full w-full"
+          width={doc.width}
+          height={doc.height}
+          title={`${doc.name} template preview`}
+        />
+      ) : (
+        <div className="bg-paper-3 h-full w-full animate-pulse" aria-hidden="true" />
+      )}
     </div>
   );
 }

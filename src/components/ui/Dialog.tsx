@@ -29,7 +29,7 @@ export function Dialog({
   return (
     <RDialog.Root open={open} onOpenChange={onOpenChange}>
       <RDialog.Portal>
-        <RDialog.Overlay className="bg-ink/40 fixed inset-0 z-[80] backdrop-blur-[2px] data-[state=open]:animate-[rise_0.2s_ease-out]" />
+        <RDialog.Overlay className="fixed inset-0 bg-black/60 z-[80] backdrop-blur-[2px] data-[state=open]:animate-[rise_0.2s_ease-out]" />
         <RDialog.Content
           className={cn(
             "border-line bg-card shadow-pop fixed inset-x-0 bottom-0 z-[81] flex max-h-[92dvh] flex-col rounded-t-3xl border focus:outline-none sm:inset-auto sm:top-1/2 sm:left-1/2 sm:w-[calc(100vw-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl",

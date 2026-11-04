@@ -6,7 +6,8 @@ Generate QR codes for 10 kinds of content, style them, and design complete layou
 
 ## Features
 
-- **QR generator** (`/create`): website, text, Wi-Fi, contact (vCard 3.0), email, phone, SMS, WhatsApp, location and calendar event codes, each with inline validation. All codes are static: no redirects and no scan tracking.
+- **GetLaunch Ph branding**: the same dark, green-accented look as ResumeFlow, with a light theme toggle, and a Support button that opens a GCash donation QR. Donations are optional and the tool stays free.
+- **QR generator** (home page `/`, with the 20 templates directly below): website, text, Wi-Fi, contact (vCard 3.0), email, phone, SMS, WhatsApp, location and calendar event codes, each with inline validation. All codes are static: no redirects and no scan tracking.
 - **QR styling**: 6 module shapes, corner frame and dot styles, solid and gradient colors, transparent backgrounds, error correction, quiet zone, and a center logo with a plate. There are 10 curated looks.
 - **Scannability first**:
   - Hard limits cover the quiet zone and logo size, error correction rises automatically when you add a logo, and unreliable corner pairings are disabled.

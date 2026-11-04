@@ -86,7 +86,7 @@ async function pickType(page: Page, type: string) {
 test.describe("QR generator", () => {
   test("generates, scan-checks and downloads every QR type", async ({ page }, info) => {
     test.slow();
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     const cases =
       info.project.name === "chromium"
         ? CASES
@@ -117,7 +117,7 @@ test.describe("QR generator", () => {
   });
 
   test("validates empty and invalid input", async ({ page }) => {
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     const url = page.getByLabel("Website address", { exact: true });
     await url.fill("javascript:alert(1)");
     await expect(page.getByText("Only http:// and https:// links are supported.")).toBeVisible();
@@ -131,7 +131,7 @@ test.describe("QR generator", () => {
   });
 
   test("warns about low contrast styling", async ({ page }) => {
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     await page.getByLabel("Website address", { exact: true }).fill("example.com");
     await page.getByRole("tab", { name: "Customize" }).click();
     const fg = page.getByLabel("Modules color", { exact: true });
@@ -141,7 +141,7 @@ test.describe("QR generator", () => {
   });
 
   test("downloads SVG and PDF locally", async ({ page }) => {
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     await page.getByLabel("Website address", { exact: true }).fill("example.com");
     await expect(page.locator("[data-scan-status]").first()).toHaveAttribute(
       "data-scan-status",

@@ -255,7 +255,7 @@ export function GeneratorPage() {
 function StepHeading({ id, step, title }: { id: string; step: string; title: string }) {
   return (
     <h2 id={id} className="text-ink mb-5 flex items-center gap-3 text-[17px] font-semibold">
-      <span className="bg-ink text-paper flex size-7 items-center justify-center rounded-full font-mono text-[12px]">
+      <span className="bg-accent-soft text-accent-ink flex size-7 items-center justify-center rounded-full font-mono text-[12px]">
         {step}
       </span>
       {title}

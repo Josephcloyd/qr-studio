@@ -19,7 +19,7 @@ test.describe("Privacy guarantees", () => {
     const requests = watchNetwork(page);
 
     // Generator with a secret marker in the content.
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     await page.getByRole("radio", { name: "Text", exact: true }).click();
     await page.getByLabel("Text", { exact: true }).fill(`secret ${MARKER}`);
     await page.getByRole("tab", { name: "Logo" }).click();

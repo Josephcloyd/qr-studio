@@ -2,6 +2,7 @@
 
 import { Tooltip } from "radix-ui";
 import { useEffect, type ReactNode } from "react";
+import { SupportDialog } from "@/components/site/Support";
 import { UnsavedWorkGuard } from "@/features/studio/UnsavedWorkGuard";
 import { Toaster } from "./Toaster";
 
@@ -16,6 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <Tooltip.Provider delayDuration={350}>
       {children}
       <Toaster />
+      <SupportDialog />
       <UnsavedWorkGuard />
     </Tooltip.Provider>
   );

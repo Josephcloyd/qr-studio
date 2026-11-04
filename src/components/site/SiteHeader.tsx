@@ -1,82 +1,76 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { cn } from "@/components/ui/cn";
 import { Brand } from "./Brand";
+import { SupportButton } from "./Support";
+import { ThemeToggle } from "./ThemeToggle";
 
-const NAV = [
-  { href: "/create/", label: "Generator" },
-  { href: "/templates/", label: "Templates" },
-  { href: "/studio/", label: "Studio" },
-  { href: "/privacy/", label: "Privacy" },
+export const NAV = [
+  { href: "/", label: "Generator", match: (p: string) => p === "/" },
+  { href: "/templates/", label: "Templates", match: (p: string) => p.startsWith("/templates") },
+  { href: "/studio/", label: "Studio", match: (p: string) => p.startsWith("/studio") },
 ];
 
-export function SiteHeader() {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const isActive = (href: string) => pathname?.startsWith(href.replace(/\/$/, ""));
-
+/** Segmented product navigation shared by the site header and the studio top bar. */
+export function ProductNav({ className }: { className?: string }) {
+  const pathname = usePathname() ?? "/";
   return (
-    <header className="border-line/80 bg-paper/85 sticky top-0 z-40 border-b backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Brand />
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className={cn(
-                "rounded-lg px-3 py-2 text-[14px] font-medium transition-colors",
-                isActive(item.href) ? "text-ink" : "text-ink-3 hover:text-ink",
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
+    <nav
+      aria-label="Main"
+      className={cn(
+        "border-line bg-paper-2 flex items-center gap-0.5 rounded-xl border p-1",
+        className,
+      )}
+    >
+      {NAV.map((item) => {
+        const active = item.match(pathname);
+        return (
           <Link
-            href="/create/"
-            className="bg-ink text-paper hover:bg-ink-2 hidden h-10 items-center rounded-xl px-4 text-sm font-semibold transition-colors sm:inline-flex"
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "rounded-lg px-3 py-1.5 text-[13.5px] font-semibold whitespace-nowrap transition-colors",
+              active ? "bg-paper-3 text-accent-ink" : "text-ink-2 hover:text-ink",
+            )}
           >
-            Create QR code
+            {item.label}
           </Link>
-          <button
-            type="button"
-            className="text-ink inline-flex size-10 items-center justify-center rounded-xl md:hidden"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((o) => !o)}
+        );
+      })}
+    </nav>
+  );
+}
+
+export function SiteHeader() {
+  return (
+    <header className="border-line bg-card/95 sticky top-0 z-40 border-b backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-3 sm:px-5">
+        <Brand />
+        <ProductNav className="ml-2 hidden md:flex" />
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <span className="hidden sm:contents">
+            <SupportButton />
+          </span>
+          <span className="contents sm:hidden">
+            <SupportButton compact />
+          </span>
+          <Link
+            href="/studio/"
+            className="bg-primary text-on-primary hover:bg-primary-hover hidden h-9 items-center gap-1.5 rounded-lg px-3.5 text-[13.5px] font-semibold transition-colors sm:inline-flex"
           >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+            Open studio
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+          </Link>
         </div>
       </div>
-      {open && (
-        <nav aria-label="Mobile" className="border-line bg-paper border-t px-4 pt-2 pb-4 md:hidden">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="text-ink hover:bg-paper-2 block rounded-xl px-3 py-3 text-[15px] font-medium"
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link
-            href="/create/"
-            onClick={() => setOpen(false)}
-            className="bg-ink text-paper mt-2 flex h-12 items-center justify-center rounded-xl text-[15px] font-semibold"
-          >
-            Create QR code
-          </Link>
-        </nav>
-      )}
+      <div className="border-line border-t px-3 py-2 md:hidden">
+        <ProductNav className="w-full justify-between [&>a]:flex-1 [&>a]:text-center" />
+      </div>
     </header>
   );
 }

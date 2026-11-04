@@ -52,7 +52,7 @@ export function TemplatesPanel() {
             onClick={() => setCategory(c)}
             className={cn(
               "h-8 shrink-0 rounded-full px-3 text-[12.5px] font-semibold transition-colors",
-              category === c ? "bg-ink text-paper" : "bg-paper-2 text-ink-2 hover:text-ink",
+              category === c ? "bg-accent-soft text-accent-ink" : "bg-paper-2 text-ink-2 hover:text-ink",
             )}
           >
             {c}

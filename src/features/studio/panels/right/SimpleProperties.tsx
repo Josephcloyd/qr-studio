@@ -201,7 +201,7 @@ export function IconProperties({ el }: { el: IconElement }) {
                   onClick={() => set({ icon: i.id, name: i.label })}
                   className={cn(
                     "hover:bg-paper-2 flex size-10 items-center justify-center rounded-lg",
-                    i.id === el.icon && "bg-ink text-paper hover:bg-ink",
+                    i.id === el.icon && "bg-accent-soft text-accent-ink hover:bg-accent-soft",
                   )}
                 >
                   <i.Icon className="size-5" aria-hidden="true" />

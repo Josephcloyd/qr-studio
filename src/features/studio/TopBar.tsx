@@ -16,7 +16,10 @@ import {
   Undo2,
 } from "lucide-react";
 import { useRef } from "react";
-import { BrandMark } from "@/components/site/Brand";
+import { Brand } from "@/components/site/Brand";
+import { ProductNav } from "@/components/site/SiteHeader";
+import { SupportButton } from "@/components/site/Support";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { Button, IconButton } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
 import { PROJECT_EXTENSION } from "@/lib/project/projectFile";
@@ -24,7 +27,6 @@ import { downloadProject, importProjectFile } from "@/features/project/projectIO
 import { useEditorStore } from "./store/editorStore";
 import { useUiStore } from "./store/uiStore";
 import { useViewportStore } from "./store/viewportStore";
-import Link from "next/link";
 
 function MenuItem({
   icon: Icon,
@@ -70,13 +72,8 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
 
   return (
     <header className="border-line bg-card flex h-14 shrink-0 items-center gap-1.5 border-b px-2 sm:gap-2 sm:px-3">
-      <Link
-        href="/"
-        aria-label="QR Studio home"
-        className="hover:bg-paper-2 shrink-0 rounded-lg p-1"
-      >
-        <BrandMark className="size-7" />
-      </Link>
+      <Brand compact={compact} className="mr-1 shrink-0" />
+      {!compact && <ProductNav className="mr-1 hidden 2xl:flex" />}
       <input
         ref={fileRef}
         type="file"
@@ -176,6 +173,7 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
             type="button"
             onClick={() => useViewportStore.getState().zoomAt(1)}
             title="Zoom to 100%"
+            aria-label={`Zoom ${Math.round(zoom * 100)}% — reset to 100%`}
             className="text-ink-2 hover:text-ink w-14 text-center font-mono text-[12px] font-semibold tabular-nums"
           >
             {Math.round(zoom * 100)}%
@@ -196,6 +194,15 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
       >
         <Eye className="size-[18px]" />
       </IconButton>
+      {!compact && <ThemeToggle />}
+      <span className={cn("contents", !compact && "lg:hidden")}>
+        <SupportButton compact />
+      </span>
+      {!compact && (
+        <span className="hidden lg:contents">
+          <SupportButton />
+        </span>
+      )}
       <Button variant="primary" size="sm" className="h-9" onClick={() => openDialog("export")}>
         <Download className="size-4" aria-hidden="true" />
         <span className={cn(compact && "sr-only")}>Export</span>

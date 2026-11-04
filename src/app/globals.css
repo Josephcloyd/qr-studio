@@ -84,33 +84,79 @@
 }
 
 /* ---------------------------------------------------------------
-   Design tokens — "print shop": warm paper, ink, one loud accent.
+   Design tokens — GetLaunch Ph family look (shared with ResumeFlow):
+   dark graphite surfaces, one green brand accent, gold for "Support".
+   Dark is the default; [data-theme="light"] switches the UI chrome.
+   (Designs on the canvas are never affected by the UI theme.)
 ---------------------------------------------------------------- */
 :root {
-  --paper: #f6f3ec;
-  --paper-2: #efeae0;
-  --paper-3: #e7e1d4;
-  --card: #fffdf8;
-  --ink: #16130f;
-  --ink-2: #463f36;
-  --ink-3: #6b6458;
-  --line: #e2dccf;
-  --line-strong: #cbc2b0;
-  --accent: #ff5a1f;
-  --accent-soft: #ffe3d6;
-  --accent-ink: #b8360a;
-  --cobalt: #2b3bff;
-  --cobalt-soft: #e3e6ff;
+  color-scheme: dark;
+  --paper: #131615;
+  --paper-2: #191c1b;
+  --paper-3: #242827;
+  --card: #1d2120;
+  --ink: #eef2ef;
+  --ink-2: #c3cbc6;
+  --ink-3: #939d97;
+  --line: #2b302e;
+  --line-strong: #6b7671;
+  --accent: #4fb889;
+  --accent-soft: #1b3a2d;
+  --accent-ink: #72d4a8;
+  --primary: #357d5c;
+  --primary-hover: #3f8f6a;
+  --on-primary: #ffffff;
+  --gold: #e8b04b;
+  --gold-soft: #2a2213;
+  --gold-line: #5c4720;
+  --cobalt: #8fb4ff;
+  --cobalt-soft: #1c2740;
+  --success: #72d4a8;
+  --success-soft: #173528;
+  --warning: #f0b955;
+  --warning-soft: #352a13;
+  --danger: #ff8f86;
+  --danger-soft: #3a1e1c;
+  --grain: rgb(255 255 255 / 0.025);
+  --dot: rgb(255 255 255 / 0.07);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-sheet: 0 1px 0 rgb(0 0 0 / 0.2), 0 12px 32px -12px rgb(0 0 0 / 0.55);
+  --shadow-pop: 0 1px 2px rgb(0 0 0 / 0.3), 0 18px 48px -16px rgb(0 0 0 / 0.7);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #f4f6f5;
+  --paper-2: #eaeeec;
+  --paper-3: #dfe5e2;
+  --card: #ffffff;
+  --ink: #131615;
+  --ink-2: #3b4440;
+  --ink-3: #5c6762;
+  --line: #dbe2de;
+  --line-strong: #87928d;
+  --accent: #2f8a5f;
+  --accent-soft: #dcefe5;
+  --accent-ink: #1d6a46;
+  --primary: #2f7a56;
+  --primary-hover: #276a4a;
+  --on-primary: #ffffff;
+  --gold: #9a6a12;
+  --gold-soft: #fbf1dc;
+  --gold-line: #e3c98f;
+  --cobalt: #2b4bff;
+  --cobalt-soft: #e3e8ff;
   --success: #1c6e46;
   --success-soft: #dcf1e5;
   --warning: #8a5300;
   --warning-soft: #fdefd3;
   --danger: #b4232a;
   --danger-soft: #fbe2e1;
-
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --shadow-sheet: 0 1px 0 rgb(22 19 15 / 0.04), 0 12px 32px -12px rgb(22 19 15 / 0.18);
-  --shadow-pop: 0 1px 2px rgb(22 19 15 / 0.08), 0 16px 48px -16px rgb(22 19 15 / 0.32);
+  --grain: rgb(19 22 21 / 0.03);
+  --dot: rgb(19 22 21 / 0.09);
+  --shadow-sheet: 0 1px 0 rgb(19 22 21 / 0.04), 0 12px 32px -12px rgb(19 22 21 / 0.18);
+  --shadow-pop: 0 1px 2px rgb(19 22 21 / 0.08), 0 16px 48px -16px rgb(19 22 21 / 0.3);
 }
 
 @theme inline {
@@ -134,9 +180,15 @@
   --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-line: var(--gold-line);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", Georgia, serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --shadow-sheet: var(--shadow-sheet);
@@ -168,8 +220,8 @@ body {
 /* Subtle paper grain for editorial surfaces. Pure CSS, no image request. */
 .paper-grain {
   background-image:
-    radial-gradient(rgb(22 19 15 / 0.035) 1px, transparent 1px),
-    radial-gradient(rgb(22 19 15 / 0.025) 1px, transparent 1px);
+    radial-gradient(var(--grain) 1px, transparent 1px),
+    radial-gradient(var(--grain) 1px, transparent 1px);
   background-size:
     18px 18px,
     27px 27px;
@@ -181,7 +233,7 @@ body {
 /* Editor canvas backdrop: a faint dot grid. */
 .workspace-dots {
   background-color: var(--paper-2);
-  background-image: radial-gradient(rgb(22 19 15 / 0.09) 1px, transparent 1px);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 

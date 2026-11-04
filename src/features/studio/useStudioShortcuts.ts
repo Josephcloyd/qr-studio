@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { createImageElement } from "@/lib/model/factory";
 import { useImageUpload } from "@/features/assets/useImageUpload";
-import { isInteractiveTarget, isTextEntry } from "./focusContext";
+import { isCompositeWidget, isInteractiveTarget, isTextEntry } from "./focusContext";
 import { useEditorStore } from "./store/editorStore";
 import { useUiStore } from "./store/uiStore";
 import { useViewportStore } from "./store/viewportStore";
@@ -88,8 +88,10 @@ export function useStudioShortcuts(onSaveProject: () => void): void {
       if (mod && (e.key === "[" || e.key === "{"))
         return (handled(), s.reorderSelection(e.shiftKey ? "back" : "backward"));
       if (mod) return;
-      // Buttons, radios, menus, sliders and pickers own Enter/Space/arrows/Delete.
-      if (isInteractiveTarget(e.target)) return;
+      // Radios, tabs, menus, sliders and pickers own arrows/Delete/Escape.
+      if (isCompositeWidget(e.target)) return;
+      // Any focused button/link owns Enter (and Space); other keys still reach the canvas.
+      if (e.key === "Enter" && isInteractiveTarget(e.target)) return;
 
       if (e.key === "Delete" || e.key === "Backspace") return (handled(), s.deleteSelection());
       if (e.key === "Escape") return s.clearSelection();

@@ -212,7 +212,7 @@ function EmptyAction({
     <button
       type="button"
       onClick={onClick}
-      className="bg-paper-2 text-ink hover:bg-ink hover:text-paper inline-flex h-9 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold transition-colors"
+      className="bg-paper-2 text-ink hover:bg-primary hover:text-on-primary inline-flex h-9 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold transition-colors"
     >
       <Icon className="size-4" aria-hidden="true" />
       {label}

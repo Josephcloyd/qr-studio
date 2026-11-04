@@ -46,7 +46,7 @@ export function QrPanel() {
           <button
             type="button"
             onClick={addFromGenerator}
-            className="group border-ink bg-ink text-paper flex items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5"
+            className="group border-accent bg-accent-soft text-ink flex items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5"
           >
             <span className="bg-paper rounded-lg p-1">
               <QrSvg payload={genPayload} style={gen.style} size={44} idPrefix="from-gen" />

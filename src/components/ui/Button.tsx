@@ -8,11 +8,11 @@ type Variant = "primary" | "accent" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-ink text-paper hover:bg-ink-2 active:translate-y-px shadow-[0_1px_0_rgb(0_0_0/0.2)]",
+  primary: "bg-primary text-on-primary hover:bg-primary-hover active:translate-y-px shadow-[0_1px_0_rgb(0_0_0/0.2)]",
   accent:
-    "bg-accent text-ink hover:brightness-95 active:translate-y-px shadow-[inset_0_-2px_0_rgb(0_0_0/0.12)]",
+    "bg-primary text-on-primary hover:bg-primary-hover active:translate-y-px shadow-[inset_0_-2px_0_rgb(0_0_0/0.12)]",
   secondary:
-    "bg-card text-ink border border-line-strong hover:border-ink hover:bg-white active:translate-y-px",
+    "bg-card text-ink border border-line-strong hover:border-ink-3 hover:bg-paper-3 active:translate-y-px",
   ghost: "text-ink-2 hover:text-ink hover:bg-paper-3/70",
   danger: "bg-card text-danger border border-danger/30 hover:bg-danger-soft",
 };
@@ -83,7 +83,7 @@ export function IconButton({
           aria-pressed={active || undefined}
           className={cn(
             "text-ink-2 hover:bg-paper-3/80 hover:text-ink inline-flex shrink-0 items-center justify-center transition-colors duration-150 disabled:pointer-events-none disabled:opacity-35",
-            active && "bg-ink text-paper hover:bg-ink hover:text-paper",
+            active && "bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink",
             ICON_SIZES[size],
             className,
           )}

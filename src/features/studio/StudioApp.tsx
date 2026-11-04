@@ -73,7 +73,7 @@ function ToolRail({ vertical }: { vertical: boolean }) {
             className={cn(
               "flex shrink-0 flex-col items-center justify-center gap-1 rounded-xl font-medium transition-colors",
               vertical ? "h-[62px] text-[10.5px]" : "w-[68px] text-[10.5px]",
-              active ? "bg-ink text-paper" : "text-ink-3 hover:bg-paper-2 hover:text-ink",
+              active ? "bg-accent-soft text-accent-ink" : "text-ink-3 hover:bg-paper-2 hover:text-ink",
             )}
           >
             <Icon className={cn("size-[20px]", active && "text-accent")} aria-hidden="true" />

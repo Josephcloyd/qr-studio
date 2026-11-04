@@ -11,6 +11,9 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
+  // Six browser engines rasterizing exports in parallel saturate a laptop;
+  // cap workers so timing-sensitive steps don't time out under load.
+  workers: process.env.CI ? 2 : 4,
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"]],
   use: {

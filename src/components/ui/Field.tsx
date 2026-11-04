@@ -338,7 +338,7 @@ export function SwitchField({ label, checked, onCheckedChange, hint, disabled }:
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
-        className="bg-line-strong data-[state=checked]:bg-ink relative mt-0.5 h-[22px] w-[38px] shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40"
+        className="bg-line-strong data-[state=checked]:bg-primary relative mt-0.5 h-[22px] w-[38px] shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40"
       >
         <RSwitch.Thumb className="bg-card block size-[18px] translate-x-[2px] rounded-full shadow transition-transform duration-150 data-[state=checked]:translate-x-[18px]" />
       </RSwitch.Root>

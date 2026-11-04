@@ -129,7 +129,7 @@ export default function PrivacyPage() {
       <p className="border-line text-ink-3 mt-6 border-t pt-8 text-[15px]">
         QR Studio is a free tool from GetLaunch Ph.{" "}
         <Link
-          href="/create/"
+          href="/"
           className="text-accent-ink font-semibold underline-offset-4 hover:underline"
         >
           Create a QR code

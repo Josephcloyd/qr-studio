@@ -33,7 +33,7 @@ test.describe("Mobile studio", () => {
   });
 
   test("generator works on a phone", async ({ page }) => {
-    await gotoReady(page, "/create/");
+    await gotoReady(page, "/");
     await page.getByLabel("Website address", { exact: true }).fill("example.com");
     await expect(page.locator("[data-scan-status]").first()).toHaveAttribute(
       "data-scan-status",
@@ -47,7 +47,7 @@ test.describe("Mobile studio", () => {
     expect(overflow).toBeLessThanOrEqual(1);
   });
 
-  test("landing page has no horizontal overflow", async ({ page }) => {
+  test("home page has no horizontal overflow", async ({ page }) => {
     await gotoReady(page, "/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const overflow = await page.evaluate(

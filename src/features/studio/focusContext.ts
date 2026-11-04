@@ -29,7 +29,15 @@ export function isTextEntry(target: EventTarget | null): boolean {
 const INTERACTIVE =
   'button, a[href], summary, input, select, textarea, [role="radio"], [role="tab"], [role="menuitem"], [role="menu"], [role="slider"], [role="switch"], [role="option"], [role="listbox"], [role="dialog"], [data-radix-popper-content-wrapper]';
 
-/** True when focus is on a control that uses Enter/Space/arrows itself. */
+/** True when focus is on a control that activates with Enter/Space. */
 export function isInteractiveTarget(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest(INTERACTIVE) !== null;
+}
+
+/** Widgets that use arrow keys / Delete / Escape themselves (plain buttons don't). */
+const COMPOSITE =
+  'input, select, textarea, [role="radio"], [role="radiogroup"], [role="tab"], [role="tablist"], [role="menuitem"], [role="menu"], [role="slider"], [role="option"], [role="listbox"], [role="dialog"], [data-radix-popper-content-wrapper], .react-colorful';
+
+export function isCompositeWidget(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest(COMPOSITE) !== null;
 }

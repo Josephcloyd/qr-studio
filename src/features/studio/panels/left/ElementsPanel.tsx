@@ -162,7 +162,7 @@ export function ElementsPanel() {
                   aria-label={`Add ${i.label} icon`}
                   title={i.label}
                   onClick={() => addIcon(i.id, i.label)}
-                  className="text-ink-2 hover:bg-ink hover:text-paper flex aspect-square items-center justify-center rounded-lg transition-colors"
+                  className="text-ink-2 hover:bg-accent-soft hover:text-accent-ink flex aspect-square items-center justify-center rounded-lg transition-colors"
                 >
                   <i.Icon className="size-5" aria-hidden="true" />
                 </button>

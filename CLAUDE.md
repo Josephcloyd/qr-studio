@@ -30,13 +30,13 @@ src/lib/          Pure, framework-free logic (unit-tested, ≥80% coverage)
   export/         PNG pHYs (DPI) writer
 src/render/       React SVG renderers — ONE renderer for canvas, thumbnails and all exports
 src/features/
-  generator/      /create page
+  generator/      home page (/) generator
   qr-editor/      shared QR forms, style/logo controls, live scan check (jsQR)
   studio/         editor: store (zustand), canvas viewport + gestures, panels, dialogs, mobile layout
   export/         SVG/PNG/PDF pipeline (browser-only), scan verification before download
   templates/      20 templates authored with templates/kit.ts (fractions of the artboard)
-  landing/        marketing page sections
-src/app/          routes: / (site group), /create, /templates, /privacy, /studio (client-only via next/dynamic ssr:false)
+  landing/        template shelf shown on the home page and /templates
+src/app/          routes: / (generator + templates), /templates, /privacy, /studio (client-only via next/dynamic ssr:false)
 ```
 
 Key conventions:
@@ -70,3 +70,11 @@ E2E runs against the built static export. Run `npx playwright install` once. The
 - `tests/decode/` renders SVG with resvg and decodes with jsQR (independent of the generator). Add new styles/templates there.
 - E2E helpers in `e2e/helpers.ts`; use `gotoReady()` before typing (waits for `html[data-hydrated]`).
 - `e2e/privacy.spec.ts` asserts every request is a same-origin GET/HEAD without a body and that browser storage stays empty — keep it green.
+
+## Branding & UI
+
+- GetLaunch Ph family look (matches ResumeFlow): dark graphite UI by default, green brand accent, gold "Support" button. Tokens live in `src/app/globals.css` (`:root` = dark, `[data-theme="light"]` = light). Use tokens (`bg-primary`, `text-accent-ink`, `bg-gold-soft`…), never raw colors, in UI chrome.
+- The theme toggle is in-memory only (no storage writes, by design) and resets on reload.
+- Header layout: logo + "by GetLaunchPh", segmented product nav (Generator · Templates · Studio), theme toggle, Support, primary action.
+- Home (`/`) is the generator with the template shelf below — there is no marketing landing page.
+- Support opens a GCash donation dialog (`src/components/site/Support.tsx`) showing `public/support/gcash-qr.png`, a static same-origin file. If you replace that image, verify it still decodes to the intended InstaPay payload.

@@ -57,7 +57,7 @@ export function TypePicker({
             className={cn(
               "group flex flex-col items-center gap-1.5 rounded-xl border px-1 py-2.5 text-[11.5px] font-medium transition-all duration-150",
               active
-                ? "border-ink bg-ink text-paper shadow-[0_2px_0_var(--accent)]"
+                ? "border-accent bg-accent-soft text-ink"
                 : "border-line bg-card text-ink-2 hover:border-ink-3 hover:text-ink",
             )}
           >

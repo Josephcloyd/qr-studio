@@ -16,7 +16,7 @@ export function SiteFooter() {
           aria-label="Footer"
           className="text-ink-2 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] font-medium"
         >
-          <Link href="/create/" className="hover:text-ink">
+          <Link href="/" className="hover:text-ink">
             Generator
           </Link>
           <Link href="/studio/" className="hover:text-ink">

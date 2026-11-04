@@ -32,7 +32,7 @@ export function TemplateShelf({
               className={cn(
                 "h-9 rounded-full border px-4 text-[13.5px] font-semibold transition-colors",
                 category === c
-                  ? "border-ink bg-ink text-paper"
+                  ? "border-accent bg-accent-soft text-accent-ink"
                   : "border-line-strong bg-card text-ink-2 hover:border-ink hover:text-ink",
               )}
             >
@@ -60,7 +60,7 @@ export function TemplateShelf({
                   className="shadow-[0_14px_30px_-14px_rgb(22_19_15/0.55)] transition-transform duration-300 group-hover:scale-[1.03]"
                 />
                 <span
-                  className="bg-ink text-paper absolute top-3 right-3 flex size-8 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                  className="bg-primary text-on-primary absolute top-3 right-3 flex size-8 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                   aria-hidden="true"
                 >
                   <ArrowUpRight className="size-4" />
