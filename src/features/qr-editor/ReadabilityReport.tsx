@@ -89,7 +89,17 @@ export function ReadabilityList({
             )}
           >
             <Icon className="mt-px size-4 shrink-0" aria-hidden="true" />
-            <span className="text-ink-2">{issue.message}</span>
+            <span className="text-ink-2">
+              {/* Severity isn't conveyed by color/icon alone. */}
+              <span className="sr-only">
+                {issue.severity === "error"
+                  ? "Problem: "
+                  : issue.severity === "warning"
+                    ? "Warning: "
+                    : "Note: "}
+              </span>
+              {issue.message}
+            </span>
           </li>
         );
       })}

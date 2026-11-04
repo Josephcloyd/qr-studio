@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FONTS } from "@/lib/fonts/registry";
+import { FONTS, fontLoadQueries } from "@/lib/fonts/registry";
 import { fitTextHeights } from "@/lib/model/textFit";
 import { canvasMeasure, clearMeasureCache } from "@/lib/text/measure";
 import { useEditorStore } from "./store/editorStore";
@@ -14,10 +14,7 @@ export function useFontsReady(): void {
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
     let cancelled = false;
-    const loads = FONTS.filter((f) => f.file).flatMap((f) => [
-      document.fonts.load(`400 16px '${f.family}'`),
-      document.fonts.load(`700 16px '${f.family}'`),
-    ]);
+    const loads = FONTS.flatMap(fontLoadQueries).map((q) => document.fonts.load(q));
     Promise.allSettled(loads).then(() => {
       if (cancelled) return;
       clearMeasureCache();

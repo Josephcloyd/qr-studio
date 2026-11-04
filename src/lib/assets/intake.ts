@@ -2,6 +2,7 @@
  * Local image intake. Files are read with the File API, decoded in the
  * browser and (if huge) downscaled on a canvas. Nothing leaves the device.
  */
+import { createObjectUrl, revokeObjectUrl } from "./objectUrls";
 
 export const ACCEPTED_IMAGE_TYPES = [
   "image/png",
@@ -64,19 +65,129 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
   });
 }
 
+/** Largest image we'll decode (≈ 7000 × 7000). Checked from the header first. */
+export const MAX_DECODE_PIXELS = 50_000_000;
+/** SVGs are rasterized with their longest side in this range. */
+const SVG_RASTER_MIN = 1024;
+const SVG_RASTER_MAX = 2048;
+
+const u32 = (b: Uint8Array, i: number) =>
+  ((b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3]) >>> 0;
+const u16be = (b: Uint8Array, i: number) => (b[i] << 8) | b[i + 1];
+const u16le = (b: Uint8Array, i: number) => b[i] | (b[i + 1] << 8);
+const u24le = (b: Uint8Array, i: number) => b[i] | (b[i + 1] << 8) | (b[i + 2] << 16);
+
+/**
+ * Reads pixel dimensions straight from a PNG/JPEG/WebP header — without
+ * decoding — so oversized "decompression bombs" are rejected before they can
+ * allocate gigabytes. Returns null when the header can't be read.
+ */
+export function readImageDimensions(bytes: Uint8Array): { width: number; height: number } | null {
+  // PNG: signature, then IHDR width/height at 16..23
+  if (
+    bytes.length >= 24 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47
+  ) {
+    return { width: u32(bytes, 16), height: u32(bytes, 20) };
+  }
+  // JPEG: walk markers to the first SOFn
+  if (bytes.length >= 4 && bytes[0] === 0xff && bytes[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < bytes.length) {
+      if (bytes[i] !== 0xff) {
+        i++;
+        continue;
+      }
+      const marker = bytes[i + 1];
+      const isSof = marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker);
+      if (isSof) return { height: u16be(bytes, i + 5), width: u16be(bytes, i + 7) };
+      if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+        i += 2;
+        continue;
+      }
+      i += 2 + u16be(bytes, i + 2);
+    }
+    return null;
+  }
+  // WebP: RIFF....WEBP + VP8 / VP8L / VP8X chunk
+  const ascii = (i: number, n: number) => String.fromCharCode(...bytes.subarray(i, i + n));
+  if (bytes.length >= 30 && ascii(0, 4) === "RIFF" && ascii(8, 4) === "WEBP") {
+    const chunk = ascii(12, 4);
+    if (chunk === "VP8X") return { width: u24le(bytes, 24) + 1, height: u24le(bytes, 27) + 1 };
+    if (chunk === "VP8L") {
+      const b = bytes.subarray(21, 25);
+      return {
+        width: (u16le(b, 0) & 0x3fff) + 1,
+        height: (((b[1] >> 6) | (b[2] << 2) | ((b[3] & 0xf) << 10)) & 0x3fff) + 1,
+      };
+    }
+    if (chunk === "VP8 ")
+      return { width: u16le(bytes, 26) & 0x3fff, height: u16le(bytes, 28) & 0x3fff };
+  }
+  return null;
+}
+
+async function checkDimensions(blob: Blob): Promise<void> {
+  const head = new Uint8Array(await blob.slice(0, 64 * 1024).arrayBuffer());
+  const dims = readImageDimensions(head);
+  if (!dims || dims.width < 1 || dims.height < 1) {
+    throw new ImageIntakeError(
+      "That image couldn't be read. It may be damaged or in an unsupported format.",
+    );
+  }
+  if (dims.width * dims.height > MAX_DECODE_PIXELS) {
+    throw new ImageIntakeError(
+      "That image is too large (over 50 megapixels). Resize it and try again.",
+    );
+  }
+}
+
+async function canvasToPng(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new ImageIntakeError("Converting the image failed."))),
+      "image/png",
+    ),
+  );
+}
+
+/**
+ * SVGs are rasterized to PNG on arrival. Rendering through <img> is a static,
+ * script-free, no-network context, and storing only pixels means an SVG's
+ * scripts, links or remote references can never reach the canvas, project
+ * files or exports (where other design tools might honor them).
+ */
 async function processSvg(file: Blob, name: string): Promise<ProcessedImage> {
   const markup = await file.text();
   if (isUnsafeSvg(markup))
     throw new ImageIntakeError("This SVG contains scripts or embedded HTML and can't be used.");
-  const blob = new Blob([markup], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(blob);
+  const url = createObjectUrl(new Blob([markup], { type: "image/svg+xml" }));
   try {
     const img = await loadImageElement(url);
-    const width = img.naturalWidth || DEFAULT_SVG_SIDE;
-    const height = img.naturalHeight || DEFAULT_SVG_SIDE;
-    return { blob, mime: "image/svg+xml", width, height, name };
+    const naturalW = img.naturalWidth || DEFAULT_SVG_SIDE;
+    const naturalH = img.naturalHeight || DEFAULT_SVG_SIDE;
+    const longest = Math.max(naturalW, naturalH);
+    const scale = Math.min(SVG_RASTER_MAX, Math.max(SVG_RASTER_MIN, longest)) / longest;
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(naturalW * scale));
+    canvas.height = Math.max(1, Math.round(naturalH * scale));
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new ImageIntakeError("Your browser couldn't convert this SVG.");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await canvasToPng(canvas);
+    canvas.width = canvas.height = 0;
+    return {
+      blob,
+      mime: "image/png",
+      width: Math.round(naturalW * scale),
+      height: Math.round(naturalH * scale),
+      name,
+    };
   } finally {
-    URL.revokeObjectURL(url);
+    revokeObjectUrl(url);
   }
 }
 
@@ -85,6 +196,7 @@ async function processRaster(
   mime: AcceptedImageType,
   name: string,
 ): Promise<ProcessedImage> {
+  await checkDimensions(file);
   let bitmap: ImageBitmap;
   try {
     bitmap = await createImageBitmap(file);
@@ -111,6 +223,7 @@ async function processRaster(
         0.92,
       ),
     );
+    canvas.width = canvas.height = 0; // release the bitmap memory now (matters on iOS)
     return { blob, mime: outMime, width: target.width, height: target.height, name };
   } finally {
     bitmap.close();
@@ -121,9 +234,17 @@ async function processRaster(
 export async function processImageFile(file: File): Promise<ProcessedImage> {
   const problem = validateImageFile(file);
   if (problem) throw new ImageIntakeError(problem);
-  const mime = file.type as AcceptedImageType;
   const name = file.name.replace(/\.[^.]+$/, "").slice(0, 60) || "Image";
-  return mime === "image/svg+xml" ? processSvg(file, name) : processRaster(file, mime, name);
+  return processImageBlob(file, file.type as AcceptedImageType, name);
+}
+
+/** Same pipeline for any blob (uploads, pasted images, imported project assets). */
+export function processImageBlob(
+  blob: Blob,
+  mime: AcceptedImageType,
+  name: string,
+): Promise<ProcessedImage> {
+  return mime === "image/svg+xml" ? processSvg(blob, name) : processRaster(blob, mime, name);
 }
 
 export function blobToDataUrl(blob: Blob): Promise<string> {

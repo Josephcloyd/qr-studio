@@ -10,9 +10,10 @@ import {
   LockKeyhole,
   PenTool,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { Dialog } from "@/components/ui/Dialog";
 import { NumberField, Segmented, SelectField, SwitchField } from "@/components/ui/Field";
 import { toast } from "@/components/ui/Toaster";
@@ -55,6 +56,7 @@ export function ExportDialog() {
   const [format, setFormat] = useState<Format>("png");
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<Pending | null>(null);
+  const runId = useRef(0);
 
   // PNG
   const [pngMode, setPngMode] = useState<"dpi" | "width">("dpi");
@@ -91,10 +93,15 @@ export function ExportDialog() {
   };
 
   const run = async () => {
+    const id = ++runId.current;
+    // Closing the dialog mid-export bumps runId, so a late result is dropped
+    // instead of downloading (or flashing a stale warning) after the fact.
+    const stale = () => id !== runId.current;
     setBusy(true);
     try {
       if (format === "png") {
         const r = await exportPng(doc, assets, { dpi: pngDpiValue, transparent });
+        if (stale()) return;
         const note = r.clamped ? " (reduced to fit browser limits)" : "";
         handleRaster(
           r,
@@ -103,6 +110,7 @@ export function ExportDialog() {
         );
       } else if (format === "svg") {
         const blob = await exportSvg(doc, assets, transparent);
+        if (stale()) return;
         finish(
           blob,
           `${base}.svg`,
@@ -110,6 +118,7 @@ export function ExportDialog() {
         );
       } else if (format === "pdf") {
         const r = await exportPdf(doc, assets, pdf);
+        if (stale()) return;
         handleRaster(
           r,
           `${base}.pdf`,
@@ -120,17 +129,23 @@ export function ExportDialog() {
         openDialog(null);
       }
     } catch (error) {
-      toast.error("Export failed", error instanceof Error ? error.message : "Please try again.");
+      if (!stale())
+        toast.error("Export failed", error instanceof Error ? error.message : "Please try again.");
     } finally {
-      setBusy(false);
+      if (!stale()) setBusy(false);
     }
   };
 
+  const { attach: groupAttach, onKeyDown: groupKeys } = useRovingGroup<HTMLDivElement>();
   return (
     <Dialog
       open={open}
       onOpenChange={(o) => {
-        if (!o) setPending(null);
+        if (!o) {
+          runId.current++; // cancel any export in flight
+          setPending(null);
+          setBusy(false);
+        }
         openDialog(o ? "export" : null);
       }}
       title="Export"
@@ -199,6 +214,8 @@ export function ExportDialog() {
       ) : (
         <div className="grid gap-6 md:grid-cols-[200px_1fr]">
           <div
+            ref={groupAttach}
+            onKeyDown={groupKeys}
             role="radiogroup"
             aria-label="Format"
             className="grid grid-cols-2 gap-2 md:grid-cols-1"

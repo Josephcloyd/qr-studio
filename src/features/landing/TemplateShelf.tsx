@@ -21,13 +21,12 @@ export function TemplateShelf({
   return (
     <div>
       {showTabs && (
-        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Template categories">
+        <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Template categories">
           {(["All", ...TEMPLATE_CATEGORIES] as const).map((c) => (
             <button
               key={c}
               type="button"
-              role="tab"
-              aria-selected={category === c}
+              aria-pressed={category === c}
               onClick={() => setCategory(c)}
               className={cn(
                 "h-9 rounded-full border px-4 text-[13.5px] font-semibold transition-colors",

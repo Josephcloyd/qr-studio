@@ -127,7 +127,7 @@ export function SelectionActions({ locked }: { locked: boolean }) {
         <Copy className="size-4" />
       </IconButton>
       <IconButton
-        label={locked ? "Unlock" : "Lock"}
+        label="Lock"
         shortcut="Ctrl Shift L"
         size="sm"
         active={locked}

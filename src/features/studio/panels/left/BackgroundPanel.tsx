@@ -55,10 +55,10 @@ export function BackgroundPanel() {
     <div className="pb-6">
       <PanelHeading title="Background" subtitle="Colors, gradients, patterns or an image." />
       <div className="grid gap-5 px-4">
-        <div className="grid grid-cols-6 gap-2" role="list" aria-label="Solid colors">
+        <div className="grid grid-cols-6 gap-2" role="group" aria-label="Background colors">
           <button
             type="button"
-            role="listitem"
+            aria-pressed={bg.paint.kind === "none"}
             aria-label="Transparent"
             onClick={() => setBg({ paint: NO_PAINT })}
             className={cn(
@@ -70,7 +70,7 @@ export function BackgroundPanel() {
             <button
               key={c}
               type="button"
-              role="listitem"
+              aria-pressed={same(solid(c))}
               aria-label={`Background ${c}`}
               onClick={() => setBg({ paint: solid(c) })}
               className={cn(

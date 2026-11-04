@@ -40,15 +40,14 @@ export function TemplatesPanel() {
       <PanelHeading title="Templates" subtitle="Starting points — every element stays editable." />
       <div
         className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-4 pb-3"
-        role="tablist"
+        role="group"
         aria-label="Template categories"
       >
         {(["All", ...TEMPLATE_CATEGORIES] as const).map((c) => (
           <button
             key={c}
             type="button"
-            role="tab"
-            aria-selected={category === c}
+            aria-pressed={category === c}
             onClick={() => setCategory(c)}
             className={cn(
               "h-8 shrink-0 rounded-full px-3 text-[12.5px] font-semibold transition-colors",

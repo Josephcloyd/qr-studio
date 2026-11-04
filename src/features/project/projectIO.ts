@@ -3,12 +3,7 @@
  * file is written with a Blob download and read with the File API.
  */
 import { toast } from "@/components/ui/Toaster";
-import {
-  dataUrlToBlob,
-  isUnsafeSvg,
-  MAX_IMAGE_SIDE,
-  type ProcessedImage,
-} from "@/lib/assets/intake";
+import { dataUrlToBlob, processImageBlob } from "@/lib/assets/intake";
 import { createId } from "@/lib/model/ids";
 import { referencedAssets } from "@/lib/model/ops";
 import {
@@ -44,7 +39,8 @@ export async function downloadProject(): Promise<void> {
     }
     const blob = new Blob([serializeProject(doc, list)], { type: "application/json" });
     downloadBlob(blob, projectFileName(doc.name));
-    useEditorStore.getState().markSaved();
+    // Only mark saved if nothing changed while images were being encoded.
+    if (useEditorStore.getState().doc === doc) useEditorStore.getState().markSaved();
     toast.success(
       "Project file downloaded",
       `${formatBytes(blob.size)} · open it later with “Open project”.`,
@@ -55,21 +51,6 @@ export async function downloadProject(): Promise<void> {
       error instanceof Error ? error.message : "Please try again.",
     );
   }
-}
-
-async function verifyImage(blob: Blob, mime: string): Promise<{ width: number; height: number }> {
-  if (mime === "image/svg+xml") {
-    if (isUnsafeSvg(await blob.text())) throw new Error("An embedded SVG contains scripts.");
-    return { width: 0, height: 0 };
-  }
-  const bitmap = await createImageBitmap(blob).catch(() => {
-    throw new Error("An embedded image is damaged.");
-  });
-  const size = { width: bitmap.width, height: bitmap.height };
-  bitmap.close();
-  if (Math.max(size.width, size.height) > MAX_IMAGE_SIDE * 2)
-    throw new Error("An embedded image is too large.");
-  return size;
 }
 
 /** Reads, validates and loads a project file. Returns true on success. */
@@ -89,15 +70,9 @@ export async function importProjectFile(file: File): Promise<boolean> {
   try {
     const remap = new Map<string, string>();
     for (const a of project.assets) {
-      const blob = dataUrlToBlob(a.dataUrl);
-      const verified = await verifyImage(blob, a.mime);
-      const image: ProcessedImage = {
-        blob,
-        mime: a.mime,
-        name: a.name,
-        width: verified.width || a.width,
-        height: verified.height || a.height,
-      };
+      // Imported images get exactly the same treatment as uploads: size checked
+      // from the header before decoding, SVG rasterized, huge images downscaled.
+      const image = await processImageBlob(dataUrlToBlob(a.dataUrl), a.mime, a.name);
       const id = createId("asset");
       store.add(image, id);
       added.push(id);

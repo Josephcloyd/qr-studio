@@ -100,8 +100,9 @@ export function PropertiesPanel() {
         subtitle={el.locked ? "Locked — unlock to move or edit it." : undefined}
       />
       <div
-        className={el.locked ? "pointer-events-none opacity-50" : undefined}
-        aria-disabled={el.locked || undefined}
+        className={el.locked ? "opacity-50" : undefined}
+        // inert removes locked controls from mouse, keyboard and screen readers alike.
+        inert={el.locked}
       >
         <TypeProperties el={el} />
       </div>

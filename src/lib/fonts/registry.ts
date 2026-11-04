@@ -143,6 +143,19 @@ export function fontStack(id: string): string {
   return `${primary}, ${font.fallback}`;
 }
 
+/**
+ * `document.fonts.load()` queries covering every face we ship for a font —
+ * including italics, which live in separate files and would otherwise be
+ * measured with a fallback font the first time they're used.
+ */
+export function fontLoadQueries(font: FontOption): string[] {
+  if (!font.file) return [];
+  const family = `'${font.family}'`;
+  const queries = [`400 16px ${family}`, `700 16px ${family}`];
+  if (font.italicFile) queries.push(`italic 400 16px ${family}`, `italic 700 16px ${family}`);
+  return queries;
+}
+
 export function clampWeight(id: string, weight: number): number {
   const [min, max] = getFont(id).weights;
   return Math.min(max, Math.max(min, weight));

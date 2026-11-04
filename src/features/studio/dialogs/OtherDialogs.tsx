@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { Dialog } from "@/components/ui/Dialog";
 import { createDocument } from "@/lib/model/factory";
 import { CANVAS_PRESETS } from "@/lib/model/presets";
@@ -109,6 +110,7 @@ export function NewDesignDialog() {
     openDialog(null);
   };
 
+  const { attach: groupAttach, onKeyDown: groupKeys } = useRovingGroup<HTMLDivElement>();
   return (
     <Dialog
       open={open}
@@ -132,6 +134,8 @@ export function NewDesignDialog() {
       }
     >
       <div
+        ref={groupAttach}
+        onKeyDown={groupKeys}
         role="radiogroup"
         aria-label="Canvas size"
         className="grid grid-cols-2 gap-2 sm:grid-cols-3"

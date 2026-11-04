@@ -2,6 +2,7 @@
 
 import { ColorField } from "@/components/ui/ColorField";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { Segmented, SliderField, SwitchField } from "@/components/ui/Field";
 import { solid } from "@/lib/model/paint";
 import {
@@ -70,12 +71,17 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
   const set = (patch: Partial<QrStyle>, key?: string) => onChange({ ...style, ...patch }, key);
   const logo = hasActiveLogo(style);
   const effective = effectiveEcLevel(style);
+  const { attach: shapeGroupAttach, onKeyDown: shapeGroupKeys } = useRovingGroup<HTMLDivElement>();
+  const { attach: frameGroupAttach, onKeyDown: frameGroupKeys } = useRovingGroup<HTMLDivElement>();
+  const { attach: dotGroupAttach, onKeyDown: dotGroupKeys } = useRovingGroup<HTMLDivElement>();
 
   return (
     <div className="grid gap-6">
       <section className="grid gap-2.5">
         <h3 className="text-ink text-[13px] font-semibold">Module shape</h3>
         <div
+          ref={shapeGroupAttach}
+          onKeyDown={shapeGroupKeys}
           role="radiogroup"
           aria-label="Module shape"
           className="grid grid-cols-3 gap-2 sm:grid-cols-6"
@@ -107,7 +113,13 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
 
       <section className="grid gap-2.5">
         <h3 className="text-ink text-[13px] font-semibold">Corner frames</h3>
-        <div role="radiogroup" aria-label="Corner frame" className="grid grid-cols-4 gap-2">
+        <div
+          ref={frameGroupAttach}
+          onKeyDown={frameGroupKeys}
+          role="radiogroup"
+          aria-label="Corner frame"
+          className="grid grid-cols-4 gap-2"
+        >
           {FINDER_FRAME_STYLES.map((f) => (
             <OptionTile
               key={f.id}
@@ -129,7 +141,13 @@ export function StyleControls({ style, onChange }: StyleControlsProps) {
           ))}
         </div>
         <h3 className="text-ink mt-1 text-[13px] font-semibold">Corner dots</h3>
-        <div role="radiogroup" aria-label="Corner dot" className="grid grid-cols-5 gap-2">
+        <div
+          ref={dotGroupAttach}
+          onKeyDown={dotGroupKeys}
+          role="radiogroup"
+          aria-label="Corner dot"
+          className="grid grid-cols-5 gap-2"
+        >
           {FINDER_DOT_STYLES.map((d) => {
             const safe = isFinderPairSafe(style.finderFrame, d.id);
             return (

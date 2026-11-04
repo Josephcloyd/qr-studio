@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { emptyContent, type QrContent } from "@/lib/qr/content";
 import { computeQrLayout } from "@/lib/qr/layout";
 import { buildMatrix } from "@/lib/qr/matrix";
@@ -32,6 +33,7 @@ function backdropFor(doc: DesignDocument): string | null {
 
 export function QrProperties({ el }: { el: QrElement }) {
   const [tab, setTab] = useState<Tab>("content");
+  const { attach: tabsAttach, onKeyDown: tabsKeys } = useRovingGroup<HTMLDivElement>("tab");
   const update = useEditorStore((s) => s.updateElement);
   const doc = useEditorStore((s) => s.doc);
   const logoAsset = useAssetStore((s) =>
@@ -67,6 +69,8 @@ export function QrProperties({ el }: { el: QrElement }) {
         action={<ScanBadge status={payload && !analysis.error ? scan : "idle"} />}
       >
         <div
+          ref={tabsAttach}
+          onKeyDown={tabsKeys}
           role="tablist"
           aria-label="QR settings"
           className="bg-paper-2 flex gap-1 rounded-xl p-1"

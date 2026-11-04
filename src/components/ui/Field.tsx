@@ -3,15 +3,17 @@
 import { Switch as RSwitch } from "radix-ui";
 import {
   useId,
+  useState,
   type InputHTMLAttributes,
   type ReactNode,
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
 import { cn } from "./cn";
+import { useRovingGroup } from "./useRovingGroup";
 
 const INPUT =
-  "w-full rounded-xl border border-line-strong bg-card px-3 text-sm text-ink placeholder:text-ink-3/70 transition-colors hover:border-ink-3 focus:border-ink focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-cobalt aria-[invalid=true]:border-danger";
+  "w-full rounded-xl border border-line-strong bg-card px-3 text-sm text-ink placeholder:text-ink-3 transition-colors hover:border-ink-3 focus:border-ink focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-cobalt aria-[invalid=true]:border-danger";
 
 interface FieldShellProps {
   label: string;
@@ -223,9 +225,15 @@ export function NumberField({
 }: NumberFieldProps) {
   const id = useId();
   const display = Number.isFinite(value) ? Number(value.toFixed(precision)) : 0;
-  const commit = (raw: string) => {
-    const n = Number(raw);
-    if (raw.trim() === "" || !Number.isFinite(n)) return;
+  // null = show the live value; a string = the user is typing. Keeps focus
+  // stable (no remount) when the committed value changes.
+  const [draft, setDraft] = useState<string | null>(null);
+  const invalid = draft !== null && (draft.trim() === "" || !Number.isFinite(Number(draft)));
+  const commit = () => {
+    if (draft === null) return;
+    const n = Number(draft);
+    setDraft(null);
+    if (draft.trim() === "" || !Number.isFinite(n)) return; // revert to the last valid value
     const clamped = Math.min(max, Math.max(min, n));
     if (clamped !== value) onValueChange(clamped);
   };
@@ -234,7 +242,12 @@ export function NumberField({
       <label htmlFor={id} className={cn("text-ink-3 text-[12px] font-medium", prefix && "sr-only")}>
         {label}
       </label>
-      <div className="border-line-strong bg-card focus-within:border-ink hover:border-ink-3 flex h-9 items-center rounded-lg border">
+      <div
+        className={cn(
+          "border-line-strong bg-card focus-within:border-ink focus-within:ring-cobalt hover:border-ink-3 flex h-9 items-center rounded-lg border focus-within:ring-2",
+          invalid && "border-danger",
+        )}
+      >
         {prefix && (
           <span
             aria-hidden="true"
@@ -245,16 +258,18 @@ export function NumberField({
         )}
         <input
           id={id}
-          key={display}
           type="number"
           inputMode="decimal"
-          defaultValue={display}
+          value={draft ?? display}
+          aria-invalid={invalid || undefined}
           min={Number.isFinite(min) ? min : undefined}
           max={Number.isFinite(max) ? max : undefined}
           step={step}
-          onBlur={(e) => commit(e.target.value)}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
           onKeyDown={(e) => {
-            if (e.key === "Enter") commit((e.target as HTMLInputElement).value);
+            if (e.key === "Enter") commit();
+            if (e.key === "Escape") setDraft(null);
           }}
           className="h-full w-full min-w-0 [appearance:textfield] bg-transparent px-2 text-[13px] tabular-nums focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
@@ -307,6 +322,7 @@ export function SliderField({
         max={max}
         step={step}
         value={value}
+        aria-valuetext={format ? format(value) : undefined}
         onChange={(e) => onValueChange(Number(e.target.value))}
         style={{ ["--fill" as string]: `${fill}%` }}
       />
@@ -331,16 +347,21 @@ export function SwitchField({ label, checked, onCheckedChange, hint, disabled }:
         <label htmlFor={id} className="text-ink-2 text-[13px] font-medium">
           {label}
         </label>
-        {hint && <span className="text-ink-3 text-[12px]">{hint}</span>}
+        {hint && (
+          <span id={`${id}-hint`} className="text-ink-3 text-[12px]">
+            {hint}
+          </span>
+        )}
       </div>
       <RSwitch.Root
         id={id}
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
-        className="bg-line-strong data-[state=checked]:bg-primary relative mt-0.5 h-[22px] w-[38px] shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40"
+        aria-describedby={hint ? `${id}-hint` : undefined}
+        className="bg-line-strong data-[state=checked]:bg-primary relative h-6 w-[42px] shrink-0 cursor-pointer rounded-full transition-colors disabled:opacity-40"
       >
-        <RSwitch.Thumb className="bg-card block size-[18px] translate-x-[2px] rounded-full shadow transition-transform duration-150 data-[state=checked]:translate-x-[18px]" />
+        <RSwitch.Thumb className="block size-5 translate-x-[2px] rounded-full bg-white shadow transition-transform duration-150 data-[state=checked]:translate-x-[20px]" />
       </RSwitch.Root>
     </div>
   );
@@ -367,30 +388,18 @@ export function Segmented<T extends string>({
   size = "md",
 }: SegmentedProps<T>) {
   const id = useId();
-  const enabled = options.filter((o) => !o.disabled);
-  const move = (dir: 1 | -1) => {
-    const i = enabled.findIndex((o) => o.value === value);
-    const next = enabled[(i + dir + enabled.length) % enabled.length];
-    if (next) onValueChange(next.value);
-  };
+  const { attach: rovingAttach, onKeyDown: rovingKeys } = useRovingGroup<HTMLDivElement>("radio");
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       <span id={id} className={cn("text-ink-2 text-[13px] font-medium", hideLabel && "sr-only")}>
         {label}
       </span>
       <div
+        ref={rovingAttach}
         role="radiogroup"
         aria-labelledby={id}
         className="bg-paper-2 flex flex-wrap gap-1 rounded-xl p-1"
-        onKeyDown={(e) => {
-          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            e.preventDefault();
-            move(1);
-          } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-            e.preventDefault();
-            move(-1);
-          }
-        }}
+        onKeyDown={rovingKeys}
       >
         {options.map((o) => {
           const active = o.value === value;
@@ -402,7 +411,6 @@ export function Segmented<T extends string>({
               aria-checked={active}
               title={o.title}
               disabled={o.disabled}
-              tabIndex={active ? 0 : -1}
               onClick={() => onValueChange(o.value)}
               className={cn(
                 "flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-35",

@@ -27,22 +27,28 @@ describe("QR renderer output decodes with an independent decoder", () => {
   const pairs = FINDER_FRAME_STYLES.flatMap((f) =>
     FINDER_COMPATIBILITY[f.id].map((d) => [f.id, d] as const),
   );
-  it.each(pairs)("finder %s + %s with every module style and a logo", (finderFrame, finderDot) => {
-    const logo = makeLogoDataUrl();
-    for (const { id: dotStyle } of DOT_STYLES) {
-      const s = style({
-        finderFrame,
-        finderDot,
-        dotStyle,
-        ecLevel: "H",
-        logo: { ...DEFAULT_LOGO, assetId: "logo", size: 0.24 },
-      });
-      const svg = renderQrMarkup(URL_PAYLOAD, s, logo);
-      for (const width of [400, 800]) {
-        expect(decodeSvg(svg, width), `${dotStyle} @${width}px`).toBe(URL_PAYLOAD);
+  // Each case renders + decodes every module style twice; coverage instrumentation slows it down.
+  const PAIR_TIMEOUT_MS = 30_000;
+  it.each(pairs)(
+    "finder %s + %s with every module style and a logo",
+    (finderFrame, finderDot) => {
+      const logo = makeLogoDataUrl();
+      for (const { id: dotStyle } of DOT_STYLES) {
+        const s = style({
+          finderFrame,
+          finderDot,
+          dotStyle,
+          ecLevel: "H",
+          logo: { ...DEFAULT_LOGO, assetId: "logo", size: 0.24 },
+        });
+        const svg = renderQrMarkup(URL_PAYLOAD, s, logo);
+        for (const width of [400, 800]) {
+          expect(decodeSvg(svg, width), `${dotStyle} @${width}px`).toBe(URL_PAYLOAD);
+        }
       }
-    }
-  });
+    },
+    PAIR_TIMEOUT_MS,
+  );
 
   it("maps unreliable finder pairings to a safe dot", () => {
     for (const f of FINDER_FRAME_STYLES) {

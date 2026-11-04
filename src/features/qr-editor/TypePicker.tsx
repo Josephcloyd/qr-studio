@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { QR_TYPE_LABELS, QR_TYPES, type QrType } from "@/lib/qr/content";
 
 export const QR_TYPE_ICONS: Record<QrType, LucideIcon> = {
@@ -38,8 +39,11 @@ export function TypePicker({
   onChange: (t: QrType) => void;
   compact?: boolean;
 }) {
+  const { attach: groupAttach, onKeyDown: groupKeys } = useRovingGroup<HTMLDivElement>();
   return (
     <div
+      ref={groupAttach}
+      onKeyDown={groupKeys}
       role="radiogroup"
       aria-label="QR code type"
       className={cn("grid gap-1.5", compact ? "grid-cols-5" : "grid-cols-5 sm:grid-cols-5")}

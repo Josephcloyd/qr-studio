@@ -94,6 +94,9 @@ See `/privacy` in the app for the user-facing explanation.
 - Very large prints at high DPI are capped to browser canvas limits (about 64 MP on desktop, 16 MP on mobile). The export dialog tells you when it reduces resolution.
 - Scan checks use jsQR, which is stricter than most phone cameras. Always test-scan your final print with real phones.
 - Non-Latin text renders with system fallback fonts. The bundled fonts cover Latin script, including Filipino.
+- Uploaded SVG images are converted to PNG (up to 2048 px on the long side) when added, so scripts or links inside them can never run. They export as sharp raster images, not vectors.
+- Uploads larger than 50 megapixels are rejected before decoding to keep the browser responsive.
+- Because the site is a static export, the Content-Security-Policy allows inline scripts (`'unsafe-inline'`) for Next.js hydration. Network access is still locked to the same origin by `connect-src 'self'`.
 
 ## License & credits
 

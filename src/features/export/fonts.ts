@@ -6,8 +6,9 @@
  * files from the same origin; it sends no user data. Allow-listed in
  * scripts/privacy-audit.mjs.
  */
-import { FONT_ASSET_BASE, getFont } from "@/lib/fonts/registry";
+import { FONT_ASSET_BASE, fontLoadQueries, getFont } from "@/lib/fonts/registry";
 import type { DesignDocument } from "@/lib/model/types";
+import { clearMeasureCache } from "@/lib/text/measure";
 
 const cache = new Map<string, Promise<string>>();
 
@@ -65,11 +66,9 @@ export async function fontFaceCss(fontIds: string[]): Promise<string> {
 /** Waits until the browser has the fonts loaded, so text measurement is accurate. */
 export async function ensureFontsLoaded(fontIds: string[]): Promise<void> {
   if (typeof document === "undefined" || !document.fonts) return;
-  await Promise.all(
-    fontIds.map((id) => {
-      const f = getFont(id);
-      if (!f.file) return Promise.resolve();
-      return document.fonts.load(`400 16px '${f.family}'`).catch(() => undefined);
-    }),
-  );
+  const queries = fontIds.flatMap((id) => fontLoadQueries(getFont(id)));
+  const before = queries.map((q) => document.fonts.check(q));
+  await Promise.all(queries.map((q) => document.fonts.load(q).catch(() => undefined)));
+  // If any face just finished loading, cached widths were measured with a fallback.
+  if (queries.some((q, i) => !before[i] && document.fonts.check(q))) clearMeasureCache();
 }

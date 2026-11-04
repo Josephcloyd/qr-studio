@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { linear, radial, solid } from "@/lib/model/paint";
 import type { QrStyle } from "@/lib/qr/style";
 import { QrSvg } from "@/render/QrGraphic";
@@ -157,8 +158,11 @@ export function StylePresets({
     p.style.finderFrame === style.finderFrame &&
     JSON.stringify(p.style.foreground) === JSON.stringify(style.foreground) &&
     JSON.stringify(p.style.background) === JSON.stringify(style.background);
+  const { attach: groupAttach, onKeyDown: groupKeys } = useRovingGroup<HTMLDivElement>();
   return (
     <div
+      ref={groupAttach}
+      onKeyDown={groupKeys}
       role="radiogroup"
       aria-label="Preset looks"
       className="grid grid-cols-5 gap-1.5 sm:gap-2.5"

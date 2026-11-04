@@ -45,10 +45,11 @@ export function QuickDownload({ content, style, disabled, scanStatus }: QuickDow
         const size = Number(pngSize);
         const doc = qrOnlyDocument(content, style, size);
         const result = await exportPng(doc, assets, { dpi: 96, transparent: false });
-        downloadBlob(result.blob, `${name}-${size}px.png`);
+        // Name the file after the real output size (phones may clamp very large canvases).
+        downloadBlob(result.blob, `${name}-${result.width}px.png`);
         toast.success(
           "PNG downloaded",
-          `${result.width} × ${result.height}px · ${formatBytes(result.blob.size)}`,
+          `${result.width} × ${result.height}px · ${formatBytes(result.blob.size)}${result.clamped ? " (reduced to fit this device)" : ""}`,
         );
       } else if (format === "svg") {
         const blob = await exportSvg(qrOnlyDocument(content, style, 512), assets, false);

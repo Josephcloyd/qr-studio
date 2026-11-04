@@ -22,12 +22,18 @@ interface ToastState {
 let counter = 0;
 const DURATION_MS = 4200;
 
+/** True while the pointer or keyboard focus is on the toast stack (WCAG 2.2.1). */
+let paused = false;
+
 const useToasts = create<ToastState>((set, get) => ({
   items: [],
   push: (t) => {
     const id = ++counter;
     set({ items: [...get().items.slice(-3), { ...t, id }] });
-    setTimeout(() => get().dismiss(id), DURATION_MS);
+    // Errors stay until dismissed; others time out, but never while being read.
+    if (t.kind === "error") return;
+    const later = () => setTimeout(() => (paused ? later() : get().dismiss(id)), DURATION_MS);
+    later();
   },
   dismiss: (id) => set({ items: get().items.filter((i) => i.id !== id) }),
 }));
@@ -50,6 +56,10 @@ export function Toaster() {
   return (
     <div
       aria-live="polite"
+      onPointerEnter={() => (paused = true)}
+      onPointerLeave={() => (paused = false)}
+      onFocus={() => (paused = true)}
+      onBlur={() => (paused = false)}
       // Top on phones so toasts never cover the studio's bottom tool dock.
       className="pointer-events-none fixed inset-x-0 top-14 z-[200] flex flex-col items-center gap-2 p-3 sm:top-auto sm:bottom-0 sm:items-end sm:p-6"
     >
@@ -70,7 +80,7 @@ export function Toaster() {
               type="button"
               aria-label="Dismiss"
               onClick={() => dismiss(t.id)}
-              className="text-ink-3 hover:bg-paper-2 hover:text-ink rounded-md p-0.5"
+              className="text-ink-3 hover:bg-paper-2 hover:text-ink flex size-7 items-center justify-center rounded-md"
             >
               <X className="size-4" />
             </button>

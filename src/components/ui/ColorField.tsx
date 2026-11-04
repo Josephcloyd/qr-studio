@@ -84,13 +84,13 @@ export function ColorField({
                   onChange={(c) => onValueChange(allowAlpha ? c : c.slice(0, 7))}
                 />
               </div>
-              <div className="mt-3 grid grid-cols-8 gap-1.5" role="list" aria-label="Color presets">
+              <div className="mt-3 grid grid-cols-8 gap-1.5" role="group" aria-label="Color presets">
                 {SWATCHES.map((c) => (
                   <button
                     key={c}
                     type="button"
-                    role="listitem"
-                    aria-label={c}
+                    aria-pressed={c.toLowerCase() === value.toLowerCase().slice(0, 7)}
+                    aria-label={`Color ${c}`}
                     onClick={() => onValueChange(c)}
                     className={cn(
                       "border-ink/10 size-6 rounded-md border transition-transform hover:scale-110",

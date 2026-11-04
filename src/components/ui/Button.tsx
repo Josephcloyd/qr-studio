@@ -66,7 +66,7 @@ const ICON_SIZES = { sm: "size-8 rounded-lg", md: "size-9 rounded-xl", lg: "size
 export function IconButton({
   label,
   shortcut,
-  active = false,
+  active,
   size = "md",
   tooltipSide = "bottom",
   className,
@@ -80,7 +80,7 @@ export function IconButton({
         <button
           type={type}
           aria-label={label}
-          aria-pressed={active || undefined}
+          aria-pressed={active}
           className={cn(
             "text-ink-2 hover:bg-paper-3/80 hover:text-ink inline-flex shrink-0 items-center justify-center transition-colors duration-150 disabled:pointer-events-none disabled:opacity-35",
             active && "bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink",

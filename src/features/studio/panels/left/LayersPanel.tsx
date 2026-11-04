@@ -98,18 +98,20 @@ export function LayersPanel() {
                     type="button"
                     onClick={(e) => (e.shiftKey ? toggleSelect(el.id) : select([el.id]))}
                     onDoubleClick={() => setRenaming(el.id)}
+                    onKeyDown={(e) => e.key === "F2" && (e.preventDefault(), setRenaming(el.id))}
+                    aria-pressed={active}
                     className={cn(
                       "min-w-0 flex-1 truncate text-left text-[13px] font-medium",
                       el.hidden ? "text-ink-3 line-through" : "text-ink",
                     )}
-                    title="Click to select, double-click to rename"
+                    title="Click to select · double-click or F2 to rename"
                   >
                     {el.name}
                   </button>
                 )}
                 <div className="flex items-center opacity-70 group-hover:opacity-100">
                   <IconButton
-                    label="Move up"
+                    label={`Move ${el.name} up`}
                     size="sm"
                     disabled={idx === elements.length - 1}
                     onClick={() => apply((d) => moveElementTo(d, el.id, idx + 1))}
@@ -117,7 +119,7 @@ export function LayersPanel() {
                     <ChevronUp className="size-3.5" />
                   </IconButton>
                   <IconButton
-                    label="Move down"
+                    label={`Move ${el.name} down`}
                     size="sm"
                     disabled={idx === 0}
                     onClick={() => apply((d) => moveElementTo(d, el.id, idx - 1))}
@@ -125,14 +127,15 @@ export function LayersPanel() {
                     <ChevronDown className="size-3.5" />
                   </IconButton>
                   <IconButton
-                    label={el.hidden ? "Show" : "Hide"}
+                    label={`Hide ${el.name}`}
+                    active={el.hidden}
                     size="sm"
                     onClick={() => setHidden(el.id, !el.hidden)}
                   >
                     {el.hidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
                   </IconButton>
                   <IconButton
-                    label={el.locked ? "Unlock" : "Lock"}
+                    label={`Lock ${el.name}`}
                     size="sm"
                     active={el.locked}
                     onClick={() => apply((d) => updateElement(d, el.id, { locked: !el.locked }))}

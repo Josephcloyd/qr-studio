@@ -4,6 +4,7 @@ import { ArrowRight, LockKeyhole, Palette, Shapes, Sparkles } from "lucide-react
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { cn } from "@/components/ui/cn";
+import { useRovingGroup } from "@/components/ui/useRovingGroup";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
 import { encodePayload } from "@/lib/qr/payloads";
@@ -37,6 +38,7 @@ export function GeneratorPage() {
   const setContent = useGeneratorStore((s) => s.setContent);
   const setStyle = useGeneratorStore((s) => s.setStyle);
   const [tab, setTab] = useState<Tab>("presets");
+  const { attach: tabsAttach, onKeyDown: tabsKeys } = useRovingGroup<HTMLDivElement>("tab");
 
   const content = currentContent({ type, contents });
   const encoded = useMemo(() => encodePayload(content), [content]);
@@ -132,6 +134,8 @@ export function GeneratorPage() {
         >
           <StepHeading id="step-style" step="2" title="Make it yours" />
           <div
+            ref={tabsAttach}
+            onKeyDown={tabsKeys}
             role="tablist"
             aria-label="Styling"
             className="bg-paper-2 mb-5 flex gap-1 rounded-2xl p-1"
@@ -143,7 +147,7 @@ export function GeneratorPage() {
                 type="button"
                 id={`tab-${id}`}
                 aria-selected={tab === id}
-                aria-controls={`panel-${id}`}
+                aria-controls={tab === id ? "styling-panel" : undefined}
                 onClick={() => setTab(id)}
                 className={cn(
                   "flex h-10 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all",
@@ -157,7 +161,7 @@ export function GeneratorPage() {
               </button>
             ))}
           </div>
-          <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
+          <div role="tabpanel" id="styling-panel" aria-labelledby={`tab-${tab}`}>
             {tab === "presets" && <StylePresets style={style} onChange={handleStyle} />}
             {tab === "design" && <StyleControls style={style} onChange={handleStyle} />}
             {tab === "logo" && (
