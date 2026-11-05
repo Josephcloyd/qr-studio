@@ -142,6 +142,22 @@ const headerCsp = existsSync(headersFile)
 if (headerCsp !== `${CSP}; frame-ancestors 'none'`)
   problems.push("public/_headers CSP is out of sync with src/lib/security/csp.ts");
 
+// Vercel ignores public/_headers; vercel.json must carry the same headers.
+const vercelFile = join(ROOT, "vercel.json");
+if (existsSync(vercelFile)) {
+  const config = JSON.parse(readFileSync(vercelFile, "utf8"));
+  const all = (config.headers ?? []).find((h) => h.source === "/(.*)")?.headers ?? [];
+  const value = (key) => all.find((h) => h.key.toLowerCase() === key.toLowerCase())?.value;
+  if (value("Content-Security-Policy") !== `${CSP}; frame-ancestors 'none'`)
+    problems.push("vercel.json CSP is out of sync with src/lib/security/csp.ts");
+  const headerLines = existsSync(headersFile)
+    ? [...readFileSync(headersFile, "utf8").matchAll(/^\s+([\w-]+):\s*(.+)$/gm)]
+    : [];
+  for (const [, key, val] of headerLines)
+    if (key !== "Content-Security-Policy" && value(key) !== val.trim())
+      problems.push(`vercel.json header ${key} differs from public/_headers`);
+}
+
 if (checkBuild) {
   if (!existsSync(OUT)) problems.push("--build given but ./out does not exist");
   else {

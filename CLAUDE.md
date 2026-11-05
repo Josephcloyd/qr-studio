@@ -14,7 +14,7 @@ These are product requirements, enforced by `scripts/privacy-audit.mjs`, the CSP
 4. **No third parties.** No analytics, trackers, CDNs, remote fonts (`next/font/google` is banned), remote images, or external QR/image services. Fonts live in `public/fonts` (copied by `npm run fonts:copy`).
 5. **Imported files are untrusted.** Validate with `src/lib/model/schema.ts`; images may only be embedded `data:` URIs; never allow external URLs into a document.
 6. **Object URLs** for uploads go through `src/lib/assets/objectUrls.ts` and must be revoked when assets are removed / a design is replaced (`features/assets/release.ts`).
-7. **CSP** lives in `src/lib/security/csp.ts` _and_ `public/_headers` — keep them in sync. `connect-src 'self'` must stay.
+7. **CSP** lives in `src/lib/security/csp.ts`, `public/_headers` _and_ `vercel.json` (Vercel ignores `_headers`) — keep all three in sync; the privacy audit checks it. `connect-src 'self'` must stay.
 8. **Scannability beats decoration.** Hard limits live in `sanitizeQrStyle` (`src/lib/qr/style.ts`): min quiet zone, logo size caps per EC level, EC raised to ≥ Q with a logo, safe finder pairings only, solid functional patterns for dot/diamond styles. Any new QR style must be added to the decode tests and pass.
 
 ## Architecture
