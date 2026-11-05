@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { CONTENT_SECURITY_POLICY } from "@/lib/security/csp";
 import { LoadingScreen } from "@/components/site/LoadingScreen";
+import { SPLASH_DECIDE_SCRIPT } from "@/components/site/splash";
 import { Providers } from "@/components/ui/Providers";
 import "./globals.css";
 import "./splash.css";
@@ -29,12 +30,14 @@ const isProduction = process.env.NODE_ENV === "production";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // The splash script sets html[data-splash] before React hydrates.
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Dev mode needs eval for React tooling, so CSP is applied to production builds. */}
         {isProduction && (
           <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
         )}
+        <script dangerouslySetInnerHTML={{ __html: SPLASH_DECIDE_SCRIPT }} />
         <link
           rel="preload"
           href="/fonts/inter.woff2"
