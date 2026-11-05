@@ -1,6 +1,6 @@
 "use client";
 
-import { ImagePlus, LockKeyhole, Trash2, Wallpaper } from "lucide-react";
+import { CopyPlus, ImagePlus, LockKeyhole, Trash2, Wallpaper } from "lucide-react";
 import { useRef } from "react";
 import { IconButton } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
@@ -12,7 +12,7 @@ import { useImageUpload } from "@/features/assets/useImageUpload";
 import { formatBytes } from "@/features/export/download";
 import { useEditorStore } from "../../store/editorStore";
 import { PanelHeading } from "../Section";
-import { centeredBox, insertElements } from "./insert";
+import { centeredBox, insertElements, revealOnCanvas } from "./insert";
 
 export function UploadsPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +35,16 @@ export function UploadsPanel() {
   const addToCanvas = (a: Asset) => {
     const box = centeredBox(0.5, a.width / a.height);
     insertElements([createImageElement(a.id, box, a.name)]);
+  };
+
+  /** Clicking a thumbnail selects the image if it's already placed, instead of stacking copies. */
+  const placeOrSelect = (a: Asset) => {
+    const placed = useEditorStore
+      .getState()
+      .doc.elements.filter((e) => e.type === "image" && e.assetId === a.id)
+      .map((e) => e.id);
+    if (placed.length) revealOnCanvas(placed);
+    else addToCanvas(a);
   };
 
   const handleFiles = async (files: FileList | null) => {
@@ -94,9 +104,11 @@ export function UploadsPanel() {
                 >
                   <button
                     type="button"
-                    onClick={() => addToCanvas(a)}
+                    onClick={() => placeOrSelect(a)}
                     className="checkerboard block aspect-square w-full"
-                    aria-label={`Add ${a.name} to the canvas`}
+                    aria-label={
+                      inUse ? `Select ${a.name} on the canvas` : `Add ${a.name} to the canvas`
+                    }
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- local object URL */}
                     <img src={a.url} alt="" className="size-full object-contain p-2" />
@@ -108,6 +120,9 @@ export function UploadsPanel() {
                     >
                       {a.name}
                     </span>
+                    <IconButton label="Add another copy" size="sm" onClick={() => addToCanvas(a)}>
+                      <CopyPlus className="size-3.5" />
+                    </IconButton>
                     <IconButton
                       label="Use as background"
                       size="sm"

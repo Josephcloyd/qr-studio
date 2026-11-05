@@ -26,8 +26,12 @@ export function insertElements(elements: DesignElement[]): void {
   const editor = useEditorStore.getState();
   if (!elements.length) return;
   editor.apply((d) => ({ ...d, elements: [...d.elements, ...elements] }));
-  editor.select(elements.map((e) => e.id));
-  // On phones, close the tool sheet so the new element is visible.
+  revealOnCanvas(elements.map((e) => e.id));
+}
+
+/** Selects elements and, on phones, closes the tool sheet so they're visible. */
+export function revealOnCanvas(ids: string[]): void {
+  useEditorStore.getState().select(ids);
   if (typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches)
     useUiStore.getState().setPanel(null);
 }

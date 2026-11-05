@@ -123,6 +123,18 @@ test.describe("Design studio", () => {
       .setInputFiles({ name: "brand-logo.png", mimeType: "image/png", buffer: makePng(200, 200) });
     await expect.poll(() => elementCount(page)).toBe(1);
 
+    // Clicking a placed image's thumbnail selects it rather than stacking a copy;
+    // "Add another copy" is the explicit way to place it again.
+    const thumb = page.getByRole("button", { name: "Select brand-logo.png on the canvas" });
+    if (await thumb.isVisible()) {
+      await thumb.click();
+      expect(await elementCount(page)).toBe(1);
+      await page.getByRole("button", { name: "Add another copy" }).click();
+      await expect.poll(() => elementCount(page)).toBe(2);
+      await page.keyboard.press("Delete");
+      await expect.poll(() => elementCount(page)).toBe(1);
+    }
+
     await openExport(page, "SVG");
     const svg = readFileSync(await exportDownload(page), "utf8");
     expect(svg).toContain("data:image/png;base64,");
@@ -185,15 +197,13 @@ test.describe("Design studio", () => {
 
   test("rejects invalid project files", async ({ page }) => {
     await openStudio(page);
-    await page
-      .locator('input[type="file"][accept*=".qrstudio.json"]')
-      .setInputFiles({
-        name: "bad.qrstudio.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(
-          '{"format":"qr-studio-project","formatVersion":1,"document":{"elements":"nope"}}',
-        ),
-      });
+    await page.locator('input[type="file"][accept*=".qrstudio.json"]').setInputFiles({
+      name: "bad.qrstudio.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        '{"format":"qr-studio-project","formatVersion":1,"document":{"elements":"nope"}}',
+      ),
+    });
     await expect(page.getByText("Couldn't open project")).toBeVisible();
     await expect.poll(() => elementCount(page)).toBe(0);
   });
