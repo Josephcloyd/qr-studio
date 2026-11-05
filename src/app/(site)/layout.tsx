@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BugReportBubble } from "@/components/site/ReportBug";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 
@@ -14,6 +15,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       <SiteHeader />
       <main id="main">{children}</main>
       <SiteFooter />
+      <BugReportBubble />
     </>
   );
 }

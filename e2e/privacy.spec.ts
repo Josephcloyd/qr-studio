@@ -16,7 +16,13 @@ test.describe("Privacy guarantees", () => {
 
   test("bug reports are an email draft, never a request", async ({ page }) => {
     await gotoReady(page, "/privacy/");
-    const link = page.getByRole("link", { name: "Report a bug" });
+    await expect(page.getByRole("link", { name: "Report a bug" })).toHaveAttribute(
+      "href",
+      /^mailto:danojosephclyde@gmail\.com\?subject=/,
+    );
+    // The chat bubble in the lower-right corner opens the same email draft.
+    await page.getByRole("button", { name: "Report a bug" }).click();
+    const link = page.getByRole("link", { name: "Email a bug report" });
     await expect(link).toHaveAttribute("href", /^mailto:danojosephclyde@gmail\.com\?subject=/);
     // Fill in the details without following the mailto: link.
     await link.evaluate((a) =>
@@ -26,6 +32,11 @@ test.describe("Privacy guarantees", () => {
     const href = decodeURIComponent((await link.getAttribute("href")) ?? "");
     expect(href).toContain("Page: /privacy/");
     expect(href).not.toContain(MARKER);
+
+    // The studio has the bubble too, on the canvas corner.
+    await openStudio(page);
+    await page.getByRole("button", { name: "Report a bug" }).click();
+    await expect(page.getByRole("link", { name: "Email a bug report" })).toBeVisible();
   });
 
   test("QR content, images and designs never leave the browser", async ({ page, baseURL }) => {

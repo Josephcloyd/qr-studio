@@ -61,7 +61,7 @@ export function Toaster() {
       onFocus={() => (paused = true)}
       onBlur={() => (paused = false)}
       // Top on phones so toasts never cover the studio's bottom tool dock.
-      className="pointer-events-none fixed inset-x-0 top-14 z-[200] flex flex-col items-center gap-2 p-3 sm:top-auto sm:bottom-0 sm:items-end sm:p-6"
+      className="pointer-events-none fixed inset-x-0 top-14 z-[200] flex flex-col items-center gap-2 p-3 sm:top-auto sm:bottom-16 sm:items-end sm:p-6"
     >
       {items.map((t) => {
         const Icon = ICONS[t.kind];

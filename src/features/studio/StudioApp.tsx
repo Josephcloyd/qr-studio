@@ -3,6 +3,7 @@
 import { Maximize, Minus, PanelLeftClose, Plus, SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { BugReportBubble } from "@/components/site/ReportBug";
 import { cn } from "@/components/ui/cn";
 import { IconButton, TooltipProvider } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
@@ -73,7 +74,9 @@ function ToolRail({ vertical }: { vertical: boolean }) {
             className={cn(
               "flex shrink-0 flex-col items-center justify-center gap-1 rounded-xl font-medium transition-colors",
               vertical ? "h-[62px] text-[10.5px]" : "w-[68px] text-[10.5px]",
-              active ? "bg-accent-soft text-accent-ink" : "text-ink-3 hover:bg-paper-2 hover:text-ink",
+              active
+                ? "bg-accent-soft text-accent-ink"
+                : "text-ink-3 hover:bg-paper-2 hover:text-ink",
             )}
           >
             <Icon className={cn("size-[20px]", active && "text-accent")} aria-hidden="true" />
@@ -111,6 +114,7 @@ function DesktopStudio() {
         )}
         <main className="relative min-w-0 flex-1" aria-label="Canvas">
           <CanvasViewport />
+          <BugReportBubble position="absolute" />
         </main>
         <aside
           aria-label="Properties"
@@ -226,6 +230,10 @@ function MobileStudio() {
           >
             <SlidersHorizontal className="size-4" aria-hidden="true" /> Canvas
           </button>
+        )}
+        {/* Only on an empty selection, so it never covers the context bar or a sheet. */}
+        {!selected.length && !panel && !propertiesOpen && (
+          <BugReportBubble position="absolute" className="right-3 bottom-3" />
         )}
         {tool && (
           <BottomSheet title={tool.label} onClose={() => setPanel(null)}>
