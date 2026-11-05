@@ -4,7 +4,7 @@ import { Maximize, Minus, PanelLeftClose, Plus, SlidersHorizontal, X } from "luc
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { BugReportBubble } from "@/components/site/ReportBug";
-import { finishSplash } from "@/components/site/splash";
+import { finishSplash, startSplash } from "@/components/site/splash";
 import { cn } from "@/components/ui/cn";
 import { IconButton, TooltipProvider } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
@@ -255,9 +255,12 @@ function MobileStudio() {
 export function StudioApp() {
   const desktop = useIsDesktop();
   const save = useCallback(() => void downloadProject(), []);
-  // Keep the GetLaunch PH loading screen up until the editor layout is known.
+  // Hold the GetLaunch PH loading screen until the editor has mounted, so mounting
+  // can't stutter the intro; it then plays once the main thread is idle.
   useEffect(() => {
-    if (desktop !== null) finishSplash();
+    if (desktop === null) return;
+    startSplash();
+    finishSplash();
   }, [desktop]);
   useFontsReady();
   useStudioShortcuts(save);

@@ -26,6 +26,17 @@
   /* Fail-safe: never trap the page if scripts don't run. */
   animation: splash-timeout 0.6s cubic-bezier(0.65, 0, 0.35, 1) 8s forwards;
 }
+/* Held at frame 0 while React hydrates (main-thread work would make the SVG drawing
+   stutter), then played in one pass once html[data-splash-play] is set. The orbit
+   ring isn't held: it's transform/opacity only, so it spins smoothly meanwhile. */
+html:not([data-splash-play]) .gl-splash svg *,
+html:not([data-splash-play]) .gl-splash .lm-halo,
+html:not([data-splash-play]) .gl-splash .lm-shadow,
+html:not([data-splash-play]) .gl-splash .lm-letter,
+html:not([data-splash-play]) .gl-splash .loading-caption {
+  animation-play-state: paused;
+}
+
 /* Reloads, back/forward and reduced motion: decided before first paint, never shown. */
 html[data-splash-skip] .gl-splash {
   display: none;

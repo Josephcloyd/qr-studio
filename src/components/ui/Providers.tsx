@@ -2,7 +2,7 @@
 
 import { Tooltip } from "radix-ui";
 import { useEffect, type ReactNode } from "react";
-import { finishSplash, holdsSplash } from "@/components/site/splash";
+import { finishSplash, holdsSplash, startSplash } from "@/components/site/splash";
 import { SupportDialog } from "@/components/site/Support";
 import { UnsavedWorkGuard } from "@/features/studio/UnsavedWorkGuard";
 import { Toaster } from "./Toaster";
@@ -13,7 +13,10 @@ export function Providers({ children }: { children: ReactNode }) {
   // typing into inputs before they're interactive).
   useEffect(() => {
     document.documentElement.dataset.hydrated = "true";
-    if (!holdsSplash(window.location.pathname)) finishSplash();
+    if (!holdsSplash(window.location.pathname)) {
+      startSplash();
+      finishSplash();
+    }
   }, []);
   return (
     <Tooltip.Provider delayDuration={350}>

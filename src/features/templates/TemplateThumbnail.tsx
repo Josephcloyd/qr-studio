@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { afterSplash } from "@/components/site/splash";
 import { cn } from "@/components/ui/cn";
 import { canvasMeasure } from "@/lib/text/measure";
 import { DocumentSvg } from "@/render/DocumentSvg";
@@ -15,14 +16,27 @@ import { getTemplate } from "./index";
 export function TemplateThumbnail({ id, className }: { id: string; className?: string }) {
   const doc = useMemo(() => getTemplate(id)?.build() ?? null, [id]);
   const [mounted, setMounted] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
     let cancelled = false;
-    // Re-measure once web fonts are available.
-    const ready =
-      typeof document !== "undefined" && document.fonts ? document.fonts.ready : Promise.resolve();
-    ready.then(() => !cancelled && setMounted(true));
+    // Draw only when near the viewport, after web fonts load (so text measures
+    // right) and after the loading screen (so 20 SVGs can't stutter its intro).
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        void Promise.all([document.fonts?.ready, afterSplash()]).then(
+          () => !cancelled && setMounted(true),
+        );
+      },
+      { rootMargin: "300px" },
+    );
+    io.observe(box);
     return () => {
       cancelled = true;
+      io.disconnect();
     };
   }, []);
   if (!doc) return null;
@@ -30,6 +44,7 @@ export function TemplateThumbnail({ id, className }: { id: string; className?: s
   const portrait = doc.height > doc.width;
   return (
     <div
+      ref={boxRef}
       className={cn(
         "overflow-hidden",
         portrait ? "h-full w-auto max-w-full" : "h-auto max-h-full w-full",
