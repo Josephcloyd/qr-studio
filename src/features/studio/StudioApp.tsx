@@ -4,6 +4,7 @@ import { Maximize, Minus, PanelLeftClose, Plus, SlidersHorizontal, X } from "luc
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { BugReportBubble } from "@/components/site/ReportBug";
+import { finishSplash } from "@/components/site/splash";
 import { cn } from "@/components/ui/cn";
 import { IconButton, TooltipProvider } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
@@ -254,6 +255,10 @@ function MobileStudio() {
 export function StudioApp() {
   const desktop = useIsDesktop();
   const save = useCallback(() => void downloadProject(), []);
+  // Keep the GetLaunch PH loading screen up until the editor layout is known.
+  useEffect(() => {
+    if (desktop !== null) finishSplash();
+  }, [desktop]);
   useFontsReady();
   useStudioShortcuts(save);
   useTemplateParam();

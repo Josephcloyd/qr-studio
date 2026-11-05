@@ -32,7 +32,7 @@ const base = (name: string, at: At, w: number, h: number) => ({
   hidden: false,
 });
 
-export const SAMPLE_QR_CONTENT: QrContent = { type: "url", url: "https://getlaunch.ph" };
+export const SAMPLE_QR_CONTENT: QrContent = { type: "url", url: "https://getlaunchph.com" };
 
 export function createQrElement(
   at: At = {},

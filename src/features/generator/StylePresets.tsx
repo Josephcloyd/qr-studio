@@ -184,7 +184,7 @@ export function StylePresets({
             )}
           >
             <QrSvg
-              payload="https://getlaunch.ph"
+              payload="https://getlaunchph.com"
               size={88}
               idPrefix={`preset-${p.id}`}
               style={{ ...style, ...p.style, margin: 2, logo: { ...style.logo, assetId: null } }}

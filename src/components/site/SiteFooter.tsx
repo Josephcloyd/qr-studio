@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="max-w-sm">
           <Brand />
           <p className="text-ink-3 mt-4 text-[13.5px] leading-relaxed">
-            A free tool from GetLaunch Ph. Everything you make is created in your browser and stays
+            A free tool from GetLaunch PH. Everything you make is created in your browser and stays
             on your device.
           </p>
         </div>
@@ -34,7 +34,7 @@ export function SiteFooter() {
       </div>
       <div className="border-line/70 border-t">
         <div className="text-ink-3 mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 font-mono text-[11px] tracking-wide sm:flex-row sm:justify-between sm:px-6">
-          <span>© GetLaunch Ph · QR Studio</span>
+          <span>© GetLaunch PH · QR Studio</span>
           <span>No accounts · No uploads · No tracking</span>
         </div>
         <div className="text-ink-3 mx-auto flex max-w-7xl flex-col gap-1 px-4 pb-5 text-[11.5px] leading-relaxed sm:flex-row sm:justify-between sm:gap-6 sm:px-6">

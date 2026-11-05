@@ -84,7 +84,7 @@
 }
 
 /* ---------------------------------------------------------------
-   Design tokens — GetLaunch Ph family look (shared with ResumeFlow):
+   Design tokens — GetLaunch PH family look (shared with ResumeFlow):
    dark graphite surfaces, one green brand accent, gold for "Support".
    Dark is the default; [data-theme="light"] switches the UI chrome.
    (Designs on the canvas are never affected by the UI theme.)

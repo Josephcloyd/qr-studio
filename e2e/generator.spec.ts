@@ -6,8 +6,8 @@ type Fill = [label: string, value: string];
 const CASES: { type: string; fills: Fill[]; contains: string }[] = [
   {
     type: "Website",
-    fills: [["Website address", "getlaunch.ph/qr?x=1&y=ñ"]],
-    contains: "https://getlaunch.ph/qr",
+    fills: [["Website address", "getlaunchph.com/qr?x=1&y=ñ"]],
+    contains: "https://getlaunchph.com/qr",
   },
   {
     type: "Text",

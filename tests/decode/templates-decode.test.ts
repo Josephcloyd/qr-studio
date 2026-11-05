@@ -77,10 +77,10 @@ describe("templates", () => {
 
 describe("generator style presets", () => {
   it.each(STYLE_PRESETS.map((p) => [p.id, p] as const))("%s decodes", (_, p) => {
-    const svg = renderQrMarkup("https://getlaunch.ph/qr-studio", {
+    const svg = renderQrMarkup("https://getlaunchph.com/qr-studio", {
       ...DEFAULT_QR_STYLE,
       ...p.style,
     });
-    expect(decodeSvg(svg)).toBe("https://getlaunch.ph/qr-studio");
+    expect(decodeSvg(svg)).toBe("https://getlaunchph.com/qr-studio");
   });
 });

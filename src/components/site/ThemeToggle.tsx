@@ -7,7 +7,7 @@ import { IconButton } from "@/components/ui/Button";
 type Theme = "dark" | "light";
 
 /**
- * UI theme (dark by default, matching the GetLaunch Ph family). Held in memory
+ * UI theme (dark by default, matching the GetLaunch PH family). Held in memory
  * only — QR Studio writes nothing to browser storage — so it resets on reload.
  */
 const useTheme = create<{ theme: Theme; toggle: () => void }>((set, get) => ({

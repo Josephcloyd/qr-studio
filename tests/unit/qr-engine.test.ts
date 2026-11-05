@@ -86,7 +86,7 @@ describe("matrix", () => {
 });
 
 describe("layout", () => {
-  const m = matrixFor("https://getlaunch.ph");
+  const m = matrixFor("https://getlaunchph.com");
   it("includes quiet zone and three finders", () => {
     const l = computeQrLayout(m, style({ margin: 4 }));
     expect(l.total).toBe(m.size + 8);
@@ -145,7 +145,7 @@ describe("style constraints", () => {
 });
 
 describe("readability", () => {
-  const m = matrixFor("https://getlaunch.ph");
+  const m = matrixFor("https://getlaunchph.com");
   const analyze = (s: QrStyle, ctx = {}) => analyzeReadability(s, computeQrLayout(m, s), ctx);
   it("passes the default style", () => {
     expect(worstSeverity(analyze(style()))).toBeNull();

@@ -1,6 +1,6 @@
 # QR Studio — project instructions
 
-Free, privacy-first QR code generator and design studio by **GetLaunch Ph**. Next.js 16 static export; everything runs in the browser. No pricing, accounts, upsells or backend — ever.
+Free, privacy-first QR code generator and design studio by **GetLaunch PH**. Next.js 16 static export; everything runs in the browser. No pricing, accounts, upsells or backend — ever.
 
 @AGENTS.md
 
@@ -73,8 +73,8 @@ E2E runs against the built static export. Run `npx playwright install` once. The
 
 ## Branding & UI
 
-- GetLaunch Ph family look (matches ResumeFlow): dark graphite UI by default, green brand accent, gold "Support" button. Tokens live in `src/app/globals.css` (`:root` = dark, `[data-theme="light"]` = light). Use tokens (`bg-primary`, `text-accent-ink`, `bg-gold-soft`…), never raw colors, in UI chrome.
+- GetLaunch PH family look (matches ResumeFlow): dark graphite UI by default, green brand accent, gold "Support" button. Tokens live in `src/app/globals.css` (`:root` = dark, `[data-theme="light"]` = light). Use tokens (`bg-primary`, `text-accent-ink`, `bg-gold-soft`…), never raw colors, in UI chrome.
 - The theme toggle is in-memory only (no storage writes, by design) and resets on reload.
-- Header layout: logo + "by GetLaunchPh", segmented product nav (Generator · Templates · Studio), theme toggle, Support, primary action.
+- Header layout: logo + "by GetLaunch PH", segmented product nav (Generator · Templates · Studio), theme toggle, Support, primary action.
 - Home (`/`) is the generator with the template shelf below — there is no marketing landing page.
 - Support opens a GCash donation dialog (`src/components/site/Support.tsx`) showing `public/support/gcash-qr.png`, a static same-origin file. If you replace that image, verify it still decodes to the intended InstaPay payload.

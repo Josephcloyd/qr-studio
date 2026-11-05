@@ -2,7 +2,7 @@
   "name": "qr-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "QR Studio — a free, privacy-first QR code generator and design studio by GetLaunch Ph. Everything runs in your browser.",
+  "description": "QR Studio — a free, privacy-first QR code generator and design studio by GetLaunch PH. Everything runs in your browser.",
   "scripts": {
     "dev": "next dev",
     "prebuild": "node scripts/build-notices.mjs",

@@ -2,7 +2,7 @@ import { emptyContent, type ContentOf, type QrContent, type QrType } from "./con
 
 /** Sample content so newly added codes render (and scan) immediately. */
 export const SAMPLE_CONTENT: { [K in QrType]: ContentOf<K> } = {
-  url: { type: "url", url: "https://getlaunch.ph" },
+  url: { type: "url", url: "https://getlaunchph.com" },
   text: { type: "text", text: "Hello from QR Studio!" },
   wifi: {
     type: "wifi",

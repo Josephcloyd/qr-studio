@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/components/ui/cn";
 
-/** GetLaunch Ph family mark: a light hexagon badge with the product glyph in brand green. */
+/** GetLaunch PH family mark: a light hexagon badge with the product glyph in brand green. */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={cn("size-9", className)} aria-hidden="true">
@@ -31,14 +31,14 @@ export function Brand({ className, compact = false }: { className?: string; comp
     <Link
       href="/"
       className={cn("group inline-flex items-center gap-2.5 rounded-lg", className)}
-      aria-label="QR Studio by GetLaunch Ph — home"
+      aria-label="QR Studio by GetLaunch PH — home"
     >
       <BrandMark className="transition-transform duration-300 group-hover:scale-105" />
       {!compact && (
         <span className="flex flex-col leading-none">
           <span className="text-ink text-[17px] font-bold tracking-tight">QR Studio</span>
           <span className="text-ink-3 mt-1 text-[9px] font-semibold tracking-[0.18em] uppercase">
-            by GetLaunchPh
+            by GetLaunch PH
           </span>
         </span>
       )}

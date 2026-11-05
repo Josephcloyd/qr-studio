@@ -45,7 +45,7 @@ for (const name of PACKAGES) {
 }
 
 const header = `QR Studio — third-party notices
-QR Studio is a free tool by GetLaunch Ph. It includes the open-source software
+QR Studio is a free tool by GetLaunch PH. It includes the open-source software
 and fonts listed below, each under its own license.
 
 "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.

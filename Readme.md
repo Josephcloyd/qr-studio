@@ -1,12 +1,12 @@
 # QR Studio
 
-**Create QR codes. Design them your way.** A free, privacy-first QR code generator and design studio from **GetLaunch Ph**.
+**Create QR codes. Design them your way.** A free, privacy-first QR code generator and design studio from **GetLaunch PH**.
 
 Generate QR codes for 10 kinds of content, style them, and design complete layouts around them, such as business cards, menus, Wi-Fi signs, invitations, flyers and posters. Then export PNG, SVG or PDF. Everything happens in your browser. There's no account, no uploads and no cloud storage.
 
 ## Features
 
-- **GetLaunch Ph branding**: the same dark, green-accented look as ResumeFlow, with a light theme toggle, and a Support button that opens a GCash donation QR. Donations are optional and the tool stays free.
+- **GetLaunch PH branding**: the same dark, green-accented look as ResumeFlow, with a light theme toggle, and a Support button that opens a GCash donation QR. Donations are optional and the tool stays free.
 - **QR generator** (home page `/`, with the 20 templates directly below): website, text, Wi-Fi, contact (vCard 3.0), email, phone, SMS, WhatsApp, location and calendar event codes, each with inline validation. All codes are static: no redirects and no scan tracking.
 - **QR styling**: 6 module shapes, corner frame and dot styles, solid and gradient colors, transparent backgrounds, error correction, quiet zone, and a center logo with a plate. There are 10 curated looks.
 - **Scannability first**:
@@ -93,6 +93,7 @@ See `/privacy` in the app for the user-facing explanation.
 - With several elements selected, you can move, align, distribute, layer, duplicate and delete them, but resizing and rotating work on one element at a time.
 - Very large prints at high DPI are capped to browser canvas limits (about 64 MP on desktop, 16 MP on mobile). The export dialog tells you when it reduces resolution.
 - Scan checks use jsQR, which is stricter than most phone cameras. Always test-scan your final print with real phones.
+- The "dots" and "diamond" module styles combined with a logo fail jsQR for roughly 1 in 15 payloads at small sizes. The live scan check flags these before download, and square/rounded styles aren't affected.
 - Non-Latin text renders with system fallback fonts. The bundled fonts cover Latin script, including Filipino.
 - Uploaded SVG images are converted to PNG (up to 2048 px on the long side) when added, so scripts or links inside them can never run. They export as sharp raster images, not vectors.
 - Uploads larger than 50 megapixels are rejected before decoding to keep the browser responsive.
@@ -100,4 +101,4 @@ See `/privacy` in the app for the user-facing explanation.
 
 ## License & credits
 
-© GetLaunch Ph. Bundled fonts are licensed under the SIL Open Font License (see the `@fontsource` packages). Icons are from [Lucide](https://lucide.dev) (ISC).
+© GetLaunch PH. Bundled fonts are licensed under the SIL Open Font License (see the `@fontsource` packages). Icons are from [Lucide](https://lucide.dev) (ISC).

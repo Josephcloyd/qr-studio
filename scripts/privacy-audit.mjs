@@ -69,7 +69,7 @@ const ALLOWED_URL_HOSTS = new Set([
   "www.openstreetmap.org",
   "wa.me",
   "example.com",
-  "getlaunch.ph",
+  "getlaunchph.com",
   "localhost",
 ]);
 

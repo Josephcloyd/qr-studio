@@ -148,7 +148,7 @@ export async function exportPdf(
     orientation: page.width > page.height ? "landscape" : "portrait",
     compress: true,
   });
-  pdf.setProperties({ title: doc.name, creator: "QR Studio by GetLaunch Ph" });
+  pdf.setProperties({ title: doc.name, creator: "QR Studio by GetLaunch PH" });
   pdf.addImage(canvas, "PNG", place.x, place.y, place.width, place.height, undefined, "FAST");
   const blob = pdf.output("blob");
   return {

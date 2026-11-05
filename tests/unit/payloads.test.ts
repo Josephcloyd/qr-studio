@@ -23,8 +23,8 @@ describe("empty inputs", () => {
 
 describe("url", () => {
   it("adds https when missing", () => {
-    expect(payload(encodePayload({ type: "url", url: "getlaunch.ph/tools" }))).toBe(
-      "https://getlaunch.ph/tools",
+    expect(payload(encodePayload({ type: "url", url: "getlaunchph.com/tools" }))).toBe(
+      "https://getlaunchph.com/tools",
     );
   });
   it("keeps explicit http(s)", () => {
@@ -120,8 +120,8 @@ describe("vcard", () => {
   });
   it("allows company-only cards", () => {
     expect(
-      payload(encodePayload({ ...emptyContent("vcard"), organization: "GetLaunch Ph" })),
-    ).toContain("FN:GetLaunch Ph");
+      payload(encodePayload({ ...emptyContent("vcard"), organization: "GetLaunch PH" })),
+    ).toContain("FN:GetLaunch PH");
   });
   it("validates email, phone and website", () => {
     const e = errors(

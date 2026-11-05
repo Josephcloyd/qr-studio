@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { CONTENT_SECURITY_POLICY } from "@/lib/security/csp";
+import { LoadingScreen } from "@/components/site/LoadingScreen";
 import { Providers } from "@/components/ui/Providers";
 import "./globals.css";
+import "./splash.css";
 
 export const metadata: Metadata = {
   title: {
@@ -10,9 +12,9 @@ export const metadata: Metadata = {
     template: "%s · QR Studio",
   },
   description:
-    "Generate, customize, and design professional QR codes in minutes. A free tool by GetLaunch Ph. Your projects stay in your browser — no account, no uploads, no cloud storage.",
+    "Generate, customize, and design professional QR codes in minutes. A free tool by GetLaunch PH. Your projects stay in your browser — no account, no uploads, no cloud storage.",
   applicationName: "QR Studio",
-  authors: [{ name: "GetLaunch Ph" }],
+  authors: [{ name: "GetLaunch PH" }],
   referrer: "no-referrer",
   robots: { index: true, follow: true },
 };
@@ -49,6 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="min-h-dvh antialiased">
+        <LoadingScreen />
         <Providers>{children}</Providers>
       </body>
     </html>

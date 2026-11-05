@@ -1,0 +1,383 @@
+/* ==========================================================================
+   GetLaunch PH loading screen — same emblem, wordmark and motion as
+   getlaunchph.com. Brand colours are fixed (not themed) so the splash looks
+   identical across the GetLaunch PH family in light and dark mode.
+   Markup: src/components/site/LoadingScreen.tsx. Hidden when Providers sets
+   html[data-splash="done"].
+   ========================================================================== */
+
+:root {
+  --splash-forest: #344c43;
+  --splash-cream: #f8f7f3;
+  --splash-sage: #a9bdb3;
+  --splash-ink: #334d44;
+  --splash-accent: #b5c9bd;
+}
+
+.gl-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  color: var(--splash-cream);
+  background: radial-gradient(60% 48% at 50% 44%, #7894864d, transparent 72%), var(--splash-forest);
+  /* Fail-safe: never trap the page if scripts don't run. */
+  animation: splash-timeout 0.6s cubic-bezier(0.65, 0, 0.35, 1) 8s forwards;
+}
+html[data-splash="done"] .gl-splash {
+  pointer-events: none;
+  animation: splash-out 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+html[data-splash="done"] .gl-splash .loading-stage {
+  animation: splash-lift 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.gl-splash .loading-stage {
+  display: grid;
+  justify-items: center;
+  gap: 30px;
+  text-align: center;
+}
+
+.gl-splash .loading-emblem {
+  --lm-ink: var(--splash-ink);
+  position: relative;
+  width: 108px;
+  height: 108px;
+  color: var(--splash-cream);
+}
+.gl-splash .loading-emblem svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lm-halo {
+  position: absolute;
+  inset: -42%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #a9bdb352, #a9bdb300);
+  will-change: transform, opacity;
+  animation:
+    lm-fade 0.9s ease-out 0.3s both,
+    lm-breathe 3.2s ease-in-out 1.5s infinite;
+}
+.lm-shadow {
+  position: absolute;
+  bottom: -16%;
+  left: 14%;
+  right: 14%;
+  height: 20%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #0a1b146b, #0a1b1400);
+  will-change: transform, opacity;
+  animation:
+    lm-fade 0.5s ease-out 0.45s both,
+    lm-float-shadow 3.2s ease-in-out 1.5s infinite;
+}
+.lm-orbit {
+  position: absolute;
+  inset: -19px;
+  border-radius: 50%;
+  animation: lm-fade 0.7s ease-out 0.45s both;
+}
+.lm-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #f8f7f31a;
+  border-radius: 50%;
+}
+.lm-orbit-arc {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  animation: lm-spin 1.9s cubic-bezier(0.55, 0.12, 0.45, 0.88) infinite;
+}
+.lm-orbit-arc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 58%, #f8f7f3e6);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 1.6px), #000 calc(100% - 1.4px));
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 1.6px), #000 calc(100% - 1.4px));
+}
+.lm-orbit-arc::after {
+  content: "";
+  position: absolute;
+  top: -2.5px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--splash-cream);
+  box-shadow: 0 0 10px 2px #f8f7f3a6;
+}
+
+.lm-hex-fill {
+  transform-box: fill-box;
+  transform-origin: 50%;
+  animation: lm-fill 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+.lm-hex-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2px;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  opacity: 0;
+  animation: lm-trace 0.85s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.lm-ink {
+  fill: currentColor;
+  stroke: var(--lm-ink);
+  stroke-width: 3.7px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lm-line {
+  fill: none;
+  stroke-dasharray: 1;
+  animation: lm-draw 0.38s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.lm-line.lm-trunk {
+  animation-delay: 0.75s;
+}
+.lm-line.lm-left,
+.lm-line.lm-right {
+  animation-delay: 0.98s;
+}
+.lm-node {
+  transform-box: fill-box;
+  transform-origin: 50%;
+  animation:
+    lm-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    lm-ping 2.4s ease-out infinite;
+}
+.lm-node-1 {
+  animation-delay: 1.05s, 2.65s;
+}
+.lm-node-2 {
+  animation-delay: 1.15s, 2.91s;
+}
+.lm-node-3 {
+  animation-delay: 1.25s, 3.05s;
+}
+.lm-base {
+  fill: var(--lm-ink);
+  stroke: none;
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: lm-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+.lm-pulse {
+  fill: none;
+  stroke: #e6eee9;
+  stroke-width: 1.5px;
+  stroke-dasharray: 0.16 1.2;
+  stroke-dashoffset: 0.16px;
+  opacity: 0;
+  animation: lm-signal 2.4s cubic-bezier(0.45, 0, 0.25, 1) 1.6s infinite;
+}
+.lm-pulse.lm-left {
+  animation-delay: 1.86s;
+}
+.lm-pulse.lm-right {
+  animation-delay: 2s;
+}
+.lm-sheen {
+  mix-blend-mode: soft-light;
+  transform: translate(-30px);
+  animation: lm-sheen 3.6s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite;
+}
+
+.gl-splash .loading-wordmark {
+  margin: 0;
+  font: 650 1.55rem/1 var(--font-sans);
+  letter-spacing: -0.05em;
+}
+.lm-letter {
+  display: inline-block;
+  animation: lm-letter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(1.05s + var(--i) * 32ms);
+}
+.lm-letter-accent {
+  margin-left: 0.2em;
+  color: var(--splash-accent);
+  font-weight: 700;
+}
+.gl-splash .loading-caption {
+  margin: -16px 0 0;
+  color: #0000;
+  background: linear-gradient(
+      90deg,
+      var(--splash-sage) 0 38%,
+      var(--splash-cream) 50%,
+      var(--splash-sage) 62% 100%
+    )
+    0 0 / 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font: 600 0.76rem/1 var(--font-sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation:
+    lm-fade 0.6s ease-out 1.4s both,
+    lm-shimmer 2.6s linear 1.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-splash .loading-stage *,
+  .gl-splash .loading-stage ::before,
+  .gl-splash .loading-stage ::after {
+    animation: none !important;
+  }
+  .lm-orbit-arc {
+    display: none;
+  }
+  .gl-splash .loading-caption {
+    color: var(--splash-sage);
+    background: none;
+  }
+}
+
+@keyframes lm-fade {
+  0% {
+    opacity: 0;
+  }
+}
+@keyframes lm-breathe {
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+@keyframes lm-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes lm-trace {
+  0% {
+    stroke-dashoffset: 1px;
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes lm-fill {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+}
+@keyframes lm-draw {
+  0% {
+    stroke-dashoffset: 1px;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+}
+@keyframes lm-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+@keyframes lm-ping {
+  0%,
+  22%,
+  to {
+    transform: scale(1);
+  }
+  7% {
+    transform: scale(1.16);
+  }
+}
+@keyframes lm-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) scaleY(0.4);
+  }
+}
+@keyframes lm-signal {
+  0% {
+    stroke-dashoffset: 0.16px;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  42% {
+    stroke-dashoffset: -1px;
+    opacity: 1;
+  }
+  44%,
+  to {
+    stroke-dashoffset: -1px;
+    opacity: 0;
+  }
+}
+@keyframes lm-sheen {
+  0% {
+    transform: translate(-30px);
+  }
+  38%,
+  to {
+    transform: translate(56px);
+  }
+}
+@keyframes lm-letter {
+  0% {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+}
+@keyframes lm-float-shadow {
+  50% {
+    opacity: 0.7;
+    transform: scaleX(0.86);
+  }
+}
+@keyframes lm-shimmer {
+  to {
+    background-position: -160% 0;
+  }
+}
+@keyframes splash-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes splash-lift {
+  to {
+    opacity: 0;
+    transform: translateY(-22px) scale(0.94);
+  }
+}
+/* Same as splash-out, but a distinct name so switching to splash-out restarts the fade. */
+@keyframes splash-timeout {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

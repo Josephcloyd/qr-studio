@@ -14,6 +14,8 @@ import {
 } from "@/lib/qr/style";
 import { decodeSvg, makeLogoDataUrl, renderQrMarkup } from "../helpers/decode";
 
+// Arbitrary test payload (not a live URL). Changing it changes the module pattern; see
+// the known dots/diamond + logo fragility noted in Readme "Known limitations".
 const URL_PAYLOAD = "https://getlaunch.ph/qr-studio?ref=print&utm=none";
 const style = (patch: Partial<QrStyle>): QrStyle => ({ ...DEFAULT_QR_STYLE, ...patch });
 
@@ -205,7 +207,7 @@ describe("payload round-trips through rendering", () => {
       type: "vcard",
       firstName: "María",
       lastName: "Dela Cruz",
-      organization: "GetLaunch Ph",
+      organization: "GetLaunch PH",
       title: "Founder",
       phone: "+63 2 8123 4567",
       mobile: "+63 917 123 4567",

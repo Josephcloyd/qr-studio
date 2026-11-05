@@ -88,10 +88,12 @@ export function makePng(
   return PNG.sync.write(png);
 }
 
-/** Navigates and waits until React has hydrated the page. */
+/** Navigates and waits until React has hydrated the page and the loading screen is dismissed. */
 export async function gotoReady(page: Page, url: string) {
   await page.goto(url);
   await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
+  // The splash stops intercepting pointer events as soon as it's marked done.
+  await page.locator('html[data-splash="done"]').waitFor({ state: "attached" });
 }
 
 /** Opens the studio on desktop with a template (or blank) and waits for the canvas. */

@@ -5,7 +5,7 @@ import { Download, Heart, House, ShieldCheck, X } from "lucide-react";
 import { create } from "zustand";
 import { cn } from "@/components/ui/cn";
 
-/** The GetLaunch Ph GCash/InstaPay QR, served as a static file from our own origin. */
+/** The GetLaunch PH GCash/InstaPay QR, served as a static file from our own origin. */
 const SUPPORT_QR = "/support/gcash-qr.png";
 
 const useSupport = create<{ open: boolean; setOpen: (open: boolean) => void }>((set) => ({
@@ -93,7 +93,7 @@ export function SupportDialog() {
                 {/* eslint-disable-next-line @next/next/no-img-element -- static same-origin file */}
                 <img
                   src={SUPPORT_QR}
-                  alt="GCash InstaPay QR code for donations to GetLaunch Ph"
+                  alt="GCash InstaPay QR code for donations to GetLaunch PH"
                   width={352}
                   height={352}
                   className="block h-auto w-full"
@@ -117,7 +117,7 @@ export function SupportDialog() {
               <div className="border-gold-line bg-gold-soft flex gap-3 rounded-2xl border p-4">
                 <ShieldCheck className="text-gold mt-0.5 size-5 shrink-0" aria-hidden="true" />
                 <p className="text-ink text-[14px] leading-relaxed font-medium">
-                  Complete the transfer only in the official GCash app. GetLaunch Ph will never ask
+                  Complete the transfer only in the official GCash app. GetLaunch PH will never ask
                   for your MPIN, OTP, password, or verification code.
                 </p>
               </div>
