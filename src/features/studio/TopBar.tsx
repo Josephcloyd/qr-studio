@@ -2,6 +2,7 @@
 
 import { DropdownMenu } from "radix-ui";
 import {
+  Bug,
   Download,
   Eye,
   FilePlus2,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { Brand } from "@/components/site/Brand";
+import { openBugReport } from "@/components/site/ReportBug";
 import { ProductNav } from "@/components/site/SiteHeader";
 import { SupportButton } from "@/components/site/Support";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
@@ -133,6 +135,8 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
               shortcut="?"
               onSelect={() => openDialog("shortcuts")}
             />
+            <DropdownMenu.Separator className="bg-line my-1 h-px" />
+            <MenuItem icon={Bug} label="Report a bug" onSelect={openBugReport} />
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>

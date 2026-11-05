@@ -89,6 +89,11 @@ export default function PrivacyPage() {
           example your website). That happens between their phone and that destination — QR Studio
           isn&apos;t involved.
         </p>
+        <p>
+          &ldquo;Report a bug&rdquo; opens your own email app with a draft addressed to us. It
+          includes the page you were on, your browser and screen size, but never your design. You
+          can edit or delete anything, and nothing is sent until you press send in your email app.
+        </p>
       </Block>
 
       <Block title="How this is enforced">
@@ -128,10 +133,7 @@ export default function PrivacyPage() {
 
       <p className="border-line text-ink-3 mt-6 border-t pt-8 text-[15px]">
         QR Studio is a free tool from GetLaunch Ph.{" "}
-        <Link
-          href="/"
-          className="text-accent-ink font-semibold underline-offset-4 hover:underline"
-        >
+        <Link href="/" className="text-accent-ink font-semibold underline-offset-4 hover:underline">
           Create a QR code
         </Link>
       </p>

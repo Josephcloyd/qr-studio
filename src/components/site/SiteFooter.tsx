@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
+import { ReportBugLink } from "./ReportBug";
 
 export function SiteFooter() {
   return (
@@ -28,6 +29,7 @@ export function SiteFooter() {
           <Link href="/privacy/" className="hover:text-ink">
             How privacy works
           </Link>
+          <ReportBugLink className="hover:text-ink" withIcon />
         </nav>
       </div>
       <div className="border-line/70 border-t">

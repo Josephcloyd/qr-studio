@@ -14,6 +14,20 @@ const MARKER = "PRIVATE-MARKER-7f3a9c";
 test.describe("Privacy guarantees", () => {
   test.skip(({ isMobile }) => isMobile, "Covered on desktop browsers");
 
+  test("bug reports are an email draft, never a request", async ({ page }) => {
+    await gotoReady(page, "/privacy/");
+    const link = page.getByRole("link", { name: "Report a bug" });
+    await expect(link).toHaveAttribute("href", /^mailto:danojosephclyde@gmail\.com\?subject=/);
+    // Fill in the details without following the mailto: link.
+    await link.evaluate((a) =>
+      a.addEventListener("click", (e) => e.preventDefault(), { once: true }),
+    );
+    await link.click();
+    const href = decodeURIComponent((await link.getAttribute("href")) ?? "");
+    expect(href).toContain("Page: /privacy/");
+    expect(href).not.toContain(MARKER);
+  });
+
   test("QR content, images and designs never leave the browser", async ({ page, baseURL }) => {
     test.slow();
     const requests = watchNetwork(page);
@@ -41,13 +55,11 @@ test.describe("Privacy guarantees", () => {
     await page.getByRole("button", { name: "Design a layout around it" }).click();
     await expect(page.getByTestId("canvas-viewport")).toBeVisible();
     await page.getByRole("button", { name: "Images", exact: true }).click();
-    await page
-      .locator('input[type="file"][multiple]')
-      .setInputFiles({
-        name: `${MARKER}-photo.png`,
-        mimeType: "image/png",
-        buffer: makePng(64, 64),
-      });
+    await page.locator('input[type="file"][multiple]').setInputFiles({
+      name: `${MARKER}-photo.png`,
+      mimeType: "image/png",
+      buffer: makePng(64, 64),
+    });
     for (const format of ["PNG", "SVG", "PDF", "Project"]) {
       await page.getByRole("button", { name: "Export", exact: true }).click();
       await page
